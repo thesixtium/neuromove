@@ -25,18 +25,23 @@ const _sequence2 = [];
 const _sequence3 = [];
 const defaultColour = "aliceblue";
 function pickSequence(array){
+    let temp = [];
+    array.forEach(element => {
+        temp.push(element);
+    });
+    console.log("temp end: " + temp[temp.length - 1]);
     array.length = 0;
     let i =0;
     while (i < _idoptions.length){
         let index = Math.floor(Math.random() * _idoptions.length);
-        if (array.includes(_idoptions[index])) {
+        if ((i == 0 && temp[temp.length - 1] == _idoptions[index]) || array.includes(_idoptions[index])){
             continue;
         } else {
             array.push(_idoptions[index]);
             i++;
         }
     }
-    console.log(array);
+    console.log("array: " + array[0]);
 }
 function flashSequence(array){
     //for(let j = 0; j < 3; j++){
@@ -55,9 +60,9 @@ function flashSequence(array){
     }, 300);
 }
 function doTheThing(){
-   // flashSequence(_sequence1);
+   //flashSequence(_sequence1);
     //setTimeout(function(){
-    for(let i = 1; i<7; i++){
+    for(let i = 0; i<7; i++){
     setTimeout(function(){flashSequence(_sequence1);}, (2500*i));}//}, 2500);
     //flashSequence(_sequence3);
 }
