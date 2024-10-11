@@ -1,0 +1,25 @@
+
+.main {
+  display: grid;
+  grid-template: 'a b c' 'd e f' 'g h i';
+  gap: 1em;
+  align-items: center;
+  background-color: grey;
+  margin-left: 12%;
+  margin-right: 12%;
+}
+
+.grid {
+  font-size: 20vh;
+  //padding-left: 2%;
+  background-color: pink;
+  text-align: center;
+  padding-top: 5%;
+  color: black;
+  
+}
+
+#l45, #fwd, #r45{
+  margin-top: 7%;
+}
+
