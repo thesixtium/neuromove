@@ -5,7 +5,8 @@ import time
 
 # Data storage
 subj = "003"  # UPDATE WITH EACH PARTICIPANT
-directory = 'C:/Users/Adam Luoma/BCI4Kids/IDUN_Test'  # CHANGE DEPENDING ON COMPUTER
+directory = os.getcwd()
+print(directory)
 subdir = os.path.join(directory, 'data')
 eeg_path = os.path.join(subdir, f'eeg_data_{subj}.csv')
 marker_path = os.path.join(subdir, f'marker_data_{subj}.csv')
@@ -70,6 +71,7 @@ if eeg_streams and marker_streams:
 
 else:
     print("No streams found in LSL INLET SCRIPT Exiting.")
+    # exit()
 
 # Clean and Save
 cleaned_eeg_samples = [sample[0] for sample in eeg_samples if sample is not None]
@@ -81,7 +83,7 @@ np.savetxt(eeg_path, eeg_data_matrix.T, delimiter=',')
 # Filter out None values and keep only the markers [1] and [2] with their corresponding timestamps
 filtered_markers_and_timestamps = [
     (sample[0], timestamp) for sample, timestamp in zip(marker_samples, marker_timestamps)
-    if sample is not None and isinstance(sample, list) and sample[0] in [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    if sample is not None and isinstance(sample, list) and sample[0] in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 ]
 
 if not filtered_markers_and_timestamps:

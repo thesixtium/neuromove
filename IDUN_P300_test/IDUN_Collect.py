@@ -3,9 +3,17 @@ from pylsl import StreamInfo, StreamOutlet, local_clock
 
 from idun_guardian_sdk import GuardianClient
 
-RECORDING_TIMER: int = (60 * 13)  # = 60 seconds * n minutes
-my_api_token = "XXXXXX"
+def get_api_key()-> str:
+    try:
+        with open('api_key.txt') as f:
+            return f.readline().strip()
+        
+    except FileNotFoundError:
+        print("api_key.txt not found. Please create a file with your API key in the same directory as this script.")
+        exit(1)
 
+RECORDING_TIMER: int = (60 * 5)  # = 60 seconds * n minutes
+my_api_token = get_api_key()
 
 async def stop_task(task):
     task.cancel()
