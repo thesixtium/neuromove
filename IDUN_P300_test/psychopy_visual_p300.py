@@ -79,7 +79,9 @@ def start_window():
             timestamp = local_clock() + unix_offset
             marker_outlet.push_sample(marker, timestamp)
 
-            core.wait(0.1)
+            # wait between 50-200ms
+            wait_time = random.uniform(0.05, 0.2)
+            core.wait(wait_time)
 
             # return to grey for 100ms
             squares[i].fillColor = 'grey'
@@ -93,6 +95,8 @@ def start_window():
             # do we need to mark end of flash?
 
         prev_cycle = cycle
+        # wait 200ms between cycles
+        core.wait(0.2)
         print(f"Cycle #{num + 1} completed")
 
     finished_text = visual.TextStim(window, text="Finished", color='white', height=0.1, pos=(0, 0))
