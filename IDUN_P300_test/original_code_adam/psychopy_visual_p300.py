@@ -5,7 +5,7 @@ from psychopy import visual, core, event as psychopy_event
 
 num_squares = 9
 num_cycles = 20
-unix_offset = time.time() - local_clock()
+unix_offset = .0 #time.time() - local_clock()
 
 marker_info = StreamInfo(name='MarkerStream',
                          type='Markers',
@@ -21,6 +21,8 @@ def start_window():
     start_text = visual.TextStim(window, text="Press Enter to start", color='white', height=0.1, pos=(0, 0.85))
     start_text.draw()
     window.flip()
+
+    start_timestamp = None
 
     while True:
         keys = psychopy_event.waitKeys()
@@ -78,6 +80,8 @@ def start_window():
             marker = [i + 1]
             timestamp = local_clock() + unix_offset
             marker_outlet.push_sample(marker, timestamp)
+            if start_timestamp is None:
+                start_timestamp = timestamp
 
             # wait 100ms
             core.wait(0.1)
@@ -105,6 +109,10 @@ def start_window():
         marker = [10]
         timestamp = local_clock() + unix_offset
         marker_outlet.push_sample(marker, timestamp)
+
+    # mark end of experiment
+    end_timestamp = local_clock() + unix_offset
+    print(f"Experiment started at {start_timestamp} and ended at {end_timestamp}. Duration of {end_timestamp - start_timestamp} seconds.")
 
     finished_text = visual.TextStim(window, text="Finished", color='white', height=0.1, pos=(0, 0))
     finished_text.draw()
