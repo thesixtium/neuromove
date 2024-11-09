@@ -3,13 +3,39 @@ const _arrows = ["ca", "cb", "cc", "cd", "ce", "cf", "cg", "ch", "ci"];
 const _sequence1 = [];
 const _sequence2 = [];
 const _sequence3 = [];
-const defaultColour = "blue";
-function pickSequence(array){
+
+
+const l45 = document.getElementById("ca");
+l45.width = 100;
+l45.height = 100;
+const cl45 = l45.getContext("2d");
+const fwd = document.getElementById("cb");
+const cfwd = fwd.getContext("2d");
+const r45 = document.getElementById("cc");
+const cr45 = r45.getContext("2d");
+const l = document.getElementById("cd");
+const cl = l.getContext("2d");
+const stop = document.getElementById("ce");
+const cstop = stop.getContext("2d");
+const r = document.getElementById("cf");
+const cr = r.getContext("2d");
+const l135 = document.getElementById("cg");
+const cl135 = l135.getContext("2d");
+const bwd = document.getElementById("ch");
+const cbwd = bwd.getContext("2d");
+const r135 = document.getElementById("ci");
+const cr135 = r135.getContext("2d");
+
+const _canvases = [cl45, cfwd, cr45, cl, cstop, cr, cl135, cbwd, cr135];
+
+const defaultColour = "white";
+function pickSequence(array, array2){
     let temp = [];
     array.forEach(element => {
         temp.push(element);
     });
     console.log("temp end: " + temp[temp.length - 1]);
+    array2.length = 0;
     array.length = 0;
     let i =0;
     while (i < _idoptions.length){
@@ -18,46 +44,42 @@ function pickSequence(array){
             continue;
         } else {
             array.push(_idoptions[index]);
+            array2.push(_canvases[index]);
             i++;
         }
     }
-    console.log("array: " + array[0]);
+    console.log("array: " + array);
+    console.log("arrows: " + _sequence2);
 }
-function flashSequence(array){
+function flashSequence(array, array2){
     //for(let j = 0; j < 3; j++){
-        pickSequence(array);
+        pickSequence(array, array2);
+        //array2[0].fillStyle = "black";
+        //array2[0].fill()
     let i = 0;
     let interval = setInterval(function(){
         if (i < _idoptions.length){
-            document.getElementById(array[i]).style.backgroundColor = "salmon";
+            document.getElementById(array[i]).style.backgroundColor = "black";
+            array2[i].fillStyle = "white";
+            array2[i].fill();
             setTimeout(function(){
                 document.getElementById(array[i]).style.backgroundColor = defaultColour;
+                array2[i].fillStyle = "black";
+                array2[i].fill();
             }, 100);
             i++;
+          /*  if (array[i] == "ca"){
+                l45.width +=15;
+                drawArrows();
+            }*/
         } else {
             clearInterval(interval);
         }
     }, 220);
 }
-function doTheThing(){
-    const l45 = document.getElementById("ca");
-    const cl45 = l45.getContext("2d");
-    const fwd = document.getElementById("cb");
-    const cfwd = fwd.getContext("2d");
-    const r45 = document.getElementById("cc");
-    const cr45 = r45.getContext("2d");
-    const l = document.getElementById("cd");
-    const cl = l.getContext("2d");
-    const stop = document.getElementById("ce");
-    const cstop = stop.getContext("2d");
-    const r = document.getElementById("cf");
-    const cr = r.getContext("2d");
-    const l135 = document.getElementById("cg");
-    const cl135 = l135.getContext("2d");
-    const bwd = document.getElementById("ch");
-    const cbwd = bwd.getContext("2d");
-    const r135 = document.getElementById("ci");
-    const cr135 = r135.getContext("2d");
+
+function drawArrows(){
+    
     cl45.beginPath();
     cl45.moveTo(85, 100);
     cl45.lineTo(35, 60);
@@ -68,6 +90,7 @@ function doTheThing(){
     cl45.lineTo(85, 100);
     cl45.lineWidth = 4;
     cl45.stroke();
+    //_canvases[0].fillStyle = "pink";
     cl45.fillStyle = "white";
     cl45.fill();
 
@@ -180,13 +203,18 @@ function doTheThing(){
     cstop.stroke();
     cstop.fillStyle = "white";
     cstop.fill();
+}
+function doTheThing(){
+    
 
    //flashSequence(_sequence1);
     //setTimeout(function(){
     for(let i = 0; i<7; i++){
-    setTimeout(function(){flashSequence(_sequence1);}, (1800*i));}//}, 2500);
+    setTimeout(function(){flashSequence(_sequence1, _sequence2);}, (1800*i));}//}, 2500);
     //flashSequence(_sequence3);
+    
 }
 //}
-addEventListener('DOMContentLoaded', doTheThing);
+addEventListener('DOMContentLoaded', drawArrows());
+addEventListener('DOMContentLoaded', doTheThing());
 //src = "test-logic.js"
