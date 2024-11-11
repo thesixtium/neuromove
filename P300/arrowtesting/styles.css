@@ -1,12 +1,13 @@
 body{
-    background-color: grey;
+    background-color: rgb(80, 97, 155);
     margin-left: 15%;
     margin-right:15%;
 }
 
 .grid-item{
     //margin: 5em;
-    background: salmon;
+    background: black;
+    //background: black;
    /*background-color: lime;*/
    max-height: 30vh;
 }
@@ -25,4 +26,10 @@ body{
     //border: 10px solid #f107a7;
     //margin: 0.5em;
     text-align: center;
+}
+
+canvas{
+   // background-color: chartreuse;
+    //border-color: chartreuse;
+    
 }
