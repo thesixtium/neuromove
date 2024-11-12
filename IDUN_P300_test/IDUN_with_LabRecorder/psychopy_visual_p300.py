@@ -5,7 +5,8 @@ from psychopy import visual, core, event as psychopy_event
 
 num_squares = 9
 num_cycles = 20
-unix_offset = .0 #time.time() - local_clock()
+unix_offset = time.time() - local_clock()
+print("unix_offset:", unix_offset)
 
 marker_info = StreamInfo(name='MarkerStream',
                          type='Markers',

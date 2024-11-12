@@ -4,7 +4,7 @@ from termcolor import colored
 from pylsl import StreamInfo, StreamOutlet
 
 mac_address = "E5:1E:FD:F5:15:26"
-RECORDING_TIMER = (60 * 5)  # = 60 seconds * n minutes
+RECORDING_TIMER = (60 * 15)  # = 60 seconds * n minutes
 
 async def init_guardian_client() -> GuardianClient:
     '''
@@ -85,7 +85,7 @@ async def main():
     
     await check_impedance(client)
 
-    # await start_recording(client)
+    await start_recording(client)
 
     print("Done Impedance Check")
 
