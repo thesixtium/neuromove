@@ -12,9 +12,12 @@ marker_info = StreamInfo(name='MarkerStream',
                          type='Markers',
                          channel_count=1,
                          nominal_srate=250,
-                         channel_format='int32',
+                         channel_format='string',
                          source_id='Marker_Outlet')
 marker_outlet = StreamOutlet(marker_info, 20, 360)
+
+def get_timestamp():
+    return local_clock() + unix_offset
 
 def start_window():
     window = visual.Window([800, 600], color='black')
@@ -23,7 +26,8 @@ def start_window():
     start_text.draw()
     window.flip()
 
-    start_timestamp = None
+    start_timestamp = get_timestamp()
+    marker_outlet.push_sample(["Experiment started"], start_timestamp)
 
     while True:
         keys = psychopy_event.waitKeys()
@@ -78,9 +82,9 @@ def start_window():
             window.flip()
 
             # mark start of flash
-            marker = [i + 1]
-            timestamp = local_clock() + unix_offset
-            marker_outlet.push_sample(marker, timestamp)
+            timestamp = get_timestamp()
+            marker_outlet.push_sample([f"{chr(i+65)}"], timestamp)
+            # print(f"Flashing square {chr(i+65)} at {timestamp}")
             if start_timestamp is None:
                 start_timestamp = timestamp
 
@@ -102,17 +106,18 @@ def start_window():
             # do we need to mark end of flash?
 
         prev_cycle = cycle
-        # wait 200ms between cycles
-        core.wait(0.2)
-        print(f"Cycle #{num + 1} completed")
 
         # mark end of cycle
-        marker = [10]
-        timestamp = local_clock() + unix_offset
-        marker_outlet.push_sample(marker, timestamp)
+        timestamp = get_timestamp()
+        marker_outlet.push_sample([f"Cycle {num}"], timestamp)
+        
+        # wait 200ms between cycles
+        core.wait(0.2)
+        print(f"Cycle #{num + 1}")
 
     # mark end of experiment
-    end_timestamp = local_clock() + unix_offset
+    end_timestamp = get_timestamp()
+    marker_outlet.push_sample(["Experiment ended"], end_timestamp)
     print(f"Experiment started at {start_timestamp} and ended at {end_timestamp}. Duration of {end_timestamp - start_timestamp} seconds.")
 
     finished_text = visual.TextStim(window, text="Finished", color='white', height=0.1, pos=(0, 0))

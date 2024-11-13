@@ -53,7 +53,7 @@ async def check_impedance(client: GuardianClient):
     input_task = asyncio.create_task(wait_for_input(client))
 
     try:
-        await asyncio.gather(client.stream_impedance(handler=_print_impedance), input_task)
+        await asyncio.gather(client.stream_impedance(handler=_print_impedance, mains_freq_60hz=True), input_task)
     except Exception as e:
         print(e)
         print("Error in impedance check")
