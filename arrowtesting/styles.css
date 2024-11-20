@@ -11,8 +11,25 @@ body{
    /*background-color: lime;*/
    max-height: 30vh;
 }
-.grid-container {
+.stop-grid-container {
     padding-top: 15%;
+    grid-gap: 1em;
+    display: grid;
+    grid-template: 'item1 item1'
+                    'item1 item1';
+    justify-content: center;
+}
+.stop-grid-item{
+    //margin: 5em;
+    background: black;
+    //background: black;
+   /*background-color: lime;*/
+   max-height: 30vh;
+}
+.grid-container {
+    padding-top: 30%;
+    padding-right: 70%;
+    margin-left: -25%;
     grid-gap: 1em;
     display: grid;
     grid-template: 'item1 item1 item1'

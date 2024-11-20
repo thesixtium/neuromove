@@ -66,7 +66,7 @@ function flashSequence(array, array2){
                 document.getElementById(array[i]).style.backgroundColor = defaultColour;
                 array2[i].fillStyle = "black";
                 array2[i].fill();
-            }, 100);
+            }, 200);
             i++;
           /*  if (array[i] == "ca"){
                 l45.width +=15;
@@ -75,7 +75,7 @@ function flashSequence(array, array2){
         } else {
             clearInterval(interval);
         }
-    }, 220);
+    }, 440);
 }
 
 function drawArrows(){
@@ -88,7 +88,8 @@ function drawArrows(){
     cl45.lineTo(70, 30);
     cl45.lineTo(55, 45);
     cl45.lineTo(85, 100);
-    cl45.lineWidth = 4;
+    cl45.lineWidth = 10;
+    cl45.strokeStyle = "black";
     cl45.stroke();
     //_canvases[0].fillStyle = "pink";
     cl45.fillStyle = "white";
@@ -103,7 +104,7 @@ function drawArrows(){
     cfwd.lineTo(60, 45);
     cfwd.lineTo(60, 95);
     cfwd.lineTo(40, 95);
-    cfwd.lineWidth = 4;
+    cfwd.lineWidth = 10;
     cfwd.stroke();
     cfwd.fillStyle = "white";
     cfwd.fill();
@@ -116,7 +117,7 @@ function drawArrows(){
     cr45.lineTo(30, 30);
     cr45.lineTo(45, 45);
     cr45.lineTo(15, 100);
-    cr45.lineWidth = 4;
+    cr45.lineWidth = 10;
     cr45.stroke();
     cr45.fillStyle = "white";
     cr45.fill();
@@ -129,7 +130,7 @@ function drawArrows(){
     cl135.lineTo(70, 90);
     cl135.lineTo(55, 75);
     cl135.lineTo(85, 20);
-    cl135.lineWidth = 4;
+    cl135.lineWidth = 10;
     cl135.stroke();
     cl135.fillStyle = "white";
     cl135.fill();
@@ -143,7 +144,7 @@ function drawArrows(){
     cbwd.lineTo(60, 60);
     cbwd.lineTo(60, 10);
     cbwd.lineTo(40, 10);
-    cbwd.lineWidth = 4;
+    cbwd.lineWidth = 10;
     cbwd.stroke();
     cbwd.fillStyle = "white";
     cbwd.fill();
@@ -156,7 +157,7 @@ function drawArrows(){
     cr135.lineTo(30, 90);
     cr135.lineTo(45, 75);
     cr135.lineTo(15, 20);
-    cr135.lineWidth = 4;
+    cr135.lineWidth = 10;
     cr135.stroke();
     cr135.fillStyle = "white";
     cr135.fill();
@@ -170,7 +171,7 @@ function drawArrows(){
     cl.lineTo(40, 50);
     cl.lineTo(90, 50);
     cl.lineTo(90, 70);
-    cl.lineWidth = 4;
+    cl.lineWidth = 10;
     cl.stroke();
     cl.fillStyle = "white";
     cl.fill();
@@ -184,7 +185,7 @@ function drawArrows(){
     cr.lineTo(60, 50);
     cr.lineTo(10, 50);
     cr.lineTo(10, 70);
-    cr.lineWidth = 4;
+    cr.lineWidth = 10;
     cr.stroke();
     cr.fillStyle = "white";
     cr.fill();
@@ -199,7 +200,7 @@ function drawArrows(){
     cstop.lineTo(15, 75);
     cstop.lineTo(15, 45);
     cstop.lineTo(35, 25); 
-    cstop.lineWidth = 4;
+    cstop.lineWidth = 10;
     cstop.stroke();
     cstop.fillStyle = "white";
     cstop.fill();
@@ -210,7 +211,7 @@ function doTheThing(){
    //flashSequence(_sequence1);
     //setTimeout(function(){
     for(let i = 0; i<7; i++){
-    setTimeout(function(){flashSequence(_sequence1, _sequence2);}, (1800*i));}//}, 2500);
+    setTimeout(function(){flashSequence(_sequence1, _sequence2);}, (3600*i));}//}, 2500);
     //flashSequence(_sequence3);
     
 }
