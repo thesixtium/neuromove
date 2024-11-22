@@ -42,7 +42,7 @@ def init() -> Tuple[visual.Window, StreamOutlet]:
         if 'return' in keys:
             start_countdown(window, 3)
             start_timestamp = get_timestamp()
-            marker_outlet.push_sample(["Experiment Start"], start_timestamp)
+            marker_outlet.push_sample(["Program Start"], start_timestamp)
             break 
 
         elif 'escape' in keys:
@@ -117,7 +117,7 @@ def run_block(window: visual.Window, lsl_outlet: StreamOutlet, squares: List[vis
         previous_cycle = cycle
 
         # wait for random time between trials
-        core.wait(random.uniform(INTER_CYCLE_MIN, INTER_CYCLE_MAX))
+        core.wait(random.uniform(INTER_CYCLE_MIN, INTER_CYCLE_MAX))  
 
 def run_experiment(window: visual.Window, lsl_outlet: StreamOutlet, squares: List[visual.Rect], labels: List[visual.TextStim]):
     # mark start of experiment
@@ -126,6 +126,10 @@ def run_experiment(window: visual.Window, lsl_outlet: StreamOutlet, squares: Lis
 
     for block in range(NUMBER_OF_BLOCKS):
         run_block(window, lsl_outlet, squares, labels)
+
+        # mark end of block
+        timestamp = get_timestamp()
+        lsl_outlet.push_sample([f"End of Block {block+1}"], timestamp)
         print(f"Block {block+1} complete")
 
         # wait for user to to say they're ready
