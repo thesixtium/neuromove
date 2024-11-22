@@ -1,11 +1,10 @@
-from pdb import run
 import random
 from pylsl import StreamInfo, StreamOutlet, local_clock
 import time
 from psychopy import visual, core, event as psychopy_event
 
 num_squares = 9
-num_cycles = 20
+num_cycles = 200
 unix_offset = time.time() - local_clock()
 print("unix_offset:", unix_offset)
 
@@ -21,7 +20,30 @@ def get_timestamp():
     # return time.time()
     return local_clock() + unix_offset
 
-def run_trial(window):
+def start_window():
+    window = visual.Window([800, 600], color='black')
+
+    start_text = visual.TextStim(window, text="Press Enter to start", color='white', height=0.1, pos=(0, 0.85))
+    start_text.draw()
+    window.flip()
+
+    start_timestamp = get_timestamp()
+    marker_outlet.push_sample(["Experiment started"], start_timestamp)
+
+    while True:
+        keys = psychopy_event.waitKeys()
+        if 'return' in keys:
+            # countdown from 3
+            for i in range(3, 0, -1):
+                countdown = visual.TextStim(window, text=str(i), color='white', height=0.1, pos=(0, 0))
+                countdown.draw()
+                window.flip()
+                core.wait(1)
+            break
+        elif 'escape' in keys:
+            window.close()
+            core.quit()
+    
     # positions for the 3x3 grid
     positions = [(-0.5, 0.5), (0, 0.5), (0.5, 0.5),
              (-0.5, 0), (0, 0), (0.5, 0),
@@ -94,32 +116,6 @@ def run_trial(window):
         core.wait(0.2)
         print(f"Cycle #{num + 1}")
 
-def start_window():
-    window = visual.Window([800, 600], color='black')
-
-    start_text = visual.TextStim(window, text="Press Enter to start", color='white', height=0.1, pos=(0, 0.85))
-    start_text.draw()
-    window.flip()
-
-    start_timestamp = get_timestamp()
-    marker_outlet.push_sample(["Experiment started"], start_timestamp)
-
-    while True:
-        keys = psychopy_event.waitKeys()
-        if 'return' in keys:
-            # countdown from 3
-            for i in range(3, 0, -1):
-                countdown = visual.TextStim(window, text=str(i), color='white', height=0.1, pos=(0, 0))
-                countdown.draw()
-                window.flip()
-                core.wait(1)
-            break
-        elif 'escape' in keys:
-            window.close()
-            core.quit()
-    
-    run_trial(window)
-
     # mark end of experiment
     end_timestamp = get_timestamp()
     marker_outlet.push_sample(["Experiment ended"], end_timestamp)
@@ -141,8 +137,6 @@ def check_close(window):
     if 'escape' in psychopy_event.getKeys():
         window.close()
         core.quit()
-    elif 's' in psychopy_event.getKeys():
-        run_trial(window)        
 
 
 if __name__ == "__main__":
