@@ -27,14 +27,11 @@ body{
    max-height: 30vh;
 }
 .grid-container {
-    padding-top: 30%;
-    padding-right: 70%;
-    margin-left: -25%;
+    padding-top: 10%;
     grid-gap: 1em;
     display: grid;
     grid-template: 'item1 item1 item1'
-                         'item1 item1 item1'
-                         'item1 item1 item1';
+                    'item1 item1 item1';
     
 }
 #a, #b, #c, #d, #e, #f, #g, #h, #i {
@@ -49,4 +46,7 @@ canvas{
    // background-color: chartreuse;
     //border-color: chartreuse;
     
+}
+#empty{
+    background: transparent;
 }
