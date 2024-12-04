@@ -3,8 +3,9 @@ const _arrows = [/*"ca",*/ "cb", /*"cc",*/ "cd", "ce", "cf"/*, "cg", "ch", "ci"*
 const _sequence1 = [];
 const _sequence2 = [];
 const _sequence3 = [];
+var _root = document.querySelector(':root');
 
-const start_time = Date.now();
+const start_time = performance.now() * 1000;
 /*const l45 = document.getElementById("ca");
 l45.width = 100;
 l45.height = 100;
@@ -64,7 +65,7 @@ function flashSequence(array, array2){
         if (i <array2.length){
             
             console.log("start i: " + array[i]);
-            console.log(Date.now() - start_time);
+            console.log(performance.now() * 1000- start_time);
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
             array2[i].fill();
@@ -74,7 +75,7 @@ function flashSequence(array, array2){
                 array2[i].fill();
             }, 200);
             console.log("end i: " + array[i]);
-            console.log(Date.now() - start_time);
+            console.log(performance.now() * 1000 - start_time);
             i++;
           /*  if (array[i] == "ca"){
                 l45.width +=15;
@@ -221,14 +222,24 @@ function drawArrows(){
     document.getElementById("e").style.backgroundColor = "black";
 }
 function doTheThing(){
-    
+    if(sessionStorage.getItem('pright')){
+    _root.style.setProperty('--pright', sessionStorage.getItem('pright'));}
+    if(sessionStorage.getItem('pleft')){
+    _root.style.setProperty('--pleft', sessionStorage.getItem('pleft'));}
+    if(sessionStorage.getItem('top')){
+    _root.style.setProperty('--top', sessionStorage.getItem('top'));}
+    if(sessionStorage.getItem('mleft')){
+    _root.style.setProperty('--mleft', sessionStorage.getItem('mleft'));}
+    if(sessionStorage.getItem('mright')){
+    _root.style.setProperty('--mright', sessionStorage.getItem('mright'));}
+
 //flashSequence(_sequence1, _sequence2);
    //flashSequence(_sequence1);
     //setTimeout(function(){
-    console.log("block start: " + Date.now()-start_time);
+    console.log("block start: " + performance.now() * 1000-start_time);
     for(let i = 0; i<2; i++){
     setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2650*i));}//}, 2500);*/
-    console.log("cycle " + i + "end: " + Date.now()-start_time);
+    console.log("cycle " + i + "end: " + performance.now() * 1000-start_time);
     //flashSequence(_sequence3);
     
 }
