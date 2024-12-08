@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>p300test</title>
+</head>
+<body>
+    <div class = "grid-container">
+    <div class = "grid-item" id="a"><p>A</p></div>
+    <div class = "grid-item" id="b"><p>B</p></div>
+    <div class = "grid-item" id="c"><p>C</p></div>
+    <div class = "grid-item" id="d"><p>D</p></div>
+    <div class = "grid-item" id="e"><p>E</p></div>
+    <div class = "grid-item" id="f"><p>F</p></div>
+    <div class = "grid-item" id="g"><p>G</p></div>
+    <div class = "grid-item" id="h"><p>H</p></div>
+    <div class = "grid-item" id="i"><p>I</p></div>
+</div>
+<script> 
+const _idoptions = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+const _sequence1 = [];
+const _sequence2 = [];
+const _sequence3 = [];
+const defaultColour = "aliceblue";
+function pickSequence(array){
+    let temp = [];
+    array.forEach(element => {
+        temp.push(element);
+    });
+    console.log("temp end: " + temp[temp.length - 1]);
+    array.length = 0;
+    let i =0;
+    while (i < _idoptions.length){
+        let index = Math.floor(Math.random() * _idoptions.length);
+        if ((i == 0 && temp[temp.length - 1] == _idoptions[index]) || array.includes(_idoptions[index])){
+            continue;
+        } else {
+            array.push(_idoptions[index]);
+            i++;
+        }
+    }
+    console.log("array: " + array[0]);
+}
+function flashSequence(array){
+    //for(let j = 0; j < 3; j++){
+        pickSequence(array);
+    let i = 0;
+    let interval = setInterval(function(){
+        if (i < _idoptions.length){
+            document.getElementById(array[i]).style.backgroundColor = "salmon";
+            setTimeout(function(){
+                document.getElementById(array[i]).style.backgroundColor = defaultColour;
+            }, 100);
+            i++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 220);
+}
+function doTheThing(){
+   //flashSequence(_sequence1);
+    //setTimeout(function(){
+    for(let i = 0; i<7; i++){
+    setTimeout(function(){flashSequence(_sequence1);}, (2000*i));}//}, 2500);
+    //flashSequence(_sequence3);
+}
+//}
+addEventListener('DOMContentLoaded', doTheThing);
+//src = "test-logic.js"
+
+</script>
+</body>
+</html>
