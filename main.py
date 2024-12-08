@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import time
-from ArduinoUno import ArduinoUno
-from ArduinoUno import MotorDirections
-from InternalException import *
+from RaspberryPi.ArduinoUno import ArduinoUno, MotorDirections
+from RaspberryPi.InternalException import *
 
 
 class States(Enum):
