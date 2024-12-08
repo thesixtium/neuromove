@@ -1,9 +1,27 @@
+:root {
+    --top: 20%;
+    --pleft: 0%;
+    --pright: 0%;
+    --mleft: 10%;
+    --mright: 10%;
+}
 body{
     background-color: rgb(80, 97, 155);
     margin-left: 15%;
     margin-right:15%;
 }
-
+#filler{
+    background-color: transparent;
+}
+#setup-grid-container{
+    padding-top: 10%;
+    grid-gap: 1em;
+    display: grid;
+    grid-template:  'item1 item1 item1'
+                    'item1 item1 item1'
+                    'item1 item1 item1';
+    justify-content: center;
+}
 .grid-item{
     //margin: 5em;
     background: black;
@@ -11,13 +29,43 @@ body{
    /*background-color: lime;*/
    max-height: 30vh;
 }
-.grid-container {
+
+#tl, #tr, #cen, #bl, #br{
+    background: black;
+    color: white;
+    font-size: 1em;
+    height: 15vh;
+    width: 15vh;
+    text-align: center;
+}
+#menutext{
+    padding-top: 20%;
+}
+.stop-grid-container {
     padding-top: 15%;
     grid-gap: 1em;
     display: grid;
+    grid-template: 'item1 item1'
+                    'item1 item1';
+    justify-content: center;
+}
+.stop-grid-item{
+    //margin: 5em;
+    background: black;
+    //background: black;
+   /*background-color: lime;*/
+   max-height: 30vh;
+}
+.grid-container {
+    padding-top: var(--top);
+    padding-left: var(--pleft);
+    padding-right: var(--pright);
+    margin-right: var(--mright);
+    margin-left: var(--mleft);
+    grid-gap: 1em;
+    display: grid;
     grid-template: 'item1 item1 item1'
-                         'item1 item1 item1'
-                         'item1 item1 item1';
+                    'item1 item1 item1';
     
 }
 #a, #b, #c, #d, #e, #f, #g, #h, #i {
@@ -32,4 +80,7 @@ canvas{
    // background-color: chartreuse;
     //border-color: chartreuse;
     
+}
+#empty{
+    background: transparent;
 }
