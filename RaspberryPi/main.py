@@ -2,7 +2,7 @@
 import time
 from ArduinoUno import ArduinoUno
 from ArduinoUno import MotorDirections
-from InternalExcpetion import *
+from InternalException import *
 
 
 class States(Enum):
@@ -63,7 +63,7 @@ def main():
 
                     # If is an error that we threw
                     if isinstance(current_exception, InternalException):
-                        print(f"Internal Error - {current_exception.print()}")
+                        print(current_exception.print())
                         if current_exception.is_permanent():
                             next_state = States.OFF
                         else:
@@ -71,7 +71,7 @@ def main():
 
                     # If is an error that we didn't throw
                     elif isinstance(current_exception, Exception):
-                        print(current_exception)
+                        print(current_exception.args)
                         next_state = States.OFF
 
                     # If not an error
@@ -95,8 +95,11 @@ def main():
             current_exception = e
 
 
-    arduino_uno.close()
+    if arduino_uno is not None:
+        arduino_uno.close()
 
+    if isinstance(current_exception, InternalException):
+        exit(current_exception.get_exception_id())
 
 if __name__ == '__main__':
     main()

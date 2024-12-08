@@ -16,6 +16,9 @@ class InternalException(Exception):
     def is_permanent(self):
         return self.exception_type == ExceptionTypes.PERMANENT
 
+    def get_exception_id(self):
+        return self.exception_id
+
 
 class NotImplementedYet(InternalException):
     def __init__(self, function_name: str):
@@ -36,6 +39,13 @@ class EnteredOffState(InternalException):
     def __init__(self):
         super().__init__(4, ExceptionTypes.PERMANENT, f"Entered off state")
 
+class SensorDistanceAlert(InternalException):
+    def __init__(self, sensor_name):
+        super().__init__(5, ExceptionTypes.TEMPORARY, f"Sensor {sensor_name} alerted")
+
+class CouldNotOpenPort(InternalException):
+    def __init__(self, port_name):
+        super().__init__(6, ExceptionTypes.PERMANENT, f"Could not open port {port_name}")
 
 class UserError(InternalException):
     def __init__(self, message: str):
