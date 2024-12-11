@@ -2,9 +2,9 @@ import heapq
 import itertools
 
 # Define some constants representing the things that can be in a field.
-OBSTACLE = 0
+OBSTACLE = 1
 DESTINATION = -2
-UNINITIALIZED = 1
+UNINITIALIZED = 0
 
 DEBUG = False
 VISUAL = True

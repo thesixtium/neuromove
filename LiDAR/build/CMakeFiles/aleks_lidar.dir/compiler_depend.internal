@@ -3,9 +3,8 @@
 
 CMakeFiles/aleks_lidar.dir/examples/aleks_lidar.cpp.o
  /home/pi/Documents/neuromove/LiDAR/examples/aleks_lidar.cpp
- /home/pi/Downloads/unilidar_sdk-main/unitree_lidar_sdk/examples/aleks_lidar.cpp
  /usr/include/stdc-predef.h
- /home/pi/Downloads/unilidar_sdk-main/unitree_lidar_sdk/include/unitree_lidar_sdk.h
+ /home/pi/Documents/neuromove/LiDAR/include/unitree_lidar_sdk.h
  /usr/lib/gcc/aarch64-linux-gnu/12/include/stdint.h
  /usr/include/stdint.h
  /usr/include/aarch64-linux-gnu/bits/libc-header-start.h
@@ -231,8 +230,8 @@ CMakeFiles/aleks_lidar.dir/examples/aleks_lidar.cpp.o
  /usr/include/aarch64-linux-gnu/bits/mathcalls.h
  /usr/include/aarch64-linux-gnu/bits/mathcalls-narrow.h
  /usr/include/aarch64-linux-gnu/bits/iscanonical.h
- /home/pi/Downloads/unilidar_sdk-main/unitree_lidar_sdk/include/unitree_lidar_sdk_config.h
- /home/pi/Downloads/unilidar_sdk-main/unitree_lidar_sdk/include/udp_handler.h
+ /home/pi/Documents/neuromove/LiDAR/include/unitree_lidar_sdk_config.h
+ /home/pi/Documents/neuromove/LiDAR/include/udp_handler.h
  /usr/include/arpa/inet.h
  /usr/include/netinet/in.h
  /usr/include/aarch64-linux-gnu/sys/socket.h

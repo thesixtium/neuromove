@@ -1,6 +1,7 @@
 #include "unitree_lidar_sdk.h"
 #include "udp_handler.h"
 #include <cstring>
+#include <string>
 
 using namespace unitree_lidar_sdk;
 
@@ -74,7 +75,7 @@ int main(){
   float x;
   float y;
   float z;
-  char string_template[] = "(%f,%f,%f)";
+  
   while (true)
   {
     result = lreader->runParse(); // You need to call this function at least 1500Hz
@@ -83,22 +84,23 @@ int main(){
     {
     
     case POINTCLOUD: {
-      cloud = lreader->getCloud();
-      pointCloudSize = cloud.points.size();
-      //scanMsg.stamp = cloudMsg.stamp;
-      
-	  for (int i = 0; i < pointCloudSize; i++){
-		  
-		  x = cloud.points[i].x;
-		  y = cloud.points[i].y;
-		  z = cloud.points[i].z;
-		  char formatted_string[1000];
-		  sprintf(formatted_string, string_template, x, y, z);
-		  
-          client.Send(formatted_string, strlen(formatted_string), (char *)destination_ip.c_str(), destination_port);
-      }
-      
-      break;
+	cloud = lreader->getCloud();
+	pointCloudSize = cloud.points.size();
+	//scanMsg.stamp = cloudMsg.stamp;
+	
+	std::string values("|");
+	
+	for (int i = 0; i < pointCloudSize; i++){
+	  x = cloud.points[i].x;
+	  y = cloud.points[i].y;
+	  z = cloud.points[i].z;
+	  values = values + std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z) + "|";
+	}
+	
+	const char* values_char = values.c_str();
+	client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
+	
+	break;
       }
       
 
