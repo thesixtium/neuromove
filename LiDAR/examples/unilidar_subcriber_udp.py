@@ -37,6 +37,8 @@ while True:
     data, addr = sock.recvfrom(10000)
     data = data.decode()
     search = re.search('[(]([^,]+),([^,]+),([^)]+)[)]', data)
+    
+    # in centimeters
     x = float(search.group(1)) * 100
     y = float(search.group(2)) * 100
     z = float(search.group(3)) * 100
@@ -54,8 +56,8 @@ while True:
         ax = fig.add_subplot()
         ax.scatter(dataDict['x'], dataDict['y'])
         ax.scatter([0], [0])
-        ax.set_xlim([-6, 6])
-        ax.set_ylim([-6, 6])
+        ax.set_xlim([-max(dataDict['x']+dataDict['y']), max(dataDict['x']+dataDict['y'])])
+        ax.set_ylim([-max(dataDict['x']+dataDict['y']), max(dataDict['x']+dataDict['y'])])
         plt.show()
         df = pd.DataFrame(dataDict)
 
