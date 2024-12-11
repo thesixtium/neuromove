@@ -53,11 +53,10 @@ def display_grid(grid):
             data2['y'].append(y)
             data2['z'].append(grid[x][y])
 
-    start_time = time.time()
-    df2 = pd.DataFrame(data2)
-    fig = plt.figure(figsize=(12, 12))
+    fig = plt.figure(figsize=(6, 6))
     ax = fig.add_subplot()
-    ax.scatter(df2.x, df2.y, df2.z)
+    ax.scatter(data2['x'], data2['y'], data2['z'])
+    ax.scatter([int(len(grid) / 2)], [int(len(grid) / 2)], s=5, c='red')
 
     plt.show()
 
