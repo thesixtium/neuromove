@@ -1,19 +1,23 @@
+from __future__ import print_function
 import socket
 import struct
 import matplotlib.pyplot as plt
 import re
 import time
 import pandas
-from __future__ import print_function
+import pandas as pd
+import numpy as np
+from scipy.ndimage import convolve
 
 import itertools, heapq
+print("Done imports")
 
 def _oc_to_grid_helper(x):
     return 0 if x != 0 else 1
 _oc_to_grid_helper_vectorized = np.vectorize(_oc_to_grid_helper)
 
-def oc_to_grid(oc):
-    return _oc_to_grid_helper_vectorized(oc.pivot(index='x', columns='y', values='z').reindex(np.arange(0,100)).reindex(np.arange(0,100), axis=1).fillna(0).to_numpy())
+def oc_to_grid(oc, n):
+    return _oc_to_grid_helper_vectorized(oc.pivot(index='x', columns='y', values='z').reindex(np.arange(0,n)).reindex(np.arange(0,n), axis=1).fillna(0).to_numpy())
 
 
 edge_filter = [
@@ -369,6 +373,7 @@ UDP_IP = "127.0.0.1"
 UDP_PORT = 12345
 
 # Create UDP socket
+print("Make socket")
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 
@@ -381,21 +386,25 @@ dataDict = {
 count = 0
 points_scanned = 0
 start_time = time.time()
-points_for_full_room = 10000 
+points_for_full_room = 20000 
 
+border_size = 0
+
+print("Start")
 while True:
     points_scanned += 1
+    
+    if count % 1000 == 0:
+        print(count)
         
     # Recv data
     data, addr = sock.recvfrom(10000)
     data = data.decode()
     search = re.search('[(]([^,]+),([^,]+),([^)]+)[)]', data)
-    if count % (points_for_full_room/100) == 0:
-        print(f"{round(count/points_for_full_room * 100, 2)}")
-    x = float(search.group(1))
-    y = float(search.group(2))
-    z = float(search.group(3))
-    if z < 0.5:
+    x = float(search.group(1)) * 100
+    y = float(search.group(2)) * 100
+    z = float(search.group(3)) * 100
+    if z < 50:
         dataDict['x'].append(x)
         dataDict['y'].append(y)
         dataDict['z'].append(1)
@@ -403,9 +412,6 @@ while True:
         
     if count > points_for_full_room:
         count = 0
-        print(f"Runtime: {(time.time() - start_time)} seconds")
-        print(f"Points:  {points_scanned}")
-        print(f"Seconds per point: {(time.time() - start_time) / points_scanned}")
         print(f"Seconds per 3000 points: {((time.time() - start_time) / points_scanned) * 3000}")
         start_time = time.time()
 
@@ -414,9 +420,9 @@ while True:
         start_time = time.time()
 
         grid_time = time.time()
-        grid = oc_to_grid(df)
+        grid = oc_to_grid(df, max(dataDict['x'] + dataDict['y']))
         grid = add_edge_buffer(grid)
-        print(f"Path:\t{time.time() - grid_time}")
+        print(f"Grid:\t{time.time() - grid_time}")
 
         path_time = time.time()
         path = get_full_path(jps(grid, 1, 1, 35, 36))
@@ -424,7 +430,7 @@ while True:
 
         print(f"Alg:\t{time.time() - start_time}")
 
-        # display_grid(grid)
+        display_grid(grid)
         display_path(grid, path)
         exit()
 
