@@ -1,3 +1,4 @@
 
 /.idea
-/RaspberryPi/__pycache__
+/src/RaspberryPi/__pycache__
+/test/RaspberryPi/__pycache__

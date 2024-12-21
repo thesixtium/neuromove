@@ -47,6 +47,18 @@ class CouldNotOpenPort(InternalException):
     def __init__(self, port_name):
         super().__init__(6, ExceptionTypes.PERMANENT, f"Could not open port {port_name}")
 
+class InvalidSocketExpectedType(InternalException):
+    def __init__(self, expected_type):
+        super().__init__(7, ExceptionTypes.PERMANENT, f"Socket class can't handle type {str(expected_type)}")
+
+class CantLoadSocketJSON(InternalException):
+    def __init__(self, message):
+        super().__init__(8, ExceptionTypes.TEMPORARY, f"Socket class can't decode JSON input: {message}")
+
+class CantConvertSocketData(InternalException):
+    def __init__(self, message, expected_type):
+        super().__init__(9, ExceptionTypes.TEMPORARY, f"Socket class can't turn {message} into a {str(expected_type)}")
+
 class UserError(InternalException):
     def __init__(self, message: str):
         super().__init__(10, ExceptionTypes.TEMPORARY, message)
