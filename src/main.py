@@ -2,6 +2,8 @@
 import time
 from src.RaspberryPi.ArduinoUno import ArduinoUno, MotorDirections
 from src.RaspberryPi.InternalException import *
+from src.RaspberryPi.Socket import Socket
+from src.RaspberryPi.uiInterface import UIInterface
 
 
 class States(Enum):
@@ -19,6 +21,10 @@ def main():
     next_state = States.START
     current_exception = None
     arduino_uno = None
+    eye_tracking_socket = None
+    p300_socket = None
+    ui_interface = None
+    initialized = False
 
     while state != States.OFF:
         try:
@@ -30,8 +36,13 @@ def main():
             match state:
                 case States.START:
                     print("Start")
-                    arduino_uno = ArduinoUno()
-                    next_state = States.SETUP
+                    if not initialized:
+                        arduino_uno = ArduinoUno()
+                        next_state = States.SETUP
+                        eye_tracking_socket = Socket(12345, 12346)
+                        p300_socket = Socket(12347, 12348)
+                        ui_interface = UIInterface()
+                        initialized = True
 
 
                 case States.SETUP:
@@ -94,8 +105,12 @@ def main():
             current_exception = e
 
 
-    if arduino_uno is not None:
+    if initialized:
         arduino_uno.close()
+        eye_tracking_socket.close()
+        p300_socket.close()
+        ui_interface.close()
+
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())
