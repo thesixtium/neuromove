@@ -62,3 +62,11 @@ class CantConvertSocketData(InternalException):
 class UserError(InternalException):
     def __init__(self, message: str):
         super().__init__(10, ExceptionTypes.TEMPORARY, message)
+
+class DidNotCreateSharedMemory(InternalException):
+    def __init__(self, memory: str):
+        super().__init__(11, ExceptionTypes.PERMANENT, f"Didn't create shared memory for {memory}")
+
+class NotEnoughSharedMemory(InternalException):
+    def __init__(self, allocated: int, required: int):
+        super().__init__(12, ExceptionTypes.PERMANENT, f"Operation requires {required} bytes, only allocated {allocated} bytes")
