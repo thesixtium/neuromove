@@ -1,5 +1,4 @@
 import random
-from numpy import square
 from pylsl import StreamInfo, StreamOutlet, local_clock
 import time
 from psychopy import visual, core, event as psychopy_event
@@ -7,8 +6,8 @@ from psychopy import visual, core, event as psychopy_event
 from typing import List, Tuple
 
 # user-defined variables
-USE_UNIX_OFFSET = True  # set to True if using IDUN, False otherwise
-NUMBER_OF_BLOCKS = 10    # how many times to repeat the experiment
+USE_UNIX_OFFSET = False  # set to True if using IDUN, False otherwise
+NUMBER_OF_BLOCKS = 3    # how many times to repeat the experiment
 TRIALS_PER_BLOCK = 20   # how many cycles of flashes back to back
 SQUARE_COLOR = 'white'    # color of the square when flashed
 FLASHED_TEXT_COLOR = 'black'  # color of the text when square is flashed
@@ -90,6 +89,7 @@ def run_block(window: visual.Window, lsl_outlet: StreamOutlet, squares: List[vis
 
             # mark start of flash
             timestamp = get_timestamp()
+            print(timestamp)
             lsl_outlet.push_sample([f"{chr(i+65)}"], timestamp)
 
             # wait 
