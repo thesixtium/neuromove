@@ -1,19 +1,17 @@
 body{
-    background-color: rgb(80, 97, 155);
+    background-color: grey;
     margin-left: 15%;
     margin-right:15%;
 }
 
 .grid-item{
     //margin: 5em;
-    background: black;
-    //background: black;
+    background: salmon;
    /*background-color: lime;*/
    max-height: 30vh;
 }
 .grid-container {
-    padding-top: 15%;
-    grid-gap: 1em;
+    grid-gap: 3px;
     display: grid;
     grid-template: 'item1 item1 item1'
                          'item1 item1 item1'
@@ -26,10 +24,4 @@ body{
     //border: 10px solid #f107a7;
     //margin: 0.5em;
     text-align: center;
-}
-
-canvas{
-   // background-color: chartreuse;
-    //border-color: chartreuse;
-    
 }
