@@ -121,7 +121,9 @@ int main(){
       }
 
       const char* values_char = values.c_str();
-	    client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
+      printf(std::to_string(strlen(values_char)).c_str());
+      client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
+      printf(" Send\n");
 	
 	    break;
       }
