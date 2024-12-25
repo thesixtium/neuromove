@@ -66,7 +66,7 @@ int main(){
 
   // Occupancy Grid
   int z1 = 1; // meters
-  int LiDAR_radius_cm = 3000;
+  int LiDAR_radius_cm = 4000;
   int resolution = 15;
   int grid_height = LiDAR_radius_cm / resolution;
   int grid_width = grid_height * 2;
@@ -97,7 +97,7 @@ int main(){
     {
     
     case POINTCLOUD: {
-      int occupancy_grid[grid_width * 1.5][grid_height * 1.5] = {0};
+      int occupancy_grid[grid_width][grid_height] = {0};
 
       cloud = lreader->getCloud();
 	    pointCloudSize = cloud.points.size();
@@ -107,7 +107,7 @@ int main(){
         z = cloud.points[i].z;
         if ( z < z1 && x > 0){
           y = cloud.points[i].y;
-          occupancy_grid[point_cloud_to_grid(x)][point_cloud_to_grid(y) + (grid_width / 2)] = 1;
+          occupancy_grid[point_cloud_to_grid(resolution, x)][point_cloud_to_grid(resolution, y) + (grid_width / 2)] = 1;
         }
       }
 
@@ -115,9 +115,9 @@ int main(){
 
       for(int i = 0; i < grid_width; i++) {
           for(int j = 0; j < grid_height; j++) {
-              str += std::to_string(occupancy_grid[i][j]);
+              values += std::to_string(occupancy_grid[i][j]);
           }
-          str += "|";
+          values += "|";
       }
 
       const char* values_char = values.c_str();
