@@ -2,8 +2,13 @@
 #include "udp_handler.h"
 #include <cstring>
 #include <string>
+#include <cmath> 
 
 using namespace unitree_lidar_sdk;
+
+int point_cloud_to_grid(int resolution, float pc){
+  return static_cast<int>(round(pc / resolution));
+}
 
 int main(){
 
@@ -59,6 +64,14 @@ int main(){
   printf("\n");
   sleep(2);
 
+  // Occupancy Grid
+  int z1 = 1; // meters
+  int LiDAR_radius_cm = 3000;
+  int resolution = 15;
+  int grid_height = LiDAR_radius_cm / resolution;
+  int grid_width = grid_height * 2;
+
+
   // UDP
   std::string destination_ip;
   unsigned short destination_port;
@@ -84,23 +97,21 @@ int main(){
     {
     
     case POINTCLOUD: {
-	cloud = lreader->getCloud();
-	pointCloudSize = cloud.points.size();
-	//scanMsg.stamp = cloudMsg.stamp;
+      int occupancy_grid[grid_width][grid_height] = {0};
+
+      cloud = lreader->getCloud();
+	    pointCloudSize = cloud.points.size();
 	
-	std::string values("|");
+      for (int i = 0; i < pointCloudSize; i++){
+        x = cloud.points[i].x;
+        z = cloud.points[i].z;
+        if ( z < z1 && x > 0){
+          y = cloud.points[i].y;
+          occupancy_grid[point_cloud_to_grid(x)][point_cloud_to_grid(y) + (grid_width / 2)] = 1;
+        }
+      }
 	
-	for (int i = 0; i < pointCloudSize; i++){
-	  x = cloud.points[i].x;
-	  y = cloud.points[i].y;
-	  z = cloud.points[i].z;
-	  values = values + std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z) + "|";
-	}
-	
-	const char* values_char = values.c_str();
-	client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
-	
-	break;
+	    break;
       }
       
 
