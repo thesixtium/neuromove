@@ -97,7 +97,7 @@ int main(){
     {
     
     case POINTCLOUD: {
-      int occupancy_grid[grid_width][grid_height] = {0};
+      int occupancy_grid[grid_width * 1.5][grid_height * 1.5] = {0};
 
       cloud = lreader->getCloud();
 	    pointCloudSize = cloud.points.size();
@@ -110,6 +110,18 @@ int main(){
           occupancy_grid[point_cloud_to_grid(x)][point_cloud_to_grid(y) + (grid_width / 2)] = 1;
         }
       }
+
+      std::string values;
+
+      for(int i = 0; i < grid_width; i++) {
+          for(int j = 0; j < grid_height; j++) {
+              str += std::to_string(occupancy_grid[i][j]);
+          }
+          str += "|";
+      }
+
+      const char* values_char = values.c_str();
+	    client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
 	
 	    break;
       }
