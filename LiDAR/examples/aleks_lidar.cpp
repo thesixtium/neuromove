@@ -125,6 +125,33 @@ int main(){
       client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
       printf(" Send\n");
 	
+      size_t shm_size = strlen(values_char);
+      const char * shmem_name = "grid";
+      int shmem_fd = shm_open(shmem_name, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
+      if (shmem_fd == -1) {
+          perror("shm_open");
+          return 1;
+      }
+      std::cout << "Shared Memory segment created with fd " << shmem_fd << std::endl;
+      if (ftruncate(shmem_fd, shm_size) == -1) {
+          perror("ftruncate");
+          return 1;
+      }
+      std::cout << "Shared Memory segment resized to " << shm_size << std::endl;
+      void * addr = mmap(0, shm_size, PROT_WRITE, MAP_SHARED, shmem_fd, 0);
+      if (addr == MAP_FAILED) {
+          perror("mmap");
+          return 1;
+      }
+      
+      while (! values.empty()) {
+          strncpy((char *)addr, values.data(), shm_size);
+          std::cout << "Written '" << values << "' to shared memory segment\n";
+          std::getline(std::cin, values);
+      }
+      std::cout << "Unlinking shared memory segment." << std::endl;
+      shm_unlink(shmem_name) ;
+
 	    break;
       }
       
