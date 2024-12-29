@@ -25,7 +25,7 @@ int main(){
   if ( lreader->initialize(cloud_scan_num, port_name) ){
     printf("Unilidar initialization failed! Exit here!\n");
     exit(-1);
-  }else{
+  } else {
     printf("Unilidar initialization succeed!\n");
   }
 
@@ -41,8 +41,8 @@ int main(){
   printf("\n");
 
   // Print Lidar Version
-  while(true){
-    if (lreader->runParse() == VERSION){
+  while( true ){
+    if ( lreader->runParse() == VERSION ){
       printf("lidar firmware version = %s\n", lreader->getVersionOfFirmware().c_str() );
       break;
     }
@@ -61,7 +61,6 @@ int main(){
       }
       if (lreader->getDirtyPercentage() > 10){
         printf("The protection cover is too dirty! Please clean it right now! Exit here ...\n");
-        // exit(0);
       }
     }
     usleep(500);
@@ -72,18 +71,17 @@ int main(){
   // Occupancy Grid
   int z1 = 1; // meters
   int LiDAR_radius_cm = 4000;
-  int resolution = 15;
+  int resolution = 45;
   int grid_height = (LiDAR_radius_cm * 2) / resolution;
   int grid_width = grid_height;
 
-
   // UDP
-  std::string destination_ip;
-  unsigned short destination_port;
-  destination_ip = "127.0.0.1";
-  destination_port = 12345;
-  UDPHandler client;
-  client.CreateSocket();
+  //std::string destination_ip;
+  //unsigned short destination_port;
+  //destination_ip = "127.0.0.1";
+  //destination_port = 12345;
+  //UDPHandler client;
+  //client.CreateSocket();
 
   // Parse PointCloud and IMU data
   MessageType result;
@@ -121,36 +119,18 @@ int main(){
     {
     
     case POINTCLOUD: {
-      clock_t start, end;
-      start = clock();
       int occupancy_grid[grid_width][grid_height] = {0};
-      //int occupancy_grid[grid_width][grid_height] = {0};
       cloud = lreader->getCloud();
       pointCloudSize = cloud.points.size();
       
-      printf("Pointcloud size: %d\t", pointCloudSize);
-      int accepted = 0;
-      int rejected = 0;
-      int total = 0;
       for (int i = 0; i < pointCloudSize; i++){	
-	total += 1;
 	x = cloud.points[i].y;
         z = cloud.points[i].z;
         y = cloud.points[i].x;
         if ( z < z1){
 	  int new_x = point_cloud_to_grid(resolution, x) + (grid_height / 2);
 	  int new_y = point_cloud_to_grid(resolution, y) + (grid_width / 2);
-	  //printf("(%d, %d)/n", new_x, new_y);
-	  //printf("%f -> %d -> %d\n", y, point_cloud_to_grid(resolution, y), point_cloud_to_grid(resolution, y) + (grid_width / 2));
-          //printf("11\n");
           occupancy_grid[new_x][new_y] = 1;
-          //printf("12\n");
-	  
-	  accepted += 1;
- 	  //printf("(%f, %f) -> (%d, %d)\n", x, y, new_x, new_y); 
-	} else {
-	  //printf("(%f, %f, %f) -> Rejected\n", cloud.points[i].x, cloud.points[i].y, cloud.points[i].z); 
-	  rejected += 1;
 	}
       }
 
@@ -163,24 +143,12 @@ int main(){
           values += "|";
       }
 
-      const char* values_char = values.c_str();
-      client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
-      // printf(" Send\n");
+      //const char* values_char = values.c_str();
+      //client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
       
       strncpy((char *)addr, values.data(), shm_size);
-      // std::cout << "Written to shared memory segment\n";
 
-      //std::cout << "Unlinking shared memory segment." << std::endl;
-      //shm_unlink(shmem_name) ;
-      
-
-      end = clock();
-      double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-      
-      printf("Total: %d\tAccepted: %d\tRejected:%d\tTime Taken: %f\tTime Per 2000 Points: %f\n", total, accepted, rejected, time_taken, (time_taken / total) * 2000);
-      
-
-	    break;
+      break;
       }
       
 
