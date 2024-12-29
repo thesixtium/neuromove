@@ -3,11 +3,16 @@
 #include <cstring>
 #include <string>
 #include <cmath> 
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <time.h>
 
 using namespace unitree_lidar_sdk;
 
 int point_cloud_to_grid(int resolution, float pc){
-  return static_cast<int>(round(pc / resolution));
+  return static_cast<int>(round((pc*100) / resolution));
 }
 
 int main(){
@@ -68,8 +73,8 @@ int main(){
   int z1 = 1; // meters
   int LiDAR_radius_cm = 4000;
   int resolution = 15;
-  int grid_height = LiDAR_radius_cm / resolution;
-  int grid_width = grid_height * 2;
+  int grid_height = (LiDAR_radius_cm * 2) / resolution;
+  int grid_width = grid_height;
 
 
   // UDP
@@ -89,26 +94,64 @@ int main(){
   float y;
   float z;
   
+  size_t shm_size = 284622;
+  const char * shmem_name = "grid3";
+  int shmem_fd = shm_open(shmem_name, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
+  if (shmem_fd == -1) {
+      perror("shm_open");
+      return 1;
+  }
+  std::cout << "Shared Memory segment created with fd " << shmem_fd << std::endl;
+  if (ftruncate(shmem_fd, shm_size) == -1) {
+      perror("ftruncate");
+      return 1;
+  }
+  std::cout << "Shared Memory segment resized to " << shm_size << std::endl;
+  void * addr = mmap(0, shm_size, PROT_WRITE, MAP_SHARED, shmem_fd, 0);
+  if (addr == MAP_FAILED) {
+      perror("mmap");
+      return 1;
+  }
+  
   while (true)
   {
     result = lreader->runParse(); // You need to call this function at least 1500Hz
-
+    
     switch (result)
     {
     
     case POINTCLOUD: {
+      clock_t start, end;
+      start = clock();
       int occupancy_grid[grid_width][grid_height] = {0};
-
+      //int occupancy_grid[grid_width][grid_height] = {0};
       cloud = lreader->getCloud();
-	    pointCloudSize = cloud.points.size();
-	
-      for (int i = 0; i < pointCloudSize; i++){
-        x = cloud.points[i].x;
+      pointCloudSize = cloud.points.size();
+      
+      printf("Pointcloud size: %d\t", pointCloudSize);
+      int accepted = 0;
+      int rejected = 0;
+      int total = 0;
+      for (int i = 0; i < pointCloudSize; i++){	
+	total += 1;
+	x = cloud.points[i].y;
         z = cloud.points[i].z;
-        if ( z < z1 && x > 0){
-          y = cloud.points[i].y;
-          occupancy_grid[point_cloud_to_grid(resolution, x)][point_cloud_to_grid(resolution, y) + (grid_width / 2)] = 1;
-        }
+        y = cloud.points[i].x;
+        if ( z < z1){
+	  int new_x = point_cloud_to_grid(resolution, x) + (grid_height / 2);
+	  int new_y = point_cloud_to_grid(resolution, y) + (grid_width / 2);
+	  //printf("(%d, %d)/n", new_x, new_y);
+	  //printf("%f -> %d -> %d\n", y, point_cloud_to_grid(resolution, y), point_cloud_to_grid(resolution, y) + (grid_width / 2));
+          //printf("11\n");
+          occupancy_grid[new_x][new_y] = 1;
+          //printf("12\n");
+	  
+	  accepted += 1;
+ 	  //printf("(%f, %f) -> (%d, %d)\n", x, y, new_x, new_y); 
+	} else {
+	  //printf("(%f, %f, %f) -> Rejected\n", cloud.points[i].x, cloud.points[i].y, cloud.points[i].z); 
+	  rejected += 1;
+	}
       }
 
       std::string values;
@@ -121,36 +164,21 @@ int main(){
       }
 
       const char* values_char = values.c_str();
-      printf(std::to_string(strlen(values_char)).c_str());
       client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
-      printf(" Send\n");
-	
-      size_t shm_size = strlen(values_char);
-      const char * shmem_name = "grid";
-      int shmem_fd = shm_open(shmem_name, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
-      if (shmem_fd == -1) {
-          perror("shm_open");
-          return 1;
-      }
-      std::cout << "Shared Memory segment created with fd " << shmem_fd << std::endl;
-      if (ftruncate(shmem_fd, shm_size) == -1) {
-          perror("ftruncate");
-          return 1;
-      }
-      std::cout << "Shared Memory segment resized to " << shm_size << std::endl;
-      void * addr = mmap(0, shm_size, PROT_WRITE, MAP_SHARED, shmem_fd, 0);
-      if (addr == MAP_FAILED) {
-          perror("mmap");
-          return 1;
-      }
+      // printf(" Send\n");
       
-      while (! values.empty()) {
-          strncpy((char *)addr, values.data(), shm_size);
-          std::cout << "Written '" << values << "' to shared memory segment\n";
-          std::getline(std::cin, values);
-      }
-      std::cout << "Unlinking shared memory segment." << std::endl;
-      shm_unlink(shmem_name) ;
+      strncpy((char *)addr, values.data(), shm_size);
+      // std::cout << "Written to shared memory segment\n";
+
+      //std::cout << "Unlinking shared memory segment." << std::endl;
+      //shm_unlink(shmem_name) ;
+      
+
+      end = clock();
+      double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
+      
+      printf("Total: %d\tAccepted: %d\tRejected:%d\tTime Taken: %f\tTime Per 2000 Points: %f\n", total, accepted, rejected, time_taken, (time_taken / total) * 2000);
+      
 
 	    break;
       }
