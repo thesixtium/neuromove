@@ -10,6 +10,8 @@ import bci_essentials.bci_controller
 
 import bci_essentials.data_tank
 
+import custom_messenger
+
 def main():
     #create classifier
     classifier = bci_essentials.classification.erp_rg_classifier.ErpRgClassifier()
@@ -22,7 +24,8 @@ def main():
 
     data_tank = bci_essentials.data_tank.data_tank.DataTank()
 
-    messenger = bci_essentials.io.lsl_messenger.LslMessenger()
+    # messenger = bci_essentials.io.lsl_messenger.LslMessenger()
+    messenger = custom_messenger.TextFileMessenger("output.txt")
 
     # create controller
     controller = bci_essentials.bci_controller.BciController(
@@ -36,6 +39,8 @@ def main():
 
     # setup controller
     controller.setup(online=False)
+
+    input("Press enter to start the controller")
 
     # run controller
     controller.run(max_loops=100)
