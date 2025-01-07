@@ -136,13 +136,13 @@ sm = SharedMemory("grid3", 284622, create=False)
 while True:
     value = sm.read_string()
     
-    with open('testData', 'w') as f:
-        f.write(value)
-    
     if value:
         print(value.split("|")[:-1])
         data = {'x': [], 'y': [], 'z': []}
         grid = [ [int(j) for j in i] for i in value.split("|")[:-1] ]
+    
+        with open('testData', 'w') as f:
+            f.write(str(grid))
         for x in range(len(grid)):
             for y in range(len(grid[0])):
                 data['x'].append(x)
