@@ -75,14 +75,6 @@ int main(){
   int grid_height = (LiDAR_radius_cm * 2) / resolution;
   int grid_width = grid_height;
 
-  // UDP
-  //std::string destination_ip;
-  //unsigned short destination_port;
-  //destination_ip = "127.0.0.1";
-  //destination_port = 12345;
-  //UDPHandler client;
-  //client.CreateSocket();
-
   // Parse PointCloud and IMU data
   MessageType result;
   std::string version;
@@ -92,7 +84,9 @@ int main(){
   float y;
   float z;
   int occupancy_grid[grid_width][grid_height] = {0}; // Make it so that before anything is updated in shared memory, N amount of point clouds are combined (probably 5)
-      
+  int pointcloud_reads = 0;
+  int NEEDED_POINTCLOUDS_READ = 5;
+  
   size_t shm_size = 284622;
   const char * shmem_name = "grid3";
   int shmem_fd = shm_open(shmem_name, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
@@ -112,12 +106,10 @@ int main(){
       return 1;
   }
   
-  while (true)
-  {
+  while (true) {
     result = lreader->runParse(); // You need to call this function at least 1500Hz
     
-    switch (result)
-    {
+    switch (result) {
     
     case POINTCLOUD: {
       cloud = lreader->getCloud();
@@ -134,19 +126,22 @@ int main(){
 	}
       }
 
-      std::string values;
+      if (pointcloud_reads >= NEEDED_POINTCLOUDS_READ){
+	// Write values to memory and erase old grid
+	std::string values;
 
-      for(int i = 0; i < grid_width; i++) {
-          for(int j = 0; j < grid_height; j++) {
-              values += std::to_string(occupancy_grid[i][j]);
-          }
-          values += "|";
+	for(int i = 0; i < grid_width; i++) {
+	    for(int j = 0; j < grid_height; j++) {
+		values += std::to_string(occupancy_grid[i][j]);
+		occupancy_grid[i][j] = 0;
+	    }
+	    values += "|";
+	}
+
+	strncpy((char *)addr, values.data(), shm_size);
+      } else{
+	pointcloud_reads++;
       }
-
-      //const char* values_char = values.c_str();
-      //client.Send(values_char, strlen(values_char), (char *)destination_ip.c_str(), destination_port);
-      
-      strncpy((char *)addr, values.data(), shm_size);
 
       break;
       }
