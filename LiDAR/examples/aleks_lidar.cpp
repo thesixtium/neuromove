@@ -91,7 +91,8 @@ int main(){
   float x;
   float y;
   float z;
-  
+  int occupancy_grid[grid_width][grid_height] = {0}; // Make it so that before anything is updated in shared memory, N amount of point clouds are combined (probably 5)
+      
   size_t shm_size = 284622;
   const char * shmem_name = "grid3";
   int shmem_fd = shm_open(shmem_name, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
@@ -119,7 +120,6 @@ int main(){
     {
     
     case POINTCLOUD: {
-      int occupancy_grid[grid_width][grid_height] = {0};
       cloud = lreader->getCloud();
       pointCloudSize = cloud.points.size();
       

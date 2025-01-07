@@ -135,6 +135,10 @@ sm = SharedMemory("grid3", 284622, create=False)
 
 while True:
     value = sm.read_string()
+    
+    with open('testData', 'w') as f:
+        f.write(value)
+    
     if value:
         print(value.split("|")[:-1])
         data = {'x': [], 'y': [], 'z': []}
