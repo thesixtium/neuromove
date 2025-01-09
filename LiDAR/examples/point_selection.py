@@ -6,6 +6,7 @@ import logging
 import time
 from queue import Queue
 import kmedoids
+from scipy.spatial.distance import pdist, squareform
 
 # NOTE: data in the grid is stored with x direction in the columns and y direction in the rows
 # so to index the coordinates, it is data[y, x]
@@ -131,13 +132,44 @@ if __name__ == "__main__":
     reachable = bfs(trimmed_data, origin)
 
     # display on graph
-    plt.imshow(reachable, cmap='gray_r', interpolation='nearest')
+    # plt.imshow(reachable, cmap='gray_r', interpolation='nearest')
+    # plt.colorbar()
+    # plt.gca().invert_yaxis()
+    # plt.scatter(origin[0], origin[1], color='red')
+    # plt.show()
+
+    # convert reachable the necessary input format
+    # TODO: validate all of this section
+    reachable = reachable.astype(float) # convert to float
+    reachable_coordinates = np.argwhere(reachable == 0) # get coordinates of all reachable points
+    dissimilarities = squareform(pdist(reachable_coordinates, metric='euclidean')) # calculate dissimilarities between all points
+
+    # run fasterPAM to get all neighbourhoods
+    start_time = time.time()
+    logger.debug(f"Starting fasterPAM at {start_time}")
+    pam_result = kmedoids.fasterpam(dissimilarities, 5)
+    logger.debug(f"FasterPAM took {time.time() - start_time} seconds")
+
+    logger.info(f"Medoids: {pam_result.medoids}")
+    logger.info(f"Loss: {pam_result.loss}")
+
+    # Map medoid indices back to original coordinates
+    medoid_coords = reachable_coordinates[pam_result.medoids]
+    
+    logger.debug(f"cluster result size {pam_result.labels.shape} vs reachable size {reachable_coordinates.shape}")
+    logger.debug(f"label: {pam_result.labels[0]}, coord: {reachable_coordinates[0]}")
+
+    # re-map to array for visualization
+    cluster_map = np.full(reachable.shape, -1)
+    for i, coord in enumerate(reachable_coordinates):
+        cluster_map[coord[0], coord[1]] = pam_result.labels[i]
+
+    # display on graph
+    plt.imshow(cluster_map, cmap='tab10', interpolation='nearest')
     plt.colorbar()
     plt.gca().invert_yaxis()
     plt.scatter(origin[0], origin[1], color='red')
     plt.show()
-
-    # run fasterPAM to get all neighbourhoods
 
     # for each neighbourhood, find 5 additional points as far away from one another as possible
     # POTENTIAL ISSUE: are points all going to be on the border of the neighbourhood?
