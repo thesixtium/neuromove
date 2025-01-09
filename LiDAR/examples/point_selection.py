@@ -1,4 +1,5 @@
 # TODO: only import necessary functions from libraries
+from operator import ne
 import numpy as np
 import ast
 import matplotlib.pyplot as plt
@@ -147,7 +148,7 @@ if __name__ == "__main__":
     # run fasterPAM to get all neighbourhoods
     start_time = time.time()
     logger.debug(f"Starting fasterPAM at {start_time}")
-    pam_result = kmedoids.fasterpam(dissimilarities, 5)
+    pam_result = kmedoids.fasterpam(dissimilarities, 5, random_state=42)
     logger.debug(f"FasterPAM took {time.time() - start_time} seconds")
 
     logger.info(f"Medoids: {pam_result.medoids}")
@@ -156,9 +157,6 @@ if __name__ == "__main__":
     # Map medoid indices back to original coordinates
     medoid_coords = reachable_coordinates[pam_result.medoids]
     
-    logger.debug(f"cluster result size {pam_result.labels.shape} vs reachable size {reachable_coordinates.shape}")
-    logger.debug(f"label: {pam_result.labels[0]}, coord: {reachable_coordinates[0]}")
-
     # re-map to array for visualization
     cluster_map = np.full(reachable.shape, -1)
     for i, coord in enumerate(reachable_coordinates):
@@ -169,7 +167,16 @@ if __name__ == "__main__":
     plt.colorbar()
     plt.gca().invert_yaxis()
     plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
     plt.show()
+
+    # organize the data into neighbourhoods
+    neighbourhoods = []
+    for i in range(5):
+        cur_neighbourhood = np.argwhere(cluster_map == i)  
+        neighbourhoods.append(cur_neighbourhood)
+
+        logger.debug(f"neighbourhood {i} has  {cur_neighbourhood.shape} points")
 
     # for each neighbourhood, find 5 additional points as far away from one another as possible
     # POTENTIAL ISSUE: are points all going to be on the border of the neighbourhood?
