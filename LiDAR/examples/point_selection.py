@@ -1,7 +1,4 @@
 # TODO: only import necessary functions from libraries
-from math import dist
-from operator import ne
-import random
 import numpy as np
 import ast
 import matplotlib.pyplot as plt
@@ -20,24 +17,40 @@ logger = logging.getLogger("point selection")
 logger.setLevel(logging.DEBUG)
 logger.debug("Logging initialized")
 
-def get_points_in_neighbourhood(points: np.ndarray, num_points: int, medoid: tuple) -> np.ndarray:
-    selected_points = [medoid]
-    remaining_points = [p for p in points if p != medoid]
+def get_points_in_neighbourhood(points: np.ndarray, neighbourhoods: np.ndarray, num_points: int, num_neighbourhoods: int, medoids: np.ndarray) -> np.ndarray:
+    selected_points = np.array(medoids)
+    remaining_points = np.array([p for p in points if not np.any(np.all(p == medoids, axis=1))])
+ 
+    logger.debug(f"Number of selected points: {len(selected_points)}, number of remaining points: {len(remaining_points)}")
 
-    while len(selected_points) < num_points:
-        # get distances between selected points and all other points
-        distances = cdist(np.array(selected_points), np.array(remaining_points), metric='euclidean')
+    i = 0
+    while selected_points.shape[0] < num_points * num_neighbourhoods:
+        current_neighbourhood = neighbourhoods[i]
 
-        # find point that maximizes min distances to all selected points
-        min_distances = distances.min(axis=0)   # get min distance to all selected points
-        best_point_index = np.argmax(min_distances) # get index of point that maximizes min distance
+        # calculate distances between all points in the neighbourhood and the selected points
+        distances = cdist(current_neighbourhood, selected_points, metric='euclidean')
 
+        # find the minimum distance for each point in the neighbourhood
+        min_distances = np.min(distances, axis=1)
 
-        # add point to selected points and remove from remaining points
-        selected_points.append(remaining_points[best_point_index])
-        remaining_points.pop(best_point_index)
+        # find the point with the maximum minimum distance
+        best_point_index = np.argmax(min_distances)
 
-    return np.array(selected_points)
+        # add the best point to the selected points
+        selected_points = np.append(selected_points, [current_neighbourhood[best_point_index]], axis=0)
+
+        # remove the best point from the remaining points
+        remaining_points = np.array([p for p in remaining_points if not np.all(p == current_neighbourhood[best_point_index])])
+
+        i = (i + 1) % num_neighbourhoods
+
+    logger.debug(f"Selected points: {selected_points.shape}")
+
+    selected_points_split = []
+    for i in range(num_neighbourhoods):
+        selected_points_split.append(selected_points[i::num_neighbourhoods])
+
+    return selected_points_split
 
 def bfs(data: np.ndarray, start: tuple) -> np.ndarray:
     # initialize visited array & queue
@@ -184,12 +197,12 @@ if __name__ == "__main__":
         cluster_map[coord[0], coord[1]] = pam_result.labels[i]
 
     # display on graph
-    plt.imshow(cluster_map, cmap='tab10', interpolation='nearest')
-    plt.colorbar()
-    plt.gca().invert_yaxis()
-    plt.scatter(origin[0], origin[1], color='red')
-    plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
-    plt.show()
+    # plt.imshow(cluster_map, cmap='tab10', interpolation='nearest')
+    # plt.colorbar()
+    # plt.gca().invert_yaxis()
+    # plt.scatter(origin[0], origin[1], color='red')
+    # plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
+    # plt.show()
 
     # organize the data into neighbourhoods
     neighbourhoods = []
@@ -200,17 +213,14 @@ if __name__ == "__main__":
 
         logger.debug(f"neighbourhood {i} has  {len(cur_neighbourhood)} points")
 
-    all_neighbourhoods = np.argwhere(cluster_map != -1)
-    all_neighbourhoods = [tuple(x) for x in all_neighbourhoods]
+    # convert cluster_map to a list of coordinates
+    cluster_map_coords = np.argwhere(cluster_map != -1)
+    
+    logger.debug(f"cluster_map shape: {cluster_map_coords.shape}, medoid_coords shape: {medoid_coords.shape}")
+    logger.debug(f'asdf: {np.all(np.isin([14, 12], medoid_coords))}')
 
     # for each neighbourhood, find 5 additional points as far away from one another as possible
-    neighbourhood_points = []
-    for i in range(5):
-        # convert to tuples first
-        medoid = tuple(medoid_coords[i])
-        cur_neighbourhood = [tuple(x) for x in neighbourhoods[i]]
-
-        neighbourhood_points.append(get_points_in_neighbourhood(cur_neighbourhood, 5, medoid))
+    neighbourhood_points = get_points_in_neighbourhood(cluster_map_coords, neighbourhoods, 5, 5, medoid_coords)
 
     # display on graph
     plt.imshow(cluster_map, cmap='Pastel1', interpolation='nearest')
@@ -218,6 +228,7 @@ if __name__ == "__main__":
     plt.gca().invert_yaxis()
     plt.scatter(origin[0], origin[1], color='red')
     colours = ['steelblue', 'darkslateblue', 'darkgoldenrod', 'darkmagenta', 'slategrey']
+
     for i in range(5):
         plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=colours[i])
     plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
