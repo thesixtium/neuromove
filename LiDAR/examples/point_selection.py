@@ -20,12 +20,6 @@ logger = logging.getLogger("point selection")
 logger.setLevel(logging.DEBUG)
 logger.debug("Logging initialized")
 
-def get_random_colors(num_colors):
-    colors = []
-    for _ in range(num_colors):
-        colors.append("#" + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)]))
-    return colors
-
 def get_points_in_neighbourhood(points: np.ndarray, num_points: int, medoid: tuple) -> np.ndarray:
     selected_points = [medoid]
     remaining_points = [p for p in points if p != medoid]
@@ -206,9 +200,10 @@ if __name__ == "__main__":
 
         logger.debug(f"neighbourhood {i} has  {len(cur_neighbourhood)} points")
 
+    all_neighbourhoods = np.argwhere(cluster_map != -1)
+    all_neighbourhoods = [tuple(x) for x in all_neighbourhoods]
+
     # for each neighbourhood, find 5 additional points as far away from one another as possible
-    # POTENTIAL ISSUE: are points all going to be on the border of the neighbourhood?
-    # maybe add padding around the border to prevent this?
     neighbourhood_points = []
     for i in range(5):
         # convert to tuples first
@@ -218,13 +213,13 @@ if __name__ == "__main__":
         neighbourhood_points.append(get_points_in_neighbourhood(cur_neighbourhood, 5, medoid))
 
     # display on graph
-    plt.imshow(reachable, cmap='gray_r', interpolation='nearest')
+    plt.imshow(cluster_map, cmap='Pastel1', interpolation='nearest')
     plt.colorbar()
     plt.gca().invert_yaxis()
     plt.scatter(origin[0], origin[1], color='red')
-    plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
-    colours = get_random_colors(5)
+    colours = ['steelblue', 'darkslateblue', 'darkgoldenrod', 'darkmagenta', 'slategrey']
     for i in range(5):
         plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=colours[i])
+    plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
     plt.show()
 
