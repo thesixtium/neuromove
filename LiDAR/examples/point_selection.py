@@ -1,12 +1,14 @@
 # TODO: only import necessary functions from libraries
-from turtle import left
-from matplotlib.pylab import f
 import numpy as np
 import ast
 import matplotlib.pyplot as plt
 import logging
-from collections import deque
 import time
+from queue import Queue
+import kmedoids
+
+# NOTE: data in the grid is stored with x direction in the columns and y direction in the rows
+# so to index the coordinates, it is data[y, x]
 
 # set up logging
 logging.basicConfig(level=logging.INFO)
@@ -15,18 +17,33 @@ logger.setLevel(logging.DEBUG)
 logger.debug("Logging initialized")
 
 def bfs(data: np.ndarray, start: tuple) -> np.ndarray:
-    # initialize values
+    # initialize visited array & queue
     visited = np.zeros(data.shape, dtype=bool)
-    stack = deque()
+    queue = Queue()
 
-    # add start to stack
-    stack.append(start)
+    # add start to queue
+    queue.put(start)
+    visited[start[1], start[0]] = True
 
-    # while stack is not empty
-    while stack:
-        visited[start] = True
-        stack.pop()
+    # while queue is not empty
+    while not queue.empty():
+        # pop from queue
+        current = queue.get()
 
+        # check all neighbours (including diagonals)
+        for y_offset in range (-1, 2):
+            for x_offset in range (-1, 2):
+                # add anything that is a 0 and hasn't been visited
+                if data[current[1]+y_offset, current[0]+x_offset] == 0 and not visited[current[1]+y_offset, current[0]+x_offset]:
+                    queue.put((current[0]+x_offset, current[1]+y_offset))
+                    visited[current[1]+y_offset, current[0]+x_offset] = True
+
+    # invert the array to return to the 0 = reachable, 1 = blocked format
+    visited = np.invert(visited)
+
+    return visited
+
+    
 def find_room_size(data: np.ndarray) -> tuple:
     # find the farthest 1 in each direction
 
@@ -97,13 +114,28 @@ if __name__ == "__main__":
     trimmed_data = trim_and_border_data(sample_data, bottom_left, top_right)
 
     # display on graph
-    plt.imshow(trimmed_data, cmap='grey_r', interpolation='nearest')
+    # plt.imshow(trimmed_data, cmap='gray_r', interpolation='nearest')
+    # plt.colorbar()
+    # plt.gca().invert_yaxis()
+    # plt.scatter(origin[0], origin[1], color='red')
+    # plt.gca().set_xticks(np.arange(-0.5, trimmed_data.shape[1], 1))
+    # plt.gca().set_yticks(np.arange(-0.5, trimmed_data.shape[0], 1))
+
+    # plt.grid(color='lightgrey', linestyle='-', linewidth=0.5)
+    # plt.show(block=True)
+
+    logger.debug(f"Trimmed data shape: {trimmed_data.shape}")
+
+    # find all reachable nodes using bfs
+    logger.debug(f"Starting bfs at {time.time()}")
+    reachable = bfs(trimmed_data, origin)
+
+    # display on graph
+    plt.imshow(reachable, cmap='gray_r', interpolation='nearest')
     plt.colorbar()
     plt.gca().invert_yaxis()
     plt.scatter(origin[0], origin[1], color='red')
     plt.show()
-
-    # find all reachable nodes using bfs
 
     # run fasterPAM to get all neighbourhoods
 
