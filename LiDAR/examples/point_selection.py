@@ -1,5 +1,7 @@
 # TODO: only import necessary functions from libraries
+from math import dist
 from operator import ne
+import random
 import numpy as np
 import ast
 import matplotlib.pyplot as plt
@@ -7,7 +9,7 @@ import logging
 import time
 from queue import Queue
 import kmedoids
-from scipy.spatial.distance import pdist, squareform
+from scipy.spatial.distance import pdist, squareform, cdist
 
 # NOTE: data in the grid is stored with x direction in the columns and y direction in the rows
 # so to index the coordinates, it is data[y, x]
@@ -17,6 +19,31 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("point selection")
 logger.setLevel(logging.DEBUG)
 logger.debug("Logging initialized")
+
+def get_random_colors(num_colors):
+    colors = []
+    for _ in range(num_colors):
+        colors.append("#" + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)]))
+    return colors
+
+def get_points_in_neighbourhood(points: np.ndarray, num_points: int, medoid: tuple) -> np.ndarray:
+    selected_points = [medoid]
+    remaining_points = [p for p in points if p != medoid]
+
+    while len(selected_points) < num_points:
+        # get distances between selected points and all other points
+        distances = cdist(np.array(selected_points), np.array(remaining_points), metric='euclidean')
+
+        # find point that maximizes min distances to all selected points
+        min_distances = distances.min(axis=0)   # get min distance to all selected points
+        best_point_index = np.argmax(min_distances) # get index of point that maximizes min distance
+
+
+        # add point to selected points and remove from remaining points
+        selected_points.append(remaining_points[best_point_index])
+        remaining_points.pop(best_point_index)
+
+    return np.array(selected_points)
 
 def bfs(data: np.ndarray, start: tuple) -> np.ndarray:
     # initialize visited array & queue
@@ -151,11 +178,11 @@ if __name__ == "__main__":
     pam_result = kmedoids.fasterpam(dissimilarities, 5, random_state=42)
     logger.debug(f"FasterPAM took {time.time() - start_time} seconds")
 
-    logger.info(f"Medoids: {pam_result.medoids}")
     logger.info(f"Loss: {pam_result.loss}")
 
     # Map medoid indices back to original coordinates
     medoid_coords = reachable_coordinates[pam_result.medoids]
+    logger.debug(f"Medoid coordinates: {medoid_coords}")
     
     # re-map to array for visualization
     cluster_map = np.full(reachable.shape, -1)
@@ -173,11 +200,31 @@ if __name__ == "__main__":
     # organize the data into neighbourhoods
     neighbourhoods = []
     for i in range(5):
-        cur_neighbourhood = np.argwhere(cluster_map == i)  
+        cur_neighbourhood = np.argwhere(cluster_map == i)
+
         neighbourhoods.append(cur_neighbourhood)
 
-        logger.debug(f"neighbourhood {i} has  {cur_neighbourhood.shape} points")
+        logger.debug(f"neighbourhood {i} has  {len(cur_neighbourhood)} points")
 
     # for each neighbourhood, find 5 additional points as far away from one another as possible
     # POTENTIAL ISSUE: are points all going to be on the border of the neighbourhood?
     # maybe add padding around the border to prevent this?
+    neighbourhood_points = []
+    for i in range(5):
+        # convert to tuples first
+        medoid = tuple(medoid_coords[i])
+        cur_neighbourhood = [tuple(x) for x in neighbourhoods[i]]
+
+        neighbourhood_points.append(get_points_in_neighbourhood(cur_neighbourhood, 5, medoid))
+
+    # display on graph
+    plt.imshow(reachable, cmap='gray_r', interpolation='nearest')
+    plt.colorbar()
+    plt.gca().invert_yaxis()
+    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
+    colours = get_random_colors(5)
+    for i in range(5):
+        plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=colours[i])
+    plt.show()
+
