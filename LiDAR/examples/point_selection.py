@@ -1,11 +1,9 @@
-# TODO: only import necessary functions from libraries
 import numpy as np
-import ast
+from ast import literal_eval    # only used to read in sample data
 import matplotlib.pyplot as plt
 import logging
-import time
 from queue import Queue
-import kmedoids
+from kmedoids import fasterpam
 from scipy.spatial.distance import pdist, squareform, cdist
 
 # NOTE: data in the grid is stored with x direction in the columns and y direction in the rows
@@ -17,11 +15,52 @@ logger = logging.getLogger("point selection")
 logger.setLevel(logging.DEBUG)
 logger.debug("Logging initialized")
 
+# TODO: make object oriented to prevent running helper functions. aka only allow running of occupancy_grid_to_points
+
 def occupancy_grid_to_points(
         data: np.ndarray, 
         origin: tuple = None, 
         number_of_neighbourhoods: int = 5, number_of_points_per_neighbourhood: int = 5,
         plot_result: bool = False) -> np.ndarray:
+    '''
+    Takes an occupancy grid with 0s as open spaces and 1s as obstacles and returns a list of points sorted into neighbourhoods.
+
+    Args: 
+    -------
+        data : np.ndarray
+            2D array containig the occupancy grid. Must be a 2D array with 0s as 
+            open spaces and 1s as obstacles.
+        origin : tuple, optional
+            The origin of the grid. If not provided, the origin is set to the 
+            middle of the grid.
+        number_of_neighbourhoods : int, optional
+            The number of neighbourhoods to divide the data into. Default is 5.
+        number_of_points_per_neighbourhood : int, optional
+            The number of points to select per neighbourhood. Default is 5.
+
+    Returns:
+    -------
+        np.ndarray
+            A 3D array containing the points in each neighbourhood. The first 
+            dimension is the neighbourhood, the second dimension is the point, 
+            and the third dimension is the x and y coordinates of the point.
+
+    Raises:
+    -------
+        ValueError
+            If the data is None, not a 2D array, or if the number of neighbourhoods 
+            or points per neighbourhood is less than 1 or greater than 5.
+
+    Example:
+    -------
+    ```python
+    data = np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]])
+    origin = (1, 1)
+    points = occupancy_grid_to_points(data, origin, 3, 2, True)
+    print(points)
+    ```
+    '''
+
     # error checking
     if data is None:
         raise ValueError("Data cannot be None")
@@ -45,12 +84,9 @@ def occupancy_grid_to_points(
     logger.debug(f"Data has shape {data.shape}")
     logger.debug(f"Origin: {origin}")
 
-    bottom_left, top_right = find_room_size(data)
-    logger.debug(f"Bottom left: {bottom_left}, top right: {top_right}. Room size = {top_right[0] - bottom_left[0]} x {top_right[1] - bottom_left[1]}")
-
     #NOTE: is it ok if we overwrite data?
-    # trim the data and add a border of 1s around the room
-    data, origin = update_data(data, origin, bottom_left, top_right)
+    data, origin = find_room_size(data, origin)
+
     logger.debug(f"Trimmed data shape: {data.shape}. New origin:  {origin}")
 
     # find all reachable nodes using breadth-first search
@@ -79,11 +115,31 @@ def occupancy_grid_to_points(
         plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
         plt.show()
 
+    logger.info("Point selection complete")
     return neighbourhood_points
 
-
-
 def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_points) -> np.ndarray:
+    '''
+    Given a map of clusters and their medoids, find num_points points in each neighbourhood.
+
+    Args:
+    -----
+        data : np.ndarray
+            2D array containing the cluster map. Each point is -1 if it is an obstacle,
+            otherwise it is a number representing the cluster it belongs to
+        medoids : np.ndarray
+            2D array containing the coordinates of the medoids of each cluster
+        num_points : int
+            The number of points to select in each neighbourhood
+
+    Returns:
+    --------
+        np.ndarray
+            A 3D array containing the points in each neighbourhood. The first 
+            dimension is the neighbourhood, the second dimension is the point, 
+            and the third dimension is the x and y coordinates of the point.
+    '''
+
     num_neighbourhoods = len(medoids)
     logger.debug(f"Detected {num_neighbourhoods} neighbourhoods")
 
@@ -119,19 +175,42 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
 
         i = (i + 1) % num_neighbourhoods
 
-    logger.info(f"Selected points: {selected_points}")
-
+    # split the selected points into the different neighbourhoods
     selected_points_split = []
     for i in range(num_neighbourhoods):
         selected_points_split.append(selected_points[i::num_neighbourhoods])
 
     return np.array(selected_points_split)
 
-def run_PAM(data: np.ndarray, num_clusters: int):
+def run_PAM(data: np.ndarray, num_clusters: int) -> tuple[np.ndarray, np.ndarray]:
+    '''
+    Runs the Faster Partitioning Around Medoids (FasterPAM) algorithm on the given data.
+
+    Args:
+    -----
+        data : np.ndarray
+            2D array containing the occupancy grid. Each point is 0 if it is reachable,
+            otherwise it is 1
+        num_clusters : int
+            The number of clusters to divide the data into. The k parameter of PAM
+
+    Returns:
+    --------
+        tuple[np.ndarray, np.ndarray]
+            A tuple containing the coordinates of the medoids and the cluster map.
+            The cluster map contains a -1 if the point is an obstacle, otherwise it is 
+            x where 0 <= x < num_clusters representing the cluster it belongs to.
+
+    Raises:
+    -------
+        ValueError
+            If the data is not convertible to float. Necessary for PAM to run
+    '''
+
     # ensure that data is in float format
     try:
         data = data.astype(float)
-    except ValueError:
+    except:
         raise ValueError("Data must be convertible to float")
 
     # get coordinates of all reachable points
@@ -146,7 +225,7 @@ def run_PAM(data: np.ndarray, num_clusters: int):
 
     # run fasterPAM to get all neighbourhoods
     # random_state is set to 42 for reproducibility
-    pam_result = kmedoids.fasterpam(dissimilarities, num_clusters, random_state=42)
+    pam_result = fasterpam(dissimilarities, num_clusters, random_state=42)
 
     logger.debug(f"Loss: {pam_result.loss}")
 
@@ -163,6 +242,24 @@ def run_PAM(data: np.ndarray, num_clusters: int):
     return medoid_coords, cluster_map
 
 def bfs(data: np.ndarray, start: tuple) -> np.ndarray:
+    '''
+    Modified breadth-first search to find all reachable points from an occupancy grid.
+
+    Args:
+    -----
+        data : np.ndarray
+            2D array containing the occupancy grid. Each point is 0 if it is open,
+            otherwise it is 1
+        start : tuple
+            The starting point for the search. The origin of the grid
+
+    Returns:
+    --------
+        np.ndarray
+            2D array containing the reachable points. Each point is 0 if it is reachable,
+            otherwise it is 1. Modified to include the origin as a reachable point.
+    '''
+
     # initialize visited array & queue
     visited = np.zeros(data.shape, dtype=bool)
     queue = Queue()
@@ -188,10 +285,29 @@ def bfs(data: np.ndarray, start: tuple) -> np.ndarray:
     visited = np.invert(visited)
 
     return visited
-
-    
+  
 #TODO: handle edge case where there are no obstacles?
-def find_room_size(data: np.ndarray) -> tuple:
+def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
+    '''
+    Find the actual size of the room from the occupancy grid. The room is defined as the 
+    smallest rectangle that contains all the obstacles.
+
+    Args:
+    -----
+        data : np.ndarray
+            2D array containing the occupancy grid. Each point is 0 if it is open,
+            otherwise it is 1
+        origin : tuple
+            The origin of the grid. The point that the robot is at
+
+    Returns:
+    --------
+        tuple[np.ndarray, tuple]
+            A tuple containing the trimmed data and the new origin. The trimmed data
+            is the smallest rectangle that contains all the obstacles. The new origin
+            is the origin adjust to the new coordinate system.
+    '''
+
     # initialize min and max values
     min_x = data.shape[1]
     max_x = 0
@@ -212,9 +328,11 @@ def find_room_size(data: np.ndarray) -> tuple:
                     max_x = j
 
     # bottom left & top right corners
-    return (min_x, min_y), (max_x, max_y)  
+    top_right = (max_x, max_y)
+    bottom_left = (min_x, min_y)  
 
-def update_data(data: np.ndarray, origin: tuple, bottom_left: tuple, top_right: tuple) -> tuple[np.ndarray, tuple]:
+    logger.debug(f"Bottom left: {bottom_left}, top right: {top_right}. Room size = {top_right[0] - bottom_left[0]} x {top_right[1] - bottom_left[1]}")
+
     # trim data to only include the room
     right_edge = np.min([data.shape[1], top_right[0]])
     top_edge = np.min([data.shape[0], top_right[1]])
@@ -241,11 +359,11 @@ if __name__ == "__main__":
         data_str = file.read()
     
     # Convert the string representation of the list to an actual list
-    sample_data = ast.literal_eval(data_str)
+    sample_data = literal_eval(data_str)
     
     # Convert the list to a numpy array
     sample_data = np.array(sample_data)
     origin = (sample_data.shape[0] // 2, sample_data.shape[1] // 2) # origin based on measurements from Aleks
-    # origin = (97, 84) # origin based on where Aleks said it was
+    # origin = (97, 84) # origin based on where Aleks said it was in our call
 
     selected_points = occupancy_grid_to_points(sample_data, origin, plot_result=True)
