@@ -17,11 +17,86 @@ logger = logging.getLogger("point selection")
 logger.setLevel(logging.DEBUG)
 logger.debug("Logging initialized")
 
-def get_points_in_neighbourhood(points: np.ndarray, neighbourhoods: np.ndarray, num_points: int, num_neighbourhoods: int, medoids: np.ndarray) -> np.ndarray:
+def occupancy_grid_to_points(
+        data: np.ndarray, 
+        origin: tuple = None, 
+        number_of_neighbourhoods: int = 5, number_of_points_per_neighbourhood: int = 5,
+        plot_result: bool = False) -> np.ndarray:
+    # error checking
+    if data is None:
+        raise ValueError("Data cannot be None")
+    
+    if len(data.shape) != 2:
+        raise ValueError("Data must be a 2D array")
+    
+    if number_of_neighbourhoods < 1 or number_of_points_per_neighbourhood < 1:
+        raise ValueError("Number of neighbourhoods and number of points per neighbourhood must be greater than 0")
+    elif number_of_neighbourhoods > 5 or number_of_points_per_neighbourhood > 5:
+        raise ValueError("Maximum number of neighbourhoods and points per neighbourhood is 5")
+    
+    #NOTE: do we need to account for cases where number of points or neighbourhoods is greater than the number of points in the data?
+    
+    if origin is None:
+        # initialize origin to middle of the data
+        origin = (data.shape[0] // 2, data.shape[1] // 2) 
+    elif origin[0] < 0 or origin[0] >= data.shape[1] or origin[1] < 0 or origin[1] >= data.shape[0]:
+        raise ValueError(f"Origin is not within the data with shape {data.shape}")
+    
+    logger.debug(f"Data has shape {data.shape}")
+    logger.debug(f"Origin: {origin}")
+
+    bottom_left, top_right = find_room_size(data)
+    logger.debug(f"Bottom left: {bottom_left}, top right: {top_right}. Room size = {top_right[0] - bottom_left[0]} x {top_right[1] - bottom_left[1]}")
+
+    #NOTE: is it ok if we overwrite data?
+    # trim the data and add a border of 1s around the room
+    data, origin = update_data(data, origin, bottom_left, top_right)
+    logger.debug(f"Trimmed data shape: {data.shape}. New origin:  {origin}")
+
+    # find all reachable nodes using breadth-first search
+    reachable_points = bfs(data, origin)
+    logger.debug(f"Reachable points found")
+
+    # run PAM to get the neighbourhoods
+    medoid_coordinates, data = run_PAM(reachable_points, number_of_neighbourhoods)
+
+    if medoid_coordinates is None or len(medoid_coordinates) != number_of_neighbourhoods:
+        raise ValueError(f"Expected {number_of_neighbourhoods} neighbourhoods, but only found {len(medoid_coordinates)}")
+
+    # get points in each neighbourhood
+    neighbourhood_points = get_points_in_neighbourhood(data, medoid_coordinates, number_of_points_per_neighbourhood)
+    logger.debug(f"neighbourhood_points shape: {neighbourhood_points.shape}")
+
+    if plot_result:
+        plt.imshow(data, cmap='Pastel1', interpolation='nearest')
+        plt.colorbar()
+        plt.gca().invert_yaxis()
+        plt.scatter(origin[0], origin[1], color='red')
+        colours = ['steelblue', 'darkslateblue', 'darkgoldenrod', 'darkmagenta', 'slategrey']
+
+        for i in range(number_of_neighbourhoods):
+            plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=colours[i])
+        plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+        plt.show()
+
+    return neighbourhood_points
+
+
+
+def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_points) -> np.ndarray:
+    num_neighbourhoods = len(medoids)
+    logger.debug(f"Detected {num_neighbourhoods} neighbourhoods")
+
+    # convert cluster map to list of valid coordinates
+    coords = np.argwhere(data != -1)
+
+    # separate out neighbourhoods
+    neighbourhoods = []
+    for i in range(num_neighbourhoods):
+        neighbourhoods.append(np.argwhere(data == i))
+
     selected_points = np.array(medoids)
-    remaining_points = np.array([p for p in points if not np.any(np.all(p == medoids, axis=1))])
- 
-    logger.debug(f"Number of selected points: {len(selected_points)}, number of remaining points: {len(remaining_points)}")
+    remaining_points = np.array([p for p in coords if not np.any(np.all(p == medoids, axis=1))])
 
     i = 0
     while selected_points.shape[0] < num_points * num_neighbourhoods:
@@ -44,13 +119,48 @@ def get_points_in_neighbourhood(points: np.ndarray, neighbourhoods: np.ndarray, 
 
         i = (i + 1) % num_neighbourhoods
 
-    logger.debug(f"Selected points: {selected_points.shape}")
+    logger.info(f"Selected points: {selected_points}")
 
     selected_points_split = []
     for i in range(num_neighbourhoods):
         selected_points_split.append(selected_points[i::num_neighbourhoods])
 
-    return selected_points_split
+    return np.array(selected_points_split)
+
+def run_PAM(data: np.ndarray, num_clusters: int):
+    # ensure that data is in float format
+    try:
+        data = data.astype(float)
+    except ValueError:
+        raise ValueError("Data must be convertible to float")
+
+    # get coordinates of all reachable points
+    reachable_coordinates = np.argwhere(data == 0)
+
+    # calculate dissimilarities between all points
+        # pdist -> pairwise distance between all points
+            # in form [distance between 0 and 1, distance between 0 and 2, ...]
+        # squareform -> convert to square matrix
+            # where each index (i, j) is the distance between point i and point j
+    dissimilarities = squareform(pdist(reachable_coordinates, metric='euclidean'))
+
+    # run fasterPAM to get all neighbourhoods
+    # random_state is set to 42 for reproducibility
+    pam_result = kmedoids.fasterpam(dissimilarities, num_clusters, random_state=42)
+
+    logger.debug(f"Loss: {pam_result.loss}")
+
+    # map medoid indices to coordinates
+    medoid_coords = reachable_coordinates[pam_result.medoids]
+
+    # re-map data to include clusters
+    # -1 now represents obstacles
+    # 0-num_clusters represent the clusters
+    cluster_map = np.full(data.shape, -1)
+    for i, coord in enumerate(reachable_coordinates):
+        cluster_map[coord[0]][coord[1]] = pam_result.labels[i]
+
+    return medoid_coords, cluster_map
 
 def bfs(data: np.ndarray, start: tuple) -> np.ndarray:
     # initialize visited array & queue
@@ -80,14 +190,15 @@ def bfs(data: np.ndarray, start: tuple) -> np.ndarray:
     return visited
 
     
+#TODO: handle edge case where there are no obstacles?
 def find_room_size(data: np.ndarray) -> tuple:
-    # find the farthest 1 in each direction
-
+    # initialize min and max values
     min_x = data.shape[1]
     max_x = 0
     min_y = data.shape[0]
     max_y = 0
 
+    # find the min and max values
     for i in range(data.shape[0]):
         for j in range(data.shape[1]):
             if data[i, j] == 1:
@@ -103,7 +214,7 @@ def find_room_size(data: np.ndarray) -> tuple:
     # bottom left & top right corners
     return (min_x, min_y), (max_x, max_y)  
 
-def trim_and_border_data(data: np.ndarray, bottom_left: tuple, top_right: tuple) -> np.ndarray:
+def update_data(data: np.ndarray, origin: tuple, bottom_left: tuple, top_right: tuple) -> tuple[np.ndarray, tuple]:
     # trim data to only include the room
     right_edge = np.min([data.shape[1], top_right[0]])
     top_edge = np.min([data.shape[0], top_right[1]])
@@ -115,7 +226,14 @@ def trim_and_border_data(data: np.ndarray, bottom_left: tuple, top_right: tuple)
     # add border of 1s around the room
     trimmed_data = np.pad(trimmed_data, 1, constant_values=1)
 
-    return trimmed_data
+     # adjust origin based on room size
+    if origin[0] < bottom_left[0] or origin[0] > top_right[0] or origin[1] < bottom_left[1] or origin[1] > top_right[1]:
+        raise ValueError(f"Origin {origin} is not within the found room size")
+    
+    # +1 is needed due to the padding added to the room
+    origin = (origin[0] - bottom_left[0]+1, origin[1] - bottom_left[1]+1)
+
+    return trimmed_data, origin
 
 if __name__ == "__main__":
     # load in data from testData
@@ -129,108 +247,5 @@ if __name__ == "__main__":
     sample_data = np.array(sample_data)
     origin = (sample_data.shape[0] // 2, sample_data.shape[1] // 2) # origin based on measurements from Aleks
     # origin = (97, 84) # origin based on where Aleks said it was
-    
-    logger.debug(f"Loaded data with shape {sample_data.shape}")
-    logger.debug(f"Origin: {origin}")
 
-    # find room size
-    logger.debug(f"Starting to find room size at {time.time()}")
-    bottom_left, top_right = find_room_size(sample_data)
-    logger.debug(f"Room size found at {time.time()}")
-    logger.debug(f"Bottom left: {bottom_left}")
-    logger.debug(f"Top right: {top_right}")
-
-
-    # adjust origin based on room size
-    # +1 is needed due to the added padding
-    origin = (origin[0] - bottom_left[0]+1, origin[1] - bottom_left[1]+1)
-    logger.debug(f"Adjusted origin: {origin}")
-
-    # add border of 1s around the room
-    trimmed_data = trim_and_border_data(sample_data, bottom_left, top_right)
-
-    # display on graph
-    # plt.imshow(trimmed_data, cmap='gray_r', interpolation='nearest')
-    # plt.colorbar()
-    # plt.gca().invert_yaxis()
-    # plt.scatter(origin[0], origin[1], color='red')
-    # plt.gca().set_xticks(np.arange(-0.5, trimmed_data.shape[1], 1))
-    # plt.gca().set_yticks(np.arange(-0.5, trimmed_data.shape[0], 1))
-
-    # plt.grid(color='lightgrey', linestyle='-', linewidth=0.5)
-    # plt.show(block=True)
-
-    logger.debug(f"Trimmed data shape: {trimmed_data.shape}")
-
-    # find all reachable nodes using bfs
-    logger.debug(f"Starting bfs at {time.time()}")
-    reachable = bfs(trimmed_data, origin)
-
-    # display on graph
-    # plt.imshow(reachable, cmap='gray_r', interpolation='nearest')
-    # plt.colorbar()
-    # plt.gca().invert_yaxis()
-    # plt.scatter(origin[0], origin[1], color='red')
-    # plt.show()
-
-    # convert reachable the necessary input format
-    # TODO: validate all of this section
-    reachable = reachable.astype(float) # convert to float
-    reachable_coordinates = np.argwhere(reachable == 0) # get coordinates of all reachable points
-    dissimilarities = squareform(pdist(reachable_coordinates, metric='euclidean')) # calculate dissimilarities between all points
-
-    # run fasterPAM to get all neighbourhoods
-    start_time = time.time()
-    logger.debug(f"Starting fasterPAM at {start_time}")
-    pam_result = kmedoids.fasterpam(dissimilarities, 5, random_state=42)
-    logger.debug(f"FasterPAM took {time.time() - start_time} seconds")
-
-    logger.info(f"Loss: {pam_result.loss}")
-
-    # Map medoid indices back to original coordinates
-    medoid_coords = reachable_coordinates[pam_result.medoids]
-    logger.debug(f"Medoid coordinates: {medoid_coords}")
-    
-    # re-map to array for visualization
-    cluster_map = np.full(reachable.shape, -1)
-    for i, coord in enumerate(reachable_coordinates):
-        cluster_map[coord[0], coord[1]] = pam_result.labels[i]
-
-    # display on graph
-    # plt.imshow(cluster_map, cmap='tab10', interpolation='nearest')
-    # plt.colorbar()
-    # plt.gca().invert_yaxis()
-    # plt.scatter(origin[0], origin[1], color='red')
-    # plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
-    # plt.show()
-
-    # organize the data into neighbourhoods
-    neighbourhoods = []
-    for i in range(5):
-        cur_neighbourhood = np.argwhere(cluster_map == i)
-
-        neighbourhoods.append(cur_neighbourhood)
-
-        logger.debug(f"neighbourhood {i} has  {len(cur_neighbourhood)} points")
-
-    # convert cluster_map to a list of coordinates
-    cluster_map_coords = np.argwhere(cluster_map != -1)
-    
-    logger.debug(f"cluster_map shape: {cluster_map_coords.shape}, medoid_coords shape: {medoid_coords.shape}")
-    logger.debug(f'asdf: {np.all(np.isin([14, 12], medoid_coords))}')
-
-    # for each neighbourhood, find 5 additional points as far away from one another as possible
-    neighbourhood_points = get_points_in_neighbourhood(cluster_map_coords, neighbourhoods, 5, 5, medoid_coords)
-
-    # display on graph
-    plt.imshow(cluster_map, cmap='Pastel1', interpolation='nearest')
-    plt.colorbar()
-    plt.gca().invert_yaxis()
-    plt.scatter(origin[0], origin[1], color='red')
-    colours = ['steelblue', 'darkslateblue', 'darkgoldenrod', 'darkmagenta', 'slategrey']
-
-    for i in range(5):
-        plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=colours[i])
-    plt.scatter(medoid_coords[:, 1], medoid_coords[:, 0], color='black')
-    plt.show()
-
+    selected_points = occupancy_grid_to_points(sample_data, origin, plot_result=True)
