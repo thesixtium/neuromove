@@ -360,6 +360,16 @@ if __name__ == "__main__":
     
     # Convert the string representation of the list to an actual list
     sample_data = literal_eval(data_str)
+
+    # TODO: make sure this works properly with data from shared memory
+    # rotate data 90 degress ccw & mirror over y-axis
+    sample_data = np.array(sample_data).T
+
+    plt.imshow(sample_data, cmap='grey_r', interpolation='nearest')
+    plt.colorbar()
+    plt.gca().invert_yaxis()
+    plt.scatter(88, 88, color='red')
+    plt.show()
     
     # Convert the list to a numpy array
     sample_data = np.array(sample_data)
