@@ -1,5 +1,5 @@
 import unittest
-from venv import create
+import numpy as np
 
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.InternalException import DidNotCreateSharedMemory
@@ -37,24 +37,19 @@ class SharedMemoryTest(unittest.TestCase):
     def test_error_not_created(self):
         self.assertRaises(DidNotCreateSharedMemory, SharedMemory, "test2", 8)
 
-    def test_occupancy_grid(self):
-        occupancy_grid = [
-            [0, 0, 1, 0, 0],
-            [0, 1, 1, 1, 0],
-            [0, 0, 1, 0, 0],
-            [0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0],
-            [1, 0, 0, 0, 1],
-        ]
+    def test_np_array(self):
+        test_array = np.arange(12).reshape(3, 4)
 
-        memory = SharedMemory("test3", 35, create=True)
-        memory.write_grid(occupancy_grid)
+        memory = SharedMemory("test3", 1000, create=True)
+        memory.write_np_array(test_array)
 
-        actual = memory.read_grid()
+        actual = memory.read_np_array()
 
         memory.close()
 
-        self.assertEqual(occupancy_grid, actual)
+        for i in range(len(test_array)):
+            for j in range(len(test_array[0])):
+                self.assertEqual(test_array[i][j], actual[i][j])
 
 
 if __name__ == '__main__':

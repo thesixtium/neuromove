@@ -1,6 +1,8 @@
 #https://stackoverflow.com/questions/73719101/connecting-a-c-program-to-a-python-script-with-shared-memory
 
 from multiprocessing import shared_memory
+import numpy as np
+
 from src.RaspberryPi.InternalException import DidNotCreateSharedMemory, NotEnoughSharedMemory
 
 class SharedMemory:
@@ -20,6 +22,11 @@ class SharedMemory:
         self._check_size(encoded)
         self.memory.buf[:len(encoded)] = encoded
 
+    def write_np_array(self, array):
+        encoded = str(array).encode()
+        self._check_size(encoded)
+        self.memory.buf[:len(encoded)] = encoded
+
     def read_string(self):
         return bytes(self.memory.buf).strip(b'\x00').decode()
 
@@ -27,6 +34,17 @@ class SharedMemory:
         value = self.read_string()
         if value:
             return [ [int(j) for j in i] for i in value.split("|")[:-1] ]
+        else:
+            return []
+
+    def read_np_array(self):
+        value = self.read_string()
+
+        if value:
+            value = value.replace("[", "").replace("]", "")
+            value_split = value.split("\n")
+            value_split = [[int(k) for k in list(filter(lambda j: j != '', i.split(" ")))] for i in value_split]
+            return np.array(value_split)
         else:
             return []
 

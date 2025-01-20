@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 import time
+import numpy as np
+
 from src.RaspberryPi.ArduinoUno import ArduinoUno, MotorDirections
 from src.RaspberryPi.InternalException import *
 from src.RaspberryPi.Socket import Socket
 from src.RaspberryPi.SharedMemory import SharedMemory
+from src.RaspberryPi.point_selection import occupancy_grid_to_points
 
 
 class States(Enum):
@@ -23,6 +26,7 @@ def main():
     arduino_uno = None
     eye_tracking_memory = None
     occupancy_grid_memory = None
+    point_selection_memory = None
     p300_socket = None
     initialized = False
 
@@ -41,6 +45,7 @@ def main():
                         next_state = States.SETUP
                         eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=1, create=True)
                         occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
+                        point_selection_memory = SharedMemory(shem_name="point_selection", size=1000, create=True)
                         p300_socket = Socket(12347, 12348)
                         initialized = True
 
@@ -65,6 +70,13 @@ def main():
 
                 case States.DESTINATION:
                     print("Destination")
+
+                    # Get point selections
+                    occupancy_grid = np.array(occupancy_grid_memory.read_grid())
+                    origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
+                    selected_points = occupancy_grid_to_points(occupancy_grid, origin, plot_result=True)
+                    point_selection_memory.write_np_array(selected_points)
+
                     raise NotImplementedYet("Destination State")
 
 
@@ -110,6 +122,7 @@ def main():
         eye_tracking_memory.close()
         p300_socket.close()
         occupancy_grid_memory.close()
+        point_selection_memory.close()
 
 
     if isinstance(current_exception, InternalException):
