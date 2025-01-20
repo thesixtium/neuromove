@@ -23,29 +23,12 @@ class SharedMemory:
     def read_string(self):
         return bytes(self.memory.buf).strip(b'\x00').decode()
 
-    def write_grid(self, occupancy_grid: list):
-        data = ''.join(str(item) for innerlist in occupancy_grid for item in innerlist).encode()
-
-        width = len(occupancy_grid[0])
-        height = len(occupancy_grid)
-        specs = f"{width}x{height}:".encode()
-
-        encoded = specs + data
-        self._check_size(encoded)
-        self.memory.buf[:len(encoded)] = encoded
-
     def read_grid(self):
-        x = bytes(self.memory.buf).strip(b'\x00')
-        specs, data = x.split(b":")
-        width, height = specs.decode().split("x")
-        grid = []
-
-        for h in range(int(height)):
-            start = h * int(width)
-            end = (h + 1) * int(width)
-            grid.append([int(i) for i in data[start:end].decode()])
-
-        return grid
+        value = self.read_string()
+        if value:
+            return [ [int(j) for j in i] for i in value.split("|")[:-1] ]
+        else:
+            return []
 
     def close(self):
         try:

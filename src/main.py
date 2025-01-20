@@ -40,7 +40,7 @@ def main():
                         arduino_uno = ArduinoUno()
                         next_state = States.SETUP
                         eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=1, create=True)
-                        occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=10000000, create=True)
+                        occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
                         p300_socket = Socket(12347, 12348)
                         initialized = True
 
