@@ -13,7 +13,7 @@ topLeftClick = function() {
     sessionStorage.setItem('pleft', '0%');
     sessionStorage.setItem('mright', '10%');
 
-    window.location.href = "p300Arrows.html";
+    window.location.href = "/local";
 }
 
 topRightClick = function() {
@@ -24,7 +24,7 @@ topRightClick = function() {
     sessionStorage.setItem('pright', '0%');
     sessionStorage.setItem('mleft', '10%');
 
-    window.location.href = "p300Arrows.html";
+    window.location.href = "/local";
 }
 
 bottomLeftClick = function() {
@@ -36,7 +36,7 @@ bottomLeftClick = function() {
     sessionStorage.setItem('pleft', '0%');
     sessionStorage.setItem('mright', '10%');
 
-    window.location.href = "p300Arrows.html";
+    window.location.href = "/local";
 }
 
 bottomRightClick = function() {
@@ -48,7 +48,7 @@ bottomRightClick = function() {
     sessionStorage.setItem('pright', '0%');
     sessionStorage.setItem('mleft', '10%');
 
-    window.location.href = "p300Arrows.html";
+    window.location.href = "/local";
 }
 
 centreClick = function() {
@@ -59,7 +59,7 @@ centreClick = function() {
     sessionStorage.setItem('top', '20%');
     sessionStorage.setItem('mleft', '10%');
     sessionStorage.setItem('mright', '10%');
-    window.location.href = "p300Arrows.html";
+    window.location.href = "/local";
 }
 
 topLeft.addEventListener("click", topLeftClick);
