@@ -1,3 +1,4 @@
+import asyncio
 import bci_essentials
 import bci_essentials.data_tank.data_tank
 import bci_essentials.io.lsl_messenger
@@ -10,9 +11,10 @@ import bci_essentials.bci_controller
 
 import bci_essentials.data_tank
 
+from bci_essentials_wrappers.bci_essentials_wrapper import Bessy
 import custom_messenger
 
-def main():
+def test_bessy():
     #create classifier
     classifier = bci_essentials.classification.erp_rg_classifier.ErpRgClassifier()
     classifier.set_p300_clf_settings()
@@ -45,5 +47,16 @@ def main():
     # run controller
     controller.run(max_loops=100)
 
+async def main():
+    eeg_source = bci_essentials.io.xdf_sources.XdfEegSource("C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-DANI/ses-S001/eeg/sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
+    marker_source = bci_essentials.io.xdf_sources.XdfMarkerSource("C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-DANI/ses-S001/eeg/sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
+
+    bessy = Bessy(9)
+
+    input("press enter to continue")
+
+    bessy.setup_offline_processing(marker_source, eeg_source)
+
 if __name__ == "__main__":
-    main()
+    # main()
+    asyncio.run(main())
