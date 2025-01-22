@@ -70,3 +70,7 @@ class DidNotCreateSharedMemory(InternalException):
 class NotEnoughSharedMemory(InternalException):
     def __init__(self, allocated: int, required: int):
         super().__init__(12, ExceptionTypes.PERMANENT, f"Operation requires {required} bytes, only allocated {allocated} bytes")
+
+class UnknownDestinationDrivingState(InternalException):
+    def __init__(self, state):
+        super().__init__(13, ExceptionTypes.TEMPORARY, f"Destination Driving entered unknown state: {str(state)}")
