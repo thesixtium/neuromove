@@ -27,9 +27,25 @@ const cbwd = bwd.getContext("2d");
 const r135 = document.getElementById("ci");
 const cr135 = r135.getContext("2d");*/
 
+function sendData(time, id) {
+    var value = [time, id];
+    $.ajax({
+        url: '/local',
+        type: 'GET',
+        data: { 'time': time, 'id': id },
+        success: function(response) {
+            document.getElementById('output').innerHTML = response;
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+}
+
 const _canvases = [/*cl45,*/ cfwd, /*cr45, */cl, cstop ,cr, /*cl135, cbwd, cr135*/];
 const defaultColour = "white";
 function pickSequence(array, array2){
+    //decide sequence in which to flash
     let temp = [];
     array.forEach(element => {
         temp.push(element);
@@ -55,6 +71,7 @@ function pickSequence(array, array2){
     console.log("arrows: " + array2);
 }
 function flashSequence(array, array2){
+    //flash the arrows
     //for(let j = 0; j < 3; j++){
         pickSequence(array, array2);
         //array2[0].fillStyle = "black";
@@ -66,6 +83,10 @@ function flashSequence(array, array2){
             
             console.log("start i: " + array[i]);
             console.log(performance.now() * 1000- start_time);
+
+            if (i>0){
+            sendData((performance.now() * 1000 - start_time).toFixed(10), array[i]);
+                }
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
             array2[i].fill();
@@ -73,7 +94,7 @@ function flashSequence(array, array2){
                 document.getElementById(array[i]).style.backgroundColor = "white";
                 array2[i].fillStyle = "black";
                 array2[i].fill();
-            }, 200);
+            }, 100);
             console.log("end i: " + array[i]);
             console.log(performance.now() * 1000 - start_time);
             i++;
@@ -85,7 +106,9 @@ function flashSequence(array, array2){
             drawArrows();
             clearInterval(interval);
         }
-    }, 640);
+    }, (300));
+    console.log("end sequence: " + array[i]);
+    console.log(performance.now() * 1000 - start_time);
 }
 
 function drawArrows(){
@@ -236,9 +259,10 @@ function doTheThing(){
 //flashSequence(_sequence1, _sequence2);
    //flashSequence(_sequence1);
     //setTimeout(function(){
+    sendData(performance.now() * 1000 - start_time);
     console.log("block start: " + performance.now() * 1000-start_time);
-    for(let i = 0; i<2; i++){
-    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2650*i));}//}, 2500);*/
+    for(let i = 0; i<8; i++){
+    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (1600*i+(Math.random()*150+50)));}//}, 2500);*/
     console.log("cycle " + i + "end: " + performance.now() * 1000-start_time);
     //flashSequence(_sequence3);
     

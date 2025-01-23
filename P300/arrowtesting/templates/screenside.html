@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Menu</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Setup Menu</h1>
+    </header>
+    <main>
+        <div id="area select">
+        <p> white side of Neuromove is the screen mounted on?<p>
+            <div class = "setup-grid-container" id = "setup-grid-container">
+                <div class = "grid-item" id="tl"><p id= "menutext">left</p></div>
+                <div class = "filler"></div>
+                <div class = "grid-item" id="tr"><p id= "menutext">right</p></div>
+            </div>
+        </div>
+    </main>
+    <script src = "{{url_for('static', filename='screenside.js') }}"></script>
+</body>
+</html>
