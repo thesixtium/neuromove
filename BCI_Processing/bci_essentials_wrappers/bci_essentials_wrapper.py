@@ -31,9 +31,7 @@ class Bessy:
                 self.__classifier.set_p300_clf_settings()
             case _:
                 raise ValueError(f"Paradigm  \"{self.__paradigm}\" not recognized")
-
-        self.__input = BCIEssentialsInput()
-
+            
         self.__messenger = custom_messenger.TextFileMessenger("class_output.txt")
         self.__data_tank = DataTank()
 
@@ -58,6 +56,9 @@ class Bessy:
         )
 
         self.__bci_controller.setup(online=False)
+
+        self.__bci_controller.event_timestamp_buffer = []
+        self.__bci_controller.event_marker_buffer = []
 
         self.__task = asyncio.create_task(self.__bessy_step_loop())
 
