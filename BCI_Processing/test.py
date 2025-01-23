@@ -11,7 +11,6 @@ import bci_essentials.bci_controller
 
 import bci_essentials.data_tank
 from bci_essentials_wrappers.bci_input import BCIEssentialsInput
-from bci_essentials_wrappers.neuromove_xdf_wrappers import NeuroMoveXdfMarkerSource
 
 from bci_essentials_wrappers.bci_essentials_wrapper import Bessy
 from bci_essentials_wrappers.bci_input import BCIEssentialsInput
@@ -22,8 +21,8 @@ def test_bessy():
     classifier = bci_essentials.classification.erp_rg_classifier.ErpRgClassifier()
     classifier.set_p300_clf_settings()
 
-    eeg_source = bci_essentials.io.xdf_sources.XdfEegSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
-    marker_source = bci_essentials.io.xdf_sources.XdfMarkerSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
+    eeg_source = bci_essentials.io.xdf_sources.XdfEegSource("p300_example.xdf")
+    marker_source = bci_essentials.io.xdf_sources.XdfMarkerSource("p300_example.xdf")
     
     paradigm = bci_essentials.paradigm.p300_paradigm.P300Paradigm()
 
@@ -69,25 +68,24 @@ async def main():
     bessy.setup_offline_processing(marker_source, eeg_source)
 
 if __name__ == "__main__":
-    # main()
-    # asyncio.run(main())
+    asyncio.run(main())
     # test_bessy()
 
-    markersource = BCIEssentialsInput("sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
-    data = markersource.get_markers()
+    # markersource = BCIEssentialsInput("sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
+    # data = markersource.get_markers()
 
-    import csv
-    list_of_lists, single_list = data
+    # import csv
+    # list_of_lists, single_list = data
 
-    # Prepare the CSV data
-    rows = [[single_list[i], ", ".join(map(str, list_of_lists[i]))] for i in range(len(single_list))]
+    # # Prepare the CSV data
+    # rows = [[single_list[i], ", ".join(map(str, list_of_lists[i]))] for i in range(len(single_list))]
 
-    # Save to CSV
-    with open("output.csv", "w", newline="") as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["Column 1", "Column 2"])  # Header row
-        writer.writerows(rows)
+    # # Save to CSV
+    # with open("output.csv", "w", newline="") as csvfile:
+    #     writer = csv.writer(csvfile)
+    #     writer.writerow(["Column 1", "Column 2"])  # Header row
+    #     writer.writerows(rows)
 
-    print("Data saved to output.csv")
+    # print("Data saved to output.csv")
 
 

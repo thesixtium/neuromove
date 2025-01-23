@@ -54,12 +54,17 @@ class BCIEssentialsInput(XdfMarkerSource):
                 # one of the letters
                 flashed = ord(s[0]) - 65
 
-                new_marker = f"|p300,s,9,{current_target},{flashed}|"
+                new_marker = f"p300,s,9,{current_target},{flashed}"
+                # new_marker = ['p300', 's', 9, current_target, flashed]
                 new_markers.append([new_marker])
                 
             else:
                 # one of the ignored cases
                 new_timestamps.pop()
+
+        # add training complete marker to trigger training model
+        new_timestamps.append(new_timestamps[-1])
+        new_markers.append(["Training Complete"])
 
         self.__samples = [[]]
         self.__timestamps = []
