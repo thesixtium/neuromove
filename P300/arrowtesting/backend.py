@@ -2,6 +2,8 @@ from flask import Flask,render_template, request, jsonify
 from bci_essentials import *
 import os
 import csv
+import sqlite3 as sql
+
 app = Flask(__name__,template_folder="templates")
 
 @app.route("/")
@@ -18,26 +20,27 @@ def screenside():
 
 @app.route("/localBCI", methods=['GET', 'POST'])
 def localBCI():
-    time = request.json('time')
-    id = request.json('id')
-    timeID = [time, id]
-    print (timeID)
-    rows = [timeID]
-    timestring = str(timeID[0]) + str(timeID[1])
-    with open("output.csv", "w", newline="") as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["Column 1", "Column 2"])  # Header row
-        writer.writerows(rows)
+    data = request.get_json()
+    time = data.get('time')
+    idrt = data.get('id')
+    timeID = [time, idrt]
+    print(timeID)
+    
+    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.json"
+    with open(file_path, "a") as f:  # Open in append mode
+        f.write(str(timeID) + '\n')
+    
+    try: 
+        con = sql.connect('shot_database.db')
+        c = con.cursor()
+        c.execute("CREATE TABLE IF NOT EXISTS shot_table (time, id)")
+        c.execute("INSERT INTO shot_table (time, id) VALUES (?,?)", (time, idrt))
+        con.commit()
 
-    print("Data saved to output.csv")
-    if os.path.exists("C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt"):
-        f = open("C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt", "a")
-    else:
-        f = open("C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt", 'w')
-    f.writelines(timestring)
-    f.close()
-    return render_template('stop_go.html')
+    except: 
+        print("an error occured")
 
+    return jsonify(timeID)
 @app.route("/stop_go", methods=['GET'])
 def stopBCI():
     time = request.json('time')
