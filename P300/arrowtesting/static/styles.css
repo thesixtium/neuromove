@@ -10,6 +10,32 @@ body{
     margin-left: 15%;
     margin-right:15%;
 }
+
+h1{
+    color: black;
+    text-align: center;
+    text-shadow: 0em 0em 1em white;
+    font-size: 5em;
+}
+
+h2{
+    color: black;
+    padding: 0.5em;
+    text-align: center;
+    text-shadow: 0em 0em 1em white;
+    font-size: 2.5em;
+}
+
+#subheader{
+    padding-top: 20%;
+padding-bottom: -20%;
+margin-bottom: -20%;}
+
+#screen_area_select{
+    padding-top: -25%;
+    margin-top: -25%;
+
+}
 #filler{
     background-color: transparent;
 }
@@ -30,7 +56,7 @@ body{
    max-height: 30vh;
 }
 
-#tl, #tr, #cen, #bl, #br{
+#tl, #tr, #cen, #bl, #br, #returning, #newb{
     background: black;
     color: white;
     font-size: 1em;
@@ -38,8 +64,14 @@ body{
     width: 15vh;
     text-align: center;
 }
+.returning{
+    margin-top: 0.1em;
+}
 #menutext{
     padding-top: 20%;
+    text-align: center;
+    font-size: 0.35em;
+    text-shadow: none;
 }
 .stop-grid-container {
     padding-top: 15%;
@@ -68,7 +100,7 @@ body{
                     'item1 item1 item1';
     
 }
-#a, #b, #c, #d, #e, #f, #g, #h, #i {
+#a, #b, #c, #d, #e, #f, #g, #h, #i, #stop, #go, #go2 {
     //padding: 1em;
     font-size: 4em;
     //border: 10px solid #f107a7;

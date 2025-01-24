@@ -1,5 +1,5 @@
-const topLeft = document.getElementById("tl");
-const topRight = document.getElementById("tr");
+const topLeft = document.getElementById("newb");
+const topRight = document.getElementById("returning");
 var r = document.querySelector(':root');
 
 topLeftClick = function() {

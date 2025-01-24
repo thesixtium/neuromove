@@ -34,7 +34,7 @@ function sendData(time, id) {
         type: 'GET',
         data: { 'time': time, 'id': id },
         success: function(response) {
-            document.getElementById('output').innerHTML = response;
+            
         },
         error: function(error) {
             console.log(error);
