@@ -15,18 +15,21 @@ var _root = document.querySelector(':root');
 const start_time = performance.now() * 1000;
 
 function sendData(time, id) {
-    var value = [time, id];
-    $.ajax({
-        url: '/stop_go',
-        type: 'GET',
-        data: { 'time': time, 'id': id },
-        success: function(response) {
-            document.getElementById('output').innerHTML = response;
+    var data = [time, id];
+    fetch('/localBCI', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
-        error: function(error) {
-            console.log(error);
-        }
-    });
+        body: JSON.stringify({data: data})
+      })
+      .then(response => response.text())
+      .then(result => {
+        console.log(result);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
 }
 
 const _canvases = [cstop, cgo, cgo2];

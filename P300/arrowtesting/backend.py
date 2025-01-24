@@ -31,11 +31,7 @@ def localBCI():
 
 @app.route("/stop_go", methods=['GET'])
 def stopBCI():
-    time = request.json('time')
-    id = request.json('id')
-    timeID = [time, id]
-    print (timeID)
-    return timeID
+    return render_template('stop_go.html')
 
 
 @app.route("/setup")
@@ -47,6 +43,11 @@ def outputpls(timeID):
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(timeID) + '\n')
     return 1
+
+@app.route('/eyetrackingside', methods=['POST'])
+def eyetrackingside():
+    data = request.form.get('data')
+    return 
 
 if __name__ == '__main__':
     app.run(debug=True)
