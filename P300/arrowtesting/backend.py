@@ -10,7 +10,7 @@ app = Flask(__name__,template_folder="templates")
 def hello():
     return render_template('bcisetup.html')
 
-@app.route("/local")
+@app.route("/local", methods=['GET', 'POST'])
 def local():
     return render_template('p300Arrows.html')
 
@@ -18,29 +18,17 @@ def local():
 def screenside():
     return render_template('screenside.html')
 
-@app.route("/localBCI", methods=['GET', 'POST'])
+@app.route("/localBCI", methods=['POST'])
 def localBCI():
-    data = request.get_json()
-    time = data.get('time')
-    idrt = data.get('id')
-    timeID = [time, idrt]
-    print(timeID)
+    data = request.json['data']
+   # time = data.get('time')
+   # idrt = data.get('id')
+   # timeID = [time, idrt]
+    #print(timeID)
+    outputpls(data)
+    return jsonify({'result': 'success'})
     
-    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.json"
-    with open(file_path, "a") as f:  # Open in append mode
-        f.write(str(timeID) + '\n')
-    
-    try: 
-        con = sql.connect('shot_database.db')
-        c = con.cursor()
-        c.execute("CREATE TABLE IF NOT EXISTS shot_table (time, id)")
-        c.execute("INSERT INTO shot_table (time, id) VALUES (?,?)", (time, idrt))
-        con.commit()
 
-    except: 
-        print("an error occured")
-
-    return jsonify(timeID)
 @app.route("/stop_go", methods=['GET'])
 def stopBCI():
     time = request.json('time')
@@ -53,6 +41,12 @@ def stopBCI():
 @app.route("/setup")
 def setup():
     return render_template('setupmenu.html')
+
+def outputpls(timeID):
+    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.txt"
+    with open(file_path, "a") as f:  # Open in append mode
+        f.write(str(timeID) + '\n')
+    return 1
 
 if __name__ == '__main__':
     app.run(debug=True)

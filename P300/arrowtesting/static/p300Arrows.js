@@ -28,18 +28,21 @@ const r135 = document.getElementById("ci");
 const cr135 = r135.getContext("2d");*/
 
 function sendData(time, id) {
-    var value = [time, id];
-    $.ajax({
-        url: '/local',
-        type: 'GET',
-        data: { 'time': time, 'id': id },
-        success: function(response) {
-            
+    var data = [time, id];
+    fetch('/localBCI', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
-        error: function(error) {
-            console.log(error);
-        }
-    });
+        body: JSON.stringify({data: data})
+      })
+      .then(response => response.text())
+      .then(result => {
+        console.log(result);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
 }
 
 const _canvases = [/*cl45,*/ cfwd, /*cr45, */cl, cstop ,cr, /*cl135, cbwd, cr135*/];
