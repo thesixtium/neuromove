@@ -3,12 +3,12 @@ import asyncio
 import custom_messenger
 
 from .bci_input import BCIEssentialsInput
-from bci_essentials.io.sources import EegSource, MarkerSource
-from bci_essentials.paradigm.p300_paradigm import P300Paradigm
-from bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
-from bci_essentials.data_tank.data_tank import DataTank
-from bci_essentials.bci_controller import BciController
-from bci_essentials.classification.erp_rg_classifier import ErpRgClassifier
+from lib.bci_essentials.bci_essentials.io.sources import EegSource, MarkerSource
+from lib.bci_essentials.bci_essentials.paradigm.p300_paradigm import P300Paradigm
+from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
+from lib.bci_essentials.bci_essentials.data_tank.data_tank import DataTank
+from lib.bci_essentials.bci_essentials.bci_controller import BciController
+from lib.bci_essentials.bci_essentials.classification.erp_rg_classifier import ErpRgClassifier
 
 # TODO: figure out if we need 2 instances of this for destination vs local driving mode (5 vs 4 classes) or if it can be modified on the fly
 class Bessy:

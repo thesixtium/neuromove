@@ -1,5 +1,5 @@
-from bci_essentials.io.messenger import Messenger
-from bci_essentials.classification.generic_classifier import Prediction
+from lib.bci_essentials.bci_essentials.io.messenger import Messenger
+from lib.bci_essentials.bci_essentials.classification.generic_classifier import Prediction
 
 class TextFileMessenger(Messenger):
     def __init__(self, file_path: str):

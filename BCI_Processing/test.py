@@ -1,22 +1,12 @@
 import asyncio
-import bci_essentials
-import bci_essentials.data_tank.data_tank
-import bci_essentials.io.lsl_messenger
-import numpy as np
 
-import bci_essentials.classification.erp_rg_classifier
-import bci_essentials.io.xdf_sources
-import bci_essentials.paradigm.p300_paradigm
-import bci_essentials.bci_controller
-
-import bci_essentials.data_tank
-from bci_essentials_wrappers.bci_input import BCIEssentialsInput
+from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource
 
 from bci_essentials_wrappers.bci_essentials_wrapper import Bessy
 from bci_essentials_wrappers.bci_input import BCIEssentialsInput
-import custom_messenger
 
-def test_bessy():
+
+"""def test_bessy():
     #create classifier
     classifier = bci_essentials.classification.erp_rg_classifier.ErpRgClassifier()
     classifier.set_p300_clf_settings()
@@ -55,9 +45,10 @@ def test_bessy():
 
     # run controller
     # controller.run(max_loops=100)
-
+"""
+    
 async def main():
-    eeg_source = bci_essentials.io.xdf_sources.XdfEegSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
+    eeg_source = XdfEegSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
     # marker_source = bci_essentials.io.xdf_sources.XdfMarkerSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
     marker_source = BCIEssentialsInput("sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
 
