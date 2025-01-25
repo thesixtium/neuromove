@@ -72,7 +72,9 @@ class BessyInput(XdfMarkerSource):
         new_markers += validation_samples
         new_timestamps += new_timestamps
 
-        # remove extra "training complete"
+        # remove extra "training complete" & "trial started"
+        new_markers.pop()
+        new_timestamps.pop()
         new_markers.pop()
         new_timestamps.pop()
 
