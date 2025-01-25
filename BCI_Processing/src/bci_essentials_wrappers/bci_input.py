@@ -66,6 +66,32 @@ class BessyInput(XdfMarkerSource):
         new_timestamps.append(new_timestamps[-1])
         new_markers.append(["Training Complete"])
 
+        # add simulated validation data
+        validation_samples = self.__generate_validation_data(new_markers, )
+
+        new_markers += validation_samples
+        new_timestamps += new_timestamps
+
+        # remove extra "training complete"
+        new_markers.pop()
+        new_timestamps.pop()
+
         self.__samples = [[]]
         self.__timestamps = []
         return [new_markers, new_timestamps]
+    
+    def __generate_validation_data(self, markers: list) -> list:
+        # replace al targets with -1
+        new_markers = []
+
+        for m in markers:
+            if "p300,s" in m[0]:
+                parts = m[0].split(',')
+                parts[3] = '-1'
+
+                new_marker = ','.join(parts)
+                new_markers.append([new_marker])
+            else:
+                new_markers.append(m)
+
+        return new_markers

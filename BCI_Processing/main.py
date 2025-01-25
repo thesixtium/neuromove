@@ -48,9 +48,9 @@ from src.bci_essentials_wrappers.bci_input import BessyInput
 """
     
 async def main():
-    eeg_source = XdfEegSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
+    eeg_source = XdfEegSource("data/sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
     # marker_source = bci_essentials.io.xdf_sources.XdfMarkerSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
-    marker_source = BessyInput("sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
+    marker_source = BessyInput("data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
 
     bessy = Bessy(9)
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     asyncio.run(main())
     # test_bessy()
 
-    # markersource = BCIEssentialsInput("sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
+    # markersource = BessyInput("data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
     # data = markersource.get_markers()
 
     # import csv
@@ -72,11 +72,9 @@ if __name__ == "__main__":
     # rows = [[single_list[i], ", ".join(map(str, list_of_lists[i]))] for i in range(len(single_list))]
 
     # # Save to CSV
-    # with open("output.csv", "w", newline="") as csvfile:
+    # with open("data/output.csv", "w", newline="") as csvfile:
     #     writer = csv.writer(csvfile)
     #     writer.writerow(["Column 1", "Column 2"])  # Header row
     #     writer.writerows(rows)
 
     # print("Data saved to output.csv")
-
-
