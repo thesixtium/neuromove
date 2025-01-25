@@ -3,7 +3,7 @@ import numpy as np
 
 
 #TODO: implement logger
-class BCIEssentialsInput(XdfMarkerSource):
+class BessyInput(XdfMarkerSource):
     '''
     This class is used to feed markers into bci_essentials. It is a wrapper around MarkerSource to allow for easy
     integration with existing data collected.
