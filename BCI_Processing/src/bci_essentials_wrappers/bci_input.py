@@ -45,7 +45,7 @@ class BessyInput(XdfMarkerSource):
                 end_timestamp = self.__timestamps[i]
                 next_timestamp = self.__timestamps[i+1]
 
-                marker_timestamp = round((end_timestamp + next_timestamp) / 2)
+                marker_timestamp = (end_timestamp + next_timestamp) / 2
                 new_timestamps.append(marker_timestamp)
                 new_markers.append(["Trial Started"])
 
