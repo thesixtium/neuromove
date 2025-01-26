@@ -64,7 +64,8 @@ class Bessy:
         self.__bci_controller.event_timestamp_buffer = []
         self.__bci_controller.event_marker_buffer = []
 
-        self.__task = asyncio.create_task(self.__bessy_step_loop())
+        # just run step once for XDF data
+        self.__bci_controller.step()
 
     # TODO: implement online processing
 
