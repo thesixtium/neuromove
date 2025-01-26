@@ -79,36 +79,6 @@ class Bessy:
 
         self.__num_classes = new_num_classes
 
-    def start_training_session(self):
-        self.__input.queue_marker("Trial Started")
-
-    def end_training_session(self):
-        self.__input.queue_marker("Trial Ends")
-
-    def mark_trial(self, target: int, flashed: int):
-        '''
-        Emit a trial marker for bci_controller
-
-        Args
-        ----
-        target: int
-            the number of the target block for the trial
-        flashed: int
-            the number of the block that just flashed
-        '''
-        
-        message = f"{self.__paradigm},{self.__flash_scheme},{self.__num_classes},{target},{flashed}"
-        self.__input.queue_marker(message)
-
-    def train_classifier(self):
-        '''Tells Bessy to update classifier using data set'''
-        self.__input.queue_marker("Update Classifier")
-        
-    def make_prediction(self, flashed: int):
-        # label of -1 triggers prediction
-        message = f"{self.__paradigm},{self.__flash_scheme},{self.__num_classes},-1,{flashed}"
-        self.__input.queue_marker(message)
-
     async def __bessy_step_loop(self):
         while not self.__stop_event.is_set() and self.__bci_controller is not None:
             await self.__bessy_step()
