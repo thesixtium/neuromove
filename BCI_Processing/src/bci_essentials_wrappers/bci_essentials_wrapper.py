@@ -1,5 +1,7 @@
 import asyncio
 
+from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
+
 from .input.xdf_input import OldXdfFormatInput
 from lib.bci_essentials.bci_essentials.io.sources import EegSource, MarkerSource
 from src.bci_essentials_wrappers.output.text_file_messenger import TextFileMessenger
@@ -68,6 +70,27 @@ class Bessy:
         self.__bci_controller.step()
 
     # TODO: implement online processing
+    def setup_online_processing(self, marker_souurce: LslMarkerSource, eeg_source: LslEegSource):
+        self.__marker_source = marker_souurce
+        self.__eeg_source = eeg_source
+
+        if self.__bci_controller is not None:
+            raise NotImplementedError("Controller is already running, cannot initialize it again")
+        
+        self.__bci_controller = BciController(
+            eeg_source=self.__eeg_source,
+            marker_source=self.__marker_source,
+            paradigm=self.__paradigm,
+            classifier=self.__classifier,
+            data_tank=self.__data_tank,
+            messenger=self.__messenger
+        )
+
+        self.__bci_controller.setup(online=True)
+        self.__bci_controller.event_timestamp_buffer = []
+        self.__bci_controller.event_marker_buffer = []
+
+        self.__task = asyncio.create_task(self.__bessy_step_loop())
 
     # assuming we can change it on the fly    
     def set_num_classes(self, new_num_classes: int) -> None:
@@ -83,6 +106,9 @@ class Bessy:
     async def __bessy_step_loop(self):
         while not self.__stop_event.is_set() and self.__bci_controller is not None:
             await self.__bessy_step()
+
+    def set_stop(self):
+        self.__stop_event.set()
 
     async def __bessy_step(self):
         self.__bci_controller.step()
