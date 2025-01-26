@@ -3,7 +3,7 @@ import asyncio
 from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource
 
 from src.bci_essentials_wrappers.bci_essentials_wrapper import Bessy
-from src.bci_essentials_wrappers.bci_input import OldXdfFormatInput
+from src.bci_essentials_wrappers.input.xdf_input import OldXdfFormatInput
 
 
 """def test_bessy():

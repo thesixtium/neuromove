@@ -1,9 +1,10 @@
 import asyncio
 
-import src.custom_messenger as custom_messenger
-
-from .bci_input import OldXdfFormatInput
+from .input.xdf_input import OldXdfFormatInput
 from lib.bci_essentials.bci_essentials.io.sources import EegSource, MarkerSource
+from src.bci_essentials_wrappers.output.text_file_messenger import TextFileMessenger
+
+from lib.bci_essentials.bci_essentials.io.messenger import Messenger
 from lib.bci_essentials.bci_essentials.paradigm.p300_paradigm import P300Paradigm
 from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
 from lib.bci_essentials.bci_essentials.data_tank.data_tank import DataTank
@@ -16,7 +17,7 @@ class Bessy:
     Bessy is a wrapper class for bci_essentials. It is based on the class of the same name from [FlickTok](https://github.com/kirtonBCIlab/FlickTok/blob/main/src/apps/server/src/Bessy.py).
     '''
     
-    def __init__(self, num_classes: int):
+    def __init__(self, num_classes: int, messenger: Messenger = None):
         # variables constant for NeuroMove but set for easy editing later
         self.__paradigm = "p300"
         self.__flash_scheme = "s" # s for single item flashing at a time
@@ -32,11 +33,14 @@ class Bessy:
             case _:
                 raise ValueError(f"Paradigm  \"{self.__paradigm}\" not recognized")
             
-        self.__messenger = custom_messenger.TextFileMessenger("class_output.txt")
+        if messenger is None:
+            self.__messenger = TextFileMessenger("data/class_output.txt")
+        else:
+            self.__messenger = messenger
+    
         self.__data_tank = DataTank()
 
         self.__bci_controller = None
-        print("Constructor done")
 
     def setup_offline_processing(self, marker_source: XdfMarkerSource, eeg_source: XdfEegSource) -> None:
         self.__marker_source = marker_source

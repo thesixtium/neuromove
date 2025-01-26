@@ -1,5 +1,4 @@
 from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource, load_xdf_stream
-import numpy as np
 
 TRAIN_PORTION = 0.85
 NUM_PER_TRIAL = 20
