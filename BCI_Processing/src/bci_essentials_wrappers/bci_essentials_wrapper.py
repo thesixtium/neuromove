@@ -2,7 +2,7 @@ import asyncio
 
 import src.custom_messenger as custom_messenger
 
-from .bci_input import BessyInput
+from .bci_input import OldXdfFormatInput
 from lib.bci_essentials.bci_essentials.io.sources import EegSource, MarkerSource
 from lib.bci_essentials.bci_essentials.paradigm.p300_paradigm import P300Paradigm
 from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
