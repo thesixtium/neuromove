@@ -1,5 +1,7 @@
 import asyncio
 
+import joblib
+
 from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource
 
 from src.bci_essentials_wrappers.bci_essentials_wrapper import Bessy
@@ -52,7 +54,9 @@ async def main():
     # marker_source = bci_essentials.io.xdf_sources.XdfMarkerSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
     marker_source = OldXdfFormatInput("data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
 
-    bessy = Bessy(9)
+    model = joblib.load("test_save.pk1")
+
+    bessy = Bessy(9, model=model)
 
     input("press enter to continue")
 

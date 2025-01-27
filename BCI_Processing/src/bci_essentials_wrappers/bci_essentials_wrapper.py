@@ -1,4 +1,6 @@
 import asyncio
+import joblib
+from sklearn.pipeline import Pipeline
 
 from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
 
@@ -19,19 +21,24 @@ class Bessy:
     Bessy is a wrapper class for bci_essentials. It is based on the class of the same name from [FlickTok](https://github.com/kirtonBCIlab/FlickTok/blob/main/src/apps/server/src/Bessy.py).
     '''
     
-    def __init__(self, num_classes: int, messenger: Messenger = None):
+    def __init__(self, num_classes: int, messenger: Messenger = None, model: Pipeline = None):
         # variables constant for NeuroMove but set for easy editing later
         self.__paradigm = "p300"
         self.__flash_scheme = "s" # s for single item flashing at a time
 
         self.__num_classes = num_classes # number of options to choose from
         self.__stop_event = asyncio.Event()
+        self.__pre_trained = False
 
         match self.__paradigm:
             case "p300":
                 self.__paradigm = P300Paradigm()
                 self.__classifier = ErpRgClassifier()
                 self.__classifier.set_p300_clf_settings()
+
+                if model is not None:
+                    self.__pre_trained = True
+                    self.__classifier.clf = model
             case _:
                 raise ValueError(f"Paradigm  \"{self.__paradigm}\" not recognized")
             
@@ -61,7 +68,7 @@ class Bessy:
             messenger=self.__messenger
         )
 
-        self.__bci_controller.setup(online=False)
+        self.__bci_controller.setup(online=False, train_complete=self.__pre_trained)
 
         self.__bci_controller.event_timestamp_buffer = []
         self.__bci_controller.event_marker_buffer = []
@@ -86,7 +93,7 @@ class Bessy:
             messenger=self.__messenger
         )
 
-        self.__bci_controller.setup(online=True)
+        self.__bci_controller.setup(online=True, train_complete=self.__pre_trained)
         self.__bci_controller.event_timestamp_buffer = []
         self.__bci_controller.event_marker_buffer = []
 
@@ -115,3 +122,6 @@ class Bessy:
 
     def __del__(self):
         self.__stop_event.set()
+
+        # save the model
+        joblib.dump(self.__bci_controller._classifier.clf, 'test_save.pk1')
