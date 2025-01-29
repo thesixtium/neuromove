@@ -141,7 +141,7 @@ while True:
         data = {'x': [], 'y': [], 'z': []}
         grid = [ [int(j) for j in i] for i in value.split("|")[:-1] ]
     
-        with open('testData', 'w') as f:
+        with open('testData5', 'w') as f:
             f.write(str(grid))
         for x in range(len(grid)):
             for y in range(len(grid[0])):
