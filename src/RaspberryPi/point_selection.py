@@ -92,6 +92,10 @@ def occupancy_grid_to_points(
     # find all reachable nodes using breadth-first search
     reachable_points = bfs(data, origin)
     logger.debug(f"Reachable points found")
+    print(reachable_points.shape[0])
+
+    if np.count_nonzero(reachable_points == 0) < number_of_neighbourhoods:
+        raise Exception(f"Could not find enough points in the data. Need at least {number_of_neighbourhoods}, only have {np.count_nonzero(reachable_points == 0)} point(s)")
 
     # run PAM to get the neighbourhoods
     medoid_coordinates, data = run_PAM(reachable_points, number_of_neighbourhoods)
@@ -386,7 +390,7 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
     # add border of 1s around the room
     trimmed_data = np.pad(trimmed_data, 1, constant_values=1)
 
-     # adjust origin based on room size
+    # adjust origin based on room size
     if origin[0] < bottom_left[0] or origin[0] > top_right[0] or origin[1] < bottom_left[1] or origin[1] > top_right[1]:
         raise ValueError(f"Origin {origin} is not within the found room size")
     
@@ -397,7 +401,7 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
 if __name__ == "__main__":
     # load in data from testData
-    with open('../LiDAR/testData5', 'r') as file:
+    with open('../LiDAR/testData4', 'r') as file:
         data_str = file.read()
     
     # Convert the string representation of the list to an actual list
