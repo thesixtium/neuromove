@@ -8,7 +8,7 @@ app = Flask(__name__,template_folder="templates")
 
 @app.route("/")
 def hello():
-    return render_template('bcisetup.html')
+    return render_template('p300Arrows.html')
 
 @app.route("/local", methods=['GET', 'POST'])
 def local():

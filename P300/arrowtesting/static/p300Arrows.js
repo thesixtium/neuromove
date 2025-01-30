@@ -1,5 +1,5 @@
-const _idoptions = [/*"a",*/ "b", /*"c", */"d", "e", "f"/*, "g", "h", "i"*/];
-const _arrows = [/*"ca",*/ "cb", /*"cc",*/ "cd", "ce", "cf"/*, "cg", "ch", "ci"*/];
+const _idoptions = [/*"a",*/ "b", /*"c", */"d", "e", "f"/*, "g"*/, "h"/*, "i"*/];
+const _arrows = [/*"ca",*/ "cb", /*"cc",*/ "cd", "ce", "cf"/*, "cg"*/, "ch"/*, "ci"*/];
 const _sequence1 = [];
 const _sequence2 = [];
 const _sequence3 = [];
@@ -21,9 +21,9 @@ const cstop = stop.getContext("2d");
 const r = document.getElementById("cf");
 const cr = r.getContext("2d");
 /*const l135 = document.getElementById("cg");
-const cl135 = l135.getContext("2d");
-const bwd = document.getElementById("ch");
-const cbwd = bwd.getContext("2d");
+const cl135 = l135.getContext("2d");*/
+const sw = document.getElementById("ch");
+const csw = sw.getContext("2d");/*
 const r135 = document.getElementById("ci");
 const cr135 = r135.getContext("2d");*/
 
@@ -45,7 +45,7 @@ function sendData(time, id) {
       });
 }
 
-const _canvases = [/*cl45,*/ cfwd, /*cr45, */cl, cstop ,cr, /*cl135, cbwd, cr135*/];
+const _canvases = [/*cl45,*/ cfwd, /*cr45, */cl, cstop ,cr, csw /*cl135, cbwd, cr135*/];
 const defaultColour = "white";
 function pickSequence(array, array2){
     //decide sequence in which to flash
@@ -246,6 +246,17 @@ function drawArrows(){
     cstop.fillStyle = "white";
     cstop.fill();
     document.getElementById("e").style.backgroundColor = "black";
+
+    csw.beginPath();
+    csw.arc(30, 50, 40, Math.PI+1.5, Math.PI/2);
+    csw.lineTo(20, 90);
+    csw.lineTo(20, 10);
+    csw.lineTo(30, 10);
+    csw.lineWidth = 10;
+    csw.stroke();
+    csw.fillStyle = "white";
+    csw.fill();
+    document.getElementById("h").style.backgroundColor = "black";
 }
 function doTheThing(){
     if(sessionStorage.getItem('pright')){
@@ -265,7 +276,7 @@ function doTheThing(){
     sendData(performance.now() * 1000 - start_time);
     console.log("block start: " + performance.now() * 1000-start_time);
     for(let i = 0; i<8; i++){
-    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (1600*i+(Math.random()*150+50)));}//}, 2500);*/
+    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
     console.log("cycle " + i + "end: " + performance.now() * 1000-start_time);
     //flashSequence(_sequence3);
     
