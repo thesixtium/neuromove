@@ -157,7 +157,6 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
     i = 0
     while selected_points.shape[0] < num_points * num_neighbourhoods:
         current_neighbourhood = neighbourhoods[i]
-        logger.debug(f"Current neighbourhood: {current_neighbourhood}")
 
         # calculate distances between all points in the neighbourhood and the selected points
         distances = cdist(current_neighbourhood, selected_points, metric='euclidean')
@@ -398,7 +397,7 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
 if __name__ == "__main__":
     # load in data from testData
-    with open('../LiDAR/testData', 'r') as file:
+    with open('../LiDAR/testData5', 'r') as file:
         data_str = file.read()
     
     # Convert the string representation of the list to an actual list
