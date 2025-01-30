@@ -118,7 +118,7 @@ def occupancy_grid_to_points(
     logger.info("Point selection complete")
     return neighbourhood_points
 
-def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_points) -> np.ndarray:
+def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_points: int) -> np.ndarray:
     '''
     Given a map of clusters and their medoids, find num_points points in each neighbourhood.
 
@@ -157,6 +157,7 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
     i = 0
     while selected_points.shape[0] < num_points * num_neighbourhoods:
         current_neighbourhood = neighbourhoods[i]
+        logger.debug(f"Current neighbourhood: {current_neighbourhood}")
 
         # calculate distances between all points in the neighbourhood and the selected points
         distances = cdist(current_neighbourhood, selected_points, metric='euclidean')
@@ -167,13 +168,26 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
         # find the point with the maximum minimum distance
         best_point_index = np.argmax(min_distances)
 
-        # add the best point to the selected points
-        selected_points = np.append(selected_points, [current_neighbourhood[best_point_index]], axis=0)
+        # check if the point is isolated from the neighbourhood
+        valid_point = check_point_neighbours(current_neighbourhood[best_point_index], current_neighbourhood)
+
+        if valid_point is True:
+            # add the best point to the selected points
+            selected_points = np.append(selected_points, [current_neighbourhood[best_point_index]], axis=0)
+
+            i = (i + 1) % num_neighbourhoods
+        else:
+            # remove point from neighbourhood
+            # since it has no neighbours, it shouldn't affect anything else
+            neighbourhood_without_point = []
+            for j in range(len(current_neighbourhood)):
+                if j != best_point_index:
+                    neighbourhood_without_point.append(current_neighbourhood[j])
+
+            neighbourhoods[i] = np.array(neighbourhood_without_point)
 
         # remove the best point from the remaining points
         remaining_points = np.array([p for p in remaining_points if not np.all(p == current_neighbourhood[best_point_index])])
-
-        i = (i + 1) % num_neighbourhoods
 
     # split the selected points into the different neighbourhoods
     selected_points_split = []
@@ -181,6 +195,35 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
         selected_points_split.append(selected_points[i::num_neighbourhoods])
 
     return np.array(selected_points_split)
+
+def check_point_neighbours(point: list, neighbourhood: list) -> bool:
+    '''
+    Given a point and its neighbourhood, check if the point has any adjacent points in the neighbourhood. 
+
+    Args:
+    -----
+        point : list
+            a 2-long list with a coordinate point.
+        neighbourhood : list
+            List of coordinates included in the neighbourhood. 
+
+    Returns:
+    --------
+        bool
+            True if there is an adjacent point to the given one. False otherwise.
+    '''
+
+    adjacent_points = []
+    for i in range(-1,2):
+        for j in range (-1,2):
+            if i == 0 and j == 0:
+                continue
+
+            adjacent_points.append([point[0]+i, point[1]+j])
+
+    valid_point = any(np.any(np.all(neighbourhood == target, axis=1)) for target in adjacent_points)
+
+    return valid_point
 
 def run_PAM(data: np.ndarray, num_clusters: int) -> tuple[np.ndarray, np.ndarray]:
     '''
@@ -355,7 +398,7 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
 if __name__ == "__main__":
     # load in data from testData
-    with open('testData', 'r') as file:
+    with open('../LiDAR/testData', 'r') as file:
         data_str = file.read()
     
     # Convert the string representation of the list to an actual list
