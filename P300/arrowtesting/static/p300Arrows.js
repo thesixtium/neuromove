@@ -27,6 +27,12 @@ const csw = sw.getContext("2d");/*
 const r135 = document.getElementById("ci");
 const cr135 = r135.getContext("2d");*/
 
+switchClick = function() {
+    console.log("switch mode!");
+    //sendData(0);
+    window.location.href = "/destination";
+}
+
 function sendData(time, id) {
     var data = [time, id];
     fetch('/localBCI', {
@@ -285,4 +291,5 @@ function doTheThing(){
 //}
 addEventListener('DOMContentLoaded', drawArrows());
 addEventListener('DOMContentLoaded', doTheThing());
+sw.addEventListener("click", switchClick);
 //src = "test-logic.js"

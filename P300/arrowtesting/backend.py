@@ -8,7 +8,7 @@ app = Flask(__name__,template_folder="templates")
 
 @app.route("/")
 def hello():
-    return render_template('bcisetup.html')
+    return render_template('destination.html')
 
 @app.route("/local")
 def local():
@@ -28,13 +28,18 @@ def localBCI():
     outputpls(data)
     return jsonify({'result': 'success'})
     
-'''@app.route("/dotcoords", methods=['GET', 'POST'])
+@app.route("/dotcoords", methods=['GET', 'POST'])
 def dotcoords():
-    file_path = "P300/arrowtesting/static/centers.txt"
+    data = request.json['data']
+    file_path = 'C:/Users/philippa.madill/Documents/GitHub/neuromove/P300/arrowtesting/static/centers.txt'
     with open(file_path, "r") as f:
         coords = f.readlines()
-        return jsonify({'result': coords})
-'''
+    dotarray = coords
+    return jsonify(dotarray)
+
+@app.route("/destination")
+def destination():
+    return render_template('destination.html')
 
 @app.route("/stop_go", methods=['GET'])
 def stopBCI():

@@ -5,10 +5,17 @@
     --mleft: 10%;
     --mright: 10%;
 }
+.quicksand {
+    font-family: "Quicksand", serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+  }
 body{
     background-color: rgb(80, 97, 155);
     margin-left: 15%;
     margin-right:15%;
+    font-family: 'Quicksand', sans-serif;
 }
 
 h1{
@@ -16,6 +23,7 @@ h1{
     text-align: center;
     text-shadow: 0em 0em 1em white;
     font-size: 5em;
+    font-family: 'Quicksand', sans-serif;
 }
 
 h2{
@@ -24,6 +32,7 @@ h2{
     text-align: center;
     text-shadow: 0em 0em 1em white;
     font-size: 2.5em;
+    font-family: 'Quicksand', sans-serif;
 }
 
 .dot{
@@ -39,20 +48,20 @@ h2{
   }
 
 #subheader{
-    padding-top: 20%;
+    padding-top: 15%;
 padding-bottom: -20%;
 margin-bottom: -20%;}
 
 #screen_area_select{
-    padding-top: -25%;
-    margin-top: -25%;
+    padding-top: -15%;
+    margin-top: -15%;
 
 }
 #filler{
     background-color: transparent;
 }
 #setup-grid-container{
-    padding-top: 10%;
+    padding-top: 18%;
     grid-gap: 1em;
     display: grid;
     grid-template:  'item1 item1 item1'
@@ -80,9 +89,9 @@ margin-bottom: -20%;}
     margin-top: 0.1em;
 }
 #menutext{
-    padding-top: 20%;
+    padding-top: 23%;
     text-align: center;
-    font-size: 0.35em;
+    font-size: 0.5em;
     text-shadow: none;
 }
 .stop-grid-container {

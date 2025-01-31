@@ -6,7 +6,7 @@ var dot2 = document.getElementById("dot2");
 var dot3 = document.getElementById("dot3");
 var dot4 = document.getElementById("dot4");
 var dot5 = document.getElementById("dot5");
-
+var dots = [[]];
 function drawDots(){
 //dots.style.top = '40%';
 //dots.style.left = '20%';
@@ -14,21 +14,20 @@ getData();
 }
 
 function getData() {
-    /*fetch("/dotcoords", {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-    success: function(response) {
-        dot1.style.x = response[0][0];
-        dot1.style.y = response[0][1];
-        console.log(response[0]);
+    fetch('/dotcoords', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
     },
-    error: function(error) {
-        console.log(error);
-    }
-});*/
-      
+    body: JSON.stringify({data: dots})
+  })
+  .then(response => response.text())
+  .then(result => {
+    console.log("\n \n \n HERE'S THE THING: " + result+ "\n \n \n");
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });      
 }
 
 function doTheThing(){
@@ -56,4 +55,4 @@ function doTheThing(){
     }
 
     addEventListener('DOMContentLoaded', doTheThing());
-    //addEventListener('DOMContentLoaded', drawDots());
+    addEventListener('DOMContentLoaded', drawDots());
