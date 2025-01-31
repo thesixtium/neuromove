@@ -1,16 +1,16 @@
 from flask import Flask,render_template, request, jsonify
 from bci_essentials import *
-import os
+'''import os
 import csv
-import sqlite3 as sql
+import sqlite3 as sql'''
 
 app = Flask(__name__,template_folder="templates")
 
 @app.route("/")
 def hello():
-    return render_template('p300Arrows.html')
+    return render_template('bcisetup.html')
 
-@app.route("/local", methods=['GET', 'POST'])
+@app.route("/local")
 def local():
     return render_template('p300Arrows.html')
 
@@ -28,6 +28,13 @@ def localBCI():
     outputpls(data)
     return jsonify({'result': 'success'})
     
+'''@app.route("/dotcoords", methods=['GET', 'POST'])
+def dotcoords():
+    file_path = "P300/arrowtesting/static/centers.txt"
+    with open(file_path, "r") as f:
+        coords = f.readlines()
+        return jsonify({'result': coords})
+'''
 
 @app.route("/stop_go", methods=['GET'])
 def stopBCI():
@@ -39,7 +46,7 @@ def setup():
     return render_template('setupmenu.html')
 
 def outputpls(timeID):
-    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.txt"
+    file_path = "P300/arrowtesting/test1.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(timeID) + '\n')
     return 1

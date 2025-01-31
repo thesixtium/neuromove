@@ -26,6 +26,18 @@ h2{
     font-size: 2.5em;
 }
 
+.dot{
+    position: absolute;
+    left: 30%;
+    top: 40%;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    z-index: 7;
+    background-color: blue; // Optional: Set a background color 
+  
+  }
+
 #subheader{
     padding-top: 20%;
 padding-bottom: -20%;
@@ -99,6 +111,15 @@ margin-bottom: -20%;}
     grid-template: 'item1 item1 item1'
                     'item1 item1 item1';
     
+}
+#map{
+    //position: relative;
+    padding-top: var(--top);
+    padding-left: var(--pleft);
+    padding-right: var(--pright);
+    margin-right: var(--mright);
+    margin-left: var(--mleft);
+    z-index: 1;
 }
 #a, #b, #c, #d, #e, #f, #g, #h, #i, #stop, #go, #go2 {
     //padding: 1em;

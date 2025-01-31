@@ -7,6 +7,7 @@ var r = document.querySelector(':root');
 
 topLeftClick = function() {
     topLeft.style.backgroundColor = "pink";
+    sessionStorage.setItem('centre', 'false');
     sessionStorage.setItem('pright', '50%');
     sessionStorage.setItem('top', '0%');
     sessionStorage.setItem('mleft', '-20%');
@@ -17,7 +18,8 @@ topLeftClick = function() {
 }
 
 topRightClick = function() {
-    topRight.style.backgroundColor = "pink";    
+    topRight.style.backgroundColor = "pink";   
+    sessionStorage.setItem('centre', 'false'); 
     sessionStorage.setItem('pleft', '50%');
     sessionStorage.setItem('top', '0%');
     sessionStorage.setItem('mright', '-20%');
@@ -29,6 +31,7 @@ topRightClick = function() {
 
 bottomLeftClick = function() {
     bottomLeft.style.backgroundColor = "pink";
+    sessionStorage.setItem('centre', 'false');
     
     sessionStorage.setItem('pright', '50%');
     sessionStorage.setItem('top', '40%');
@@ -41,6 +44,7 @@ bottomLeftClick = function() {
 
 bottomRightClick = function() {
     bottomRight.style.backgroundColor = "pink";
+    sessionStorage.setItem('centre', 'false');
     
     sessionStorage.setItem('pleft', '50%');
     sessionStorage.setItem('top', '40%');
@@ -53,7 +57,7 @@ bottomRightClick = function() {
 
 centreClick = function() {
     centre.style.backgroundColor = "pink";
-    
+    sessionStorage.setItem('centre', 'true');
     sessionStorage.setItem('pright', '0%');
     sessionStorage.setItem('pleft', '0%');
     sessionStorage.setItem('top', '20%');
