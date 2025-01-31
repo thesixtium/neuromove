@@ -41,15 +41,15 @@ int main(){
   printf("\n");
 
   // Print Lidar Version
-  while( true ){
-    if ( lreader->runParse() == VERSION ){
-      printf("lidar firmware version = %s\n", lreader->getVersionOfFirmware().c_str() );
-      break;
-    }
-    usleep(500);
-  }
-  printf("lidar sdk version = %s\n\n", lreader->getVersionOfSDK().c_str());
-  sleep(2);
+  // while( true ){
+  //   if ( lreader->runParse() == VERSION ){
+  //     printf("lidar firmware version = %s\n", lreader->getVersionOfFirmware().c_str() );
+  //     break;
+  //   }
+  //   usleep(500);
+  // }
+  // printf("lidar sdk version = %s\n\n", lreader->getVersionOfSDK().c_str());
+  // sleep(2);
 
   // Check lidar dirty percentange
   int count_percentage = 0;
