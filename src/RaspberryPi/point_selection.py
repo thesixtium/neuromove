@@ -1,3 +1,4 @@
+from matplotlib.colors import ListedColormap
 import numpy as np
 from ast import literal_eval    # only used to read in sample data
 import matplotlib.pyplot as plt
@@ -103,14 +104,16 @@ def occupancy_grid_to_points(
     logger.debug(f"neighbourhood_points shape: {neighbourhood_points.shape}")
 
     if plot_result:
-        plt.imshow(data, cmap='Pastel1', interpolation='nearest')
+        colours = ['#202020', '#FFE18D', '#B3D88D', '#FF8383', '#E9BFE9']
+        colourmap = ListedColormap(colours)
+        plt.imshow(data, cmap=colourmap, interpolation='nearest')
         plt.colorbar()
         plt.gca().invert_yaxis()
         plt.scatter(origin[0], origin[1], color='red')
-        colours = ['steelblue', 'darkslateblue', 'darkgoldenrod', 'darkmagenta', 'slategrey']
+        dark_colours = ['#B78B14', '#547A2E', '#A62424', '#864385']
 
         for i in range(number_of_neighbourhoods):
-            plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=colours[i])
+            plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=dark_colours[i])
         plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
         plt.show()
 
