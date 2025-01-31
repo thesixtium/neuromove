@@ -18,8 +18,8 @@ logger.debug("Logging initialized")
 # TODO: make object oriented to prevent running helper functions. aka only allow running of occupancy_grid_to_points
 
 def occupancy_grid_to_points(
-        data: np.ndarray, 
-        origin: tuple = None, 
+        data: str = None, 
+        # origin: tuple = None, 
         number_of_neighbourhoods: int = 5, number_of_points_per_neighbourhood: int = 5,
         plot_result: bool = False) -> np.ndarray:
     '''
@@ -61,10 +61,8 @@ def occupancy_grid_to_points(
     ```
     '''
 
-    # error checking
-    if data is None:
-        raise ValueError("Data cannot be None")
-    
+    data, origin = read_from_memory(raw_data=data)
+
     if len(data.shape) != 2:
         raise ValueError("Data must be a 2D array")
     
@@ -121,6 +119,18 @@ def occupancy_grid_to_points(
 
     logger.info("Point selection complete")
     return neighbourhood_points
+
+def read_from_memory(raw_data: np.ndarray = None):
+    if raw_data is None:
+        memory = SharedMemory(shem_name="point_selection")
+        raw_data = memory.read_grid()
+
+    data = literal_eval(raw_data)
+    data = np.array(data).T
+
+    origin = (data.shape[0] // 2, data.shape[1] // 2)
+
+    return data, origin
 
 def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_points: int) -> np.ndarray:
     '''
@@ -401,25 +411,25 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
 if __name__ == "__main__":
     # load in data from testData
-    with open('../LiDAR/testData4', 'r') as file:
+    with open('LiDAR/testData', 'r') as file:
         data_str = file.read()
-    
+
     # Convert the string representation of the list to an actual list
-    sample_data = literal_eval(data_str)
+    # sample_data = literal_eval(data_str)
 
-    # TODO: make sure this works properly with data from shared memory
-    # rotate data 90 degress ccw & mirror over y-axis
-    sample_data = np.array(sample_data).T
+    # # TODO: make sure this works properly with data from shared memory
+    # # rotate data 90 degress ccw & mirror over y-axis
+    # sample_data = np.array(sample_data).T
 
-    plt.imshow(sample_data, cmap='grey_r', interpolation='nearest')
-    plt.colorbar()
-    plt.gca().invert_yaxis()
-    plt.scatter(88, 88, color='red')
-    plt.show()
+    # plt.imshow(sample_data, cmap='grey_r', interpolation='nearest')
+    # plt.colorbar()
+    # plt.gca().invert_yaxis()
+    # plt.scatter(88, 88, color='red')
+    # plt.show()
     
-    # Convert the list to a numpy array
-    sample_data = np.array(sample_data)
-    origin = (sample_data.shape[0] // 2, sample_data.shape[1] // 2) # origin based on measurements from Aleks
-    # origin = (97, 84) # origin based on where Aleks said it was in our call
+    # # Convert the list to a numpy array
+    # sample_data = np.array(sample_data)
+    # origin = (sample_data.shape[0] // 2, sample_data.shape[1] // 2) # origin based on measurements from Aleks
+    # # origin = (97, 84) # origin based on where Aleks said it was in our call
 
-    selected_points = occupancy_grid_to_points(sample_data, origin, plot_result=True)
+    selected_points = occupancy_grid_to_points(data=data_str, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4)
