@@ -71,7 +71,7 @@ int main(){
   // Occupancy Grid
   int z1 = 1; // meters
   int LiDAR_radius_cm = 4000;
-  int resolution = 45;
+  int resolution = 20;
   int grid_height = (LiDAR_radius_cm * 2) / resolution;
   int grid_width = grid_height;
 
