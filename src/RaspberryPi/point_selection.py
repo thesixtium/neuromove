@@ -19,24 +19,22 @@ logger.debug("Logging initialized")
 
 def occupancy_grid_to_points(
         data: str = None, 
-        # origin: tuple = None, 
-        number_of_neighbourhoods: int = 5, number_of_points_per_neighbourhood: int = 5,
+        number_of_neighbourhoods: int = 4, number_of_points_per_neighbourhood: int = 4,
         plot_result: bool = False) -> np.ndarray:
     '''
     Takes an occupancy grid with 0s as open spaces and 1s as obstacles and returns a list of points sorted into neighbourhoods.
 
     Args: 
     -------
-        data : np.ndarray
-            2D array containig the occupancy grid. Must be a 2D array with 0s as 
-            open spaces and 1s as obstacles.
+        data : str
+            The string representation of the data. None by default. When data is none, it will be read from shared memory. Only use this value for debugging
         origin : tuple, optional
             The origin of the grid. If not provided, the origin is set to the 
             middle of the grid.
         number_of_neighbourhoods : int, optional
-            The number of neighbourhoods to divide the data into. Default is 5.
+            The number of neighbourhoods to divide the data into. Default is 4.
         number_of_points_per_neighbourhood : int, optional
-            The number of points to select per neighbourhood. Default is 5.
+            The number of points to select per neighbourhood. Default is 4.
 
     Returns:
     -------
@@ -90,7 +88,6 @@ def occupancy_grid_to_points(
     # find all reachable nodes using breadth-first search
     reachable_points = bfs(data, origin)
     logger.debug(f"Reachable points found")
-    print(reachable_points.shape[0])
 
     if np.count_nonzero(reachable_points == 0) < number_of_neighbourhoods:
         raise Exception(f"Could not find enough points in the data. Need at least {number_of_neighbourhoods}, only have {np.count_nonzero(reachable_points == 0)} point(s)")
@@ -102,7 +99,7 @@ def occupancy_grid_to_points(
         raise ValueError(f"Expected {number_of_neighbourhoods} neighbourhoods, but only found {len(medoid_coordinates)}")
 
     # get points in each neighbourhood
-    neighbourhood_points = get_points_in_neighbourhood(data, medoid_coordinates, number_of_points_per_neighbourhood)
+    neighbourhood_points = get_points_in_neighbourhood(data, origin, medoid_coordinates, number_of_points_per_neighbourhood)
     logger.debug(f"neighbourhood_points shape: {neighbourhood_points.shape}")
 
     if plot_result:
@@ -132,7 +129,7 @@ def read_from_memory(raw_data: np.ndarray = None):
 
     return data, origin
 
-def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_points: int) -> np.ndarray:
+def get_points_in_neighbourhood(data: np.ndarray, origin: np.ndarray, medoids: np.ndarray, num_points: int) -> np.ndarray:
     '''
     Given a map of clusters and their medoids, find num_points points in each neighbourhood.
 
@@ -165,11 +162,19 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
     for i in range(num_neighbourhoods):
         neighbourhoods.append(np.argwhere(data == i))
 
+    # append origin temporarily to medoids
+    # x and y are reversed in origin
+    medoids = np.vstack([[origin[1], origin[0]], medoids])
+
     selected_points = np.array(medoids)
     remaining_points = np.array([p for p in coords if not np.any(np.all(p == medoids, axis=1))])
 
+    # remove origin from medoids
+    medoids = medoids[:-1]
+
     i = 0
-    while selected_points.shape[0] < num_points * num_neighbourhoods:
+    # need the +1 to account for the origin
+    while selected_points.shape[0] < num_points * num_neighbourhoods + 1:
         current_neighbourhood = neighbourhoods[i]
 
         # calculate distances between all points in the neighbourhood and the selected points
@@ -201,6 +206,9 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
 
         # remove the best point from the remaining points
         remaining_points = np.array([p for p in remaining_points if not np.all(p == current_neighbourhood[best_point_index])])
+
+    # remove the first point from selected points (the origin)
+    selected_points = selected_points[1:]
 
     # split the selected points into the different neighbourhoods
     selected_points_split = []
