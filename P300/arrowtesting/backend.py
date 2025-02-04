@@ -1,10 +1,22 @@
 from flask import Flask,render_template, request, jsonify
 from bci_essentials import *
+
+from pylsl import StreamInfo, StreamOutlet
 '''import os
 import csv
 import sqlite3 as sql'''
 
 app = Flask(__name__,template_folder="templates")
+
+# create LSL stream
+marker_info = StreamInfo(name='MarkerStream',
+                        type='Markers',
+                        channel_count=1,
+                        nominal_srate=250,
+                        channel_format='string',
+                        source_id='Marker_Outlet')
+marker_outlet = StreamOutlet(marker_info, 20, 360)  
+NUMBER_OF_OPTIONS = 5
 
 @app.route("/")
 def hello():
@@ -54,6 +66,18 @@ def outputpls(timeID):
     file_path = "P300/arrowtesting/test1.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(timeID) + '\n')
+
+    # format data sample 
+    # TODO: get what is flashing (for training) or a flag saying we're not training
+    current_target = -1
+    flashed_as_num = ord(timeID[1]) - 97
+    marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
+
+    timestamp = float(timeID[0])
+
+    # broadcast to LSL
+    marker_outlet.push_sample([marker], timestamp)
+
     return 1
 
 @app.route('/eyetrackingside', methods=['POST'])
