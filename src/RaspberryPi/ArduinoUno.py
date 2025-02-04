@@ -1,7 +1,7 @@
 import serial
 from enum import Enum
 import threading
-from InternalException import SensorDistanceAlert, CouldNotOpenPort
+from src.RaspberryPi.InternalException import SensorDistanceAlert, CouldNotOpenPort
 
 class MotorDirections(Enum):
     FORWARD = b"w"

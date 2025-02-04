@@ -1,3 +1,6 @@
+// pi@raspberrypi:~/Documents/neuromove/src/LiDAR/bin $ cmake .. && make -j2 && sudo ../bin/aleks_lidar
+
+
 #include "unitree_lidar_sdk.h"
 #include "udp_handler.h"
 #include <cstring>
@@ -144,19 +147,20 @@ int main(){
             }
 
 
-            case IMU:
-                std:string values;
+            case IMU: {
+                std::string values;
 
                 values += std::to_string( lreader->getIMU().quaternion[0] );
-                values += ","
+                values += ",";
                 values += std::to_string( lreader->getIMU().quaternion[1] );
-                values += ","
+                values += ",";
                 values += std::to_string( lreader->getIMU().quaternion[2] );
-                values += ","
+                values += ",";
                 values += std::to_string( lreader->getIMU().quaternion[3] );
                 
                 strncpy( (char *)addr_imu, values.data(), shm_size_imu );
                 break;
+            }
 
             default:
                 break;

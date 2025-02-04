@@ -4,7 +4,7 @@ from src.RaspberryPi.point_selection import occupancy_grid_to_points
 import numpy as np
 from src.RaspberryPi.jps import jps, get_full_path
 
-sm = SharedMemory("occupancy_grid", 284622, create=False)
+sm = SharedMemory("occupancy_grid", 284622, create=True)
 
 while True:
     value = sm.read_grid()
