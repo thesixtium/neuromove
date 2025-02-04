@@ -21,10 +21,6 @@ int LiDAR_radius_cm = 4000;
 int resolution = 20;
 int NEEDED_POINTCLOUDS_READ = 5;
 
-// Constants - Shared Memory
-size_t shm_size = 284622;
-const char * shmem_name = "occupancy_grid";
-
 int point_cloud_to_grid(int resolution, float pc){
   return static_cast<int>(round((pc*100) / resolution));
 }
@@ -81,33 +77,34 @@ int main(){
     int occupancy_grid[grid_width][grid_height] = {0};
     int pointcloud_reads = 0;
 
-    // Shared Memory - Open
-    int shmem_fd = shm_open( shmem_name, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
-    if ( shmem_fd == -1 ) {
-        perror("shm_open");
-        return 1;
-    }
-    std::cout << "Shared Memory segment opened with fd " << shmem_fd << std::endl;
+    // OC Shared Memory
+    size_t shm_size_oc = 284622;
+    const char * shmem_name_oc = "occupancy_grid";
+    int shmem_fd_oc = shm_open( shmem_name_oc, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
+    if ( shmem_fd_oc == -1 ) { perror("shm_open"); return 1; }
+    std::cout << "Shared Memory segment opened with fd " << shmem_fd_oc << std::endl;
+    if ( ftruncate( shmem_fd_oc, shm_size_oc ) == -1 ) { perror( "ftruncate" ); return 1; }
+    std::cout << "Shared Memory segment resized to " << shm_size_oc << std::endl;
+    void * addr_oc = mmap( 0, shm_size_oc, PROT_WRITE, MAP_SHARED, shmem_fd_oc, 0 );
+    if ( addr_oc == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
-    // Shared Memory - Truncate
-    if ( ftruncate( shmem_fd, shm_size ) == -1 ) {
-        perror( "ftruncate" );
-        return 1;
-    }
-    std::cout << "Shared Memory segment resized to " << shm_size << std::endl;
-
-    // Shared Memory - Map
-    void * addr = mmap( 0, shm_size, PROT_WRITE, MAP_SHARED, shmem_fd, 0 );
-    if ( addr == MAP_FAILED ) {
-        perror( "mmap" );
-        return 1;
-    }
+    // IMU Shared Memory
+    size_t shm_size_imu = 284622;
+    const char * shmem_name_imu = "imu";
+    int shmem_fd_imu = shm_open( shmem_name_imu, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
+    if ( shmem_fd_imu == -1 ) { perror("shm_open"); return 1; }
+    std::cout << "Shared Memory segment opened with fd " << shmem_fd_imu << std::endl;
+    if ( ftruncate( shmem_fd_imu, shm_size_imu ) == -1 ) { perror( "ftruncate" ); return 1; }
+    std::cout << "Shared Memory segment resized to " << shm_size_imu << std::endl;
+    void * addr_imu = mmap( 0, shm_size_imu, PROT_WRITE, MAP_SHARED, shmem_fd_imu, 0 );
+    if ( addr_imu == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
     // Read Data
     while (true) {
         result = lreader->runParse(); // You need to call this function at least 1500Hz
 
         switch (result) {
+
 
             case POINTCLOUD: {
                 cloud = lreader->getCloud();
@@ -139,12 +136,27 @@ int main(){
                         values += "|";
                     }
 
-                    strncpy( (char *)addr, values.data(), shm_size );
+                    strncpy( (char *)addr_oc, values.data(), shm_size_oc );
                 } else {
                     pointcloud_reads++;
                 }
                 break;
             }
+
+
+            case IMU:
+                std:string values;
+
+                values += std::to_string( lreader->getIMU().quaternion[0] );
+                values += ","
+                values += std::to_string( lreader->getIMU().quaternion[1] );
+                values += ","
+                values += std::to_string( lreader->getIMU().quaternion[2] );
+                values += ","
+                values += std::to_string( lreader->getIMU().quaternion[3] );
+                
+                strncpy( (char *)addr_imu, values.data(), shm_size_imu );
+                break;
 
             default:
                 break;
