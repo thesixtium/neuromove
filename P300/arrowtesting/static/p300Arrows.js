@@ -33,8 +33,8 @@ switchClick = function() {
     window.location.href = "/destination";
 }
 
-function sendData(time, id) {
-    var data = [time, id];
+function sendData(time, id, target) {
+    var data = [time, id, target];
     fetch('/localBCI', {
         method: 'POST',
         headers: {
@@ -91,10 +91,10 @@ function flashSequence(array, array2){
         if (i <array2.length){
             
             console.log("start i: " + array[i]);
-            console.log(performance.now() * 1000- start_time);
+            console.log(performance.now() / 1000- start_time);
 
             if (i>0){
-            sendData((performance.now() * 1000 - start_time).toFixed(10), array[i]);
+            sendData((performance.now() / 1000 - start_time).toFixed(10), array[i], -1);
                 }
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
@@ -105,7 +105,7 @@ function flashSequence(array, array2){
                 array2[i].fill();
             }, 100);
             console.log("end i: " + array[i]);
-            console.log(performance.now() * 1000 - start_time);
+            console.log(performance.now() / 1000 - start_time);
             i++;
           /*  if (array[i] == "ca"){
                 l45.width +=15;
@@ -117,7 +117,7 @@ function flashSequence(array, array2){
         }
     }, (300));
     console.log("end sequence: " + array[i]);
-    console.log(performance.now() * 1000 - start_time);
+    console.log(performance.now() / 1000 - start_time);
 }
 
 function drawArrows(){
@@ -279,17 +279,17 @@ function doTheThing(){
 //flashSequence(_sequence1, _sequence2);
    //flashSequence(_sequence1);
     //setTimeout(function(){
-    sendData(performance.now() * 1000 - start_time);
-    console.log("block start: " + performance.now() * 1000-start_time);
+    sendData(performance.now() / 1000 - start_time, -1);
+    console.log("block start: " + performance.now() / 1000-start_time);
     for(let i = 0; i<8; i++){
     setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
-    console.log("cycle " + i + "end: " + performance.now() * 1000-start_time);
+    console.log("cycle " + i + "end: " + performance.now() / 1000-start_time);
     //flashSequence(_sequence3);
     
 }
 //console.log("block end: " + Date.now()-start_time);
 //}
 addEventListener('DOMContentLoaded', drawArrows());
+document.getElementById("h").addEventListener("click", switchClick);
 addEventListener('DOMContentLoaded', doTheThing());
-sw.addEventListener("click", switchClick);
 //src = "test-logic.js"

@@ -20,7 +20,7 @@ NUMBER_OF_OPTIONS = 5
 
 @app.route("/")
 def hello():
-    return render_template('destination.html')
+    return render_template('bcisetup.html')
 
 @app.route("/local")
 def local():
@@ -43,10 +43,10 @@ def localBCI():
 @app.route("/dotcoords", methods=['GET', 'POST'])
 def dotcoords():
     data = request.json['data']
-    file_path = 'C:/Users/philippa.madill/Documents/GitHub/neuromove/P300/arrowtesting/static/centers.txt'
+    file_path = 'C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/static/centers.txt'
     with open(file_path, "r") as f:
         coords = f.readlines()
-    dotarray = coords
+    dotarray = [[14,12][5,17][17,26][6,5][5,29]]
     return jsonify(dotarray)
 
 @app.route("/destination")
@@ -63,7 +63,7 @@ def setup():
     return render_template('setupmenu.html')
 
 def outputpls(timeID):
-    file_path = "P300/arrowtesting/test1.txt"
+    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(timeID) + '\n')
 
@@ -74,10 +74,10 @@ def outputpls(timeID):
     marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
 
     # convert from microseconds to seconds
-    timestamp = float(timeID[0]) / (10 ** 6) + local_clock()
+    #timestamp = float(timeID[0]) / (10 ** 6) + local_clock()
 
     # broadcast to LSL
-    marker_outlet.push_sample([marker], timestamp)
+    marker_outlet.push_sample([marker], timeID[0])
 
     return 1
 
