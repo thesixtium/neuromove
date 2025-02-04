@@ -5,7 +5,7 @@ import numpy as np
 
 from src.RaspberryPi.InternalException import DidNotCreateSharedMemory, NotEnoughSharedMemory
 from src.RaspberryPi.ArduinoUno import MotorDirections
-from src.main import States, DestinationDrivingStates
+from src.RaspberryPi.States import States, DestinationDrivingStates
 
 class SharedMemory:
     def __init__(self, shem_name: str, size:int, create=False):

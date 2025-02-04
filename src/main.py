@@ -8,22 +8,8 @@ from src.RaspberryPi.Socket import Socket
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
 from src.LiDAR.build.RunLiDAR import RunLiDAR
+from src.RaspberryPi.States import States, DestinationDrivingStates
 
-
-class States(Enum):
-    START = 1
-    SETUP = 2
-    LOCAL = 3
-    DESTINATION = 4
-    RECOVERY = 5
-    OFF = 6
-
-class DestinationDrivingStates(Enum):
-    IDLE = 1
-    MAP_ROOM = 2
-    SELECT_DESTINATION = 3
-    TRANSLATE_TO_MOVEMENT = 4
-    DRIVE = 5
 
 def main():
     # Starting variables
