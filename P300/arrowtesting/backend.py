@@ -1,7 +1,7 @@
 from flask import Flask,render_template, request, jsonify
 from bci_essentials import *
 
-from pylsl import StreamInfo, StreamOutlet
+from pylsl import StreamInfo, StreamOutlet, local_clock
 '''import os
 import csv
 import sqlite3 as sql'''
@@ -70,10 +70,11 @@ def outputpls(timeID):
     # format data sample 
     # TODO: get what is flashing (for training) or a flag saying we're not training
     current_target = -1
-    flashed_as_num = ord(timeID[1]) - 97
+    flashed_as_num = ord(timeID[1]) - 98
     marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
 
-    timestamp = float(timeID[0])
+    # convert from microseconds to seconds
+    timestamp = float(timeID[0]) / (10 ** 6) + local_clock()
 
     # broadcast to LSL
     marker_outlet.push_sample([marker], timestamp)
