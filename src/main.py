@@ -36,6 +36,7 @@ def main():
     occupancy_grid_memory = None
     point_selection_memory = None
     local_driving_memory = None
+    imu_memory = None
     requested_next_state_memory = None
     destination_driving_state_memory = None
     p300_socket = None
@@ -68,6 +69,7 @@ def main():
                         local_driving_memory = SharedMemory(shem_name="local_driving", size=1, create=True)
                         requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=1, create=True)
                         occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
+                        imu_memory = SharedMemory(shem_name="imu", size=284622, create=True)
                         point_selection_memory = SharedMemory(shem_name="point_selection", size=1000, create=True)
                         destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=1, create=True)
 
@@ -158,6 +160,7 @@ def main():
         local_driving_memory.close()
         requested_next_state_memory.close()
         destination_driving_state_memory.close()
+        imu_memory.close()
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())
