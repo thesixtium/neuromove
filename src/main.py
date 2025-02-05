@@ -1,3 +1,5 @@
+# pipreqs src --ignore src/LiDAR
+
 #!/usr/bin/env python3
 import numpy as np
 import subprocess
