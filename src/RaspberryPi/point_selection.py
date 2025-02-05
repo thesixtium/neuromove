@@ -1,6 +1,7 @@
 from matplotlib.colors import ListedColormap
 import numpy as np
 from ast import literal_eval    # only used to read in sample data
+from typing import Tuple
 import matplotlib.pyplot as plt
 import logging
 from queue import Queue
@@ -16,12 +17,12 @@ logger = logging.getLogger("point selection")
 logger.setLevel(logging.DEBUG)
 logger.debug("Logging initialized")
 
-# TODO: make object oriented to prevent running helper functions. aka only allow running of occupancy_grid_to_points
-
+# TODO: make object oriented to prevent running helper functions. 
+# aka only allow running of occupancy_grid_to_points
 def occupancy_grid_to_points(
-        data: str = None, 
+        input_data: str = None, 
         number_of_neighbourhoods: int = 4, number_of_points_per_neighbourhood: int = 4,
-        plot_result: bool = False) -> np.ndarray:
+        plot_result: bool = False, save_result_to_disk: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, tuple]:
     '''
     Takes an occupancy grid with 0s as open spaces and 1s as obstacles and returns a list of points sorted into neighbourhoods.
 
@@ -39,10 +40,14 @@ def occupancy_grid_to_points(
 
     Returns:
     -------
-        np.ndarray
-            A 3D array containing the points in each neighbourhood. The first 
-            dimension is the neighbourhood, the second dimension is the point, 
-            and the third dimension is the x and y coordinates of the point.
+        np.ndarray - data
+            A 2D array containing all the data of the room. It is represented by values -1 to number_of_neighbourhoods where -1 is an obstacle and all other numbers are neighbourhoods. Access by using data[y][x]
+        np.ndarray - medoid_coordinates
+            a 2D array containing the centre point of each neighbourhood. Stored in order from neighbourhood 0 to N in [y,x] format.
+        np.ndarray - neighbourhood_points
+            a 3D array containing all selected points in each neighbourhood. The array will be of shape (N,M,2) where N is the number of neighbourhoods and M is the number of points per neighbourhood. The first point of each sub-list will be the medoid followed by all selected points. The lists are in order from neighbourhood 0 to N. Points are listed in [y,x] format
+        tuple - origin
+            The origin of the LiDAR sensor. In [y,x] format.
 
     Raises:
     -------
@@ -60,7 +65,7 @@ def occupancy_grid_to_points(
     ```
     '''
 
-    data, origin = read_from_memory(raw_data=data)
+    data, origin = read_from_memory(raw_data=input_data)
 
     if len(data.shape) != 2:
         raise ValueError("Data must be a 2D array")
@@ -106,19 +111,51 @@ def occupancy_grid_to_points(
     if plot_result:
         colours = ['#202020', '#FFE18D', '#B3D88D', '#FF8383', '#E9BFE9']
         colourmap = ListedColormap(colours)
-        plt.imshow(data, cmap=colourmap, interpolation='nearest')
-        plt.colorbar()
+        img = plt.imshow(data, cmap=colourmap, interpolation='nearest')
         plt.gca().invert_yaxis()
+
+        if save_result_to_disk:
+            # save just colour zones
+            plt.axis('off')
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
         plt.scatter(origin[0], origin[1], color='red')
+        plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+        if save_result_to_disk:
+            # save with origin and centers
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            plt.savefig('center-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
         dark_colours = ['#B78B14', '#547A2E', '#A62424', '#864385']
 
         for i in range(number_of_neighbourhoods):
             plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=dark_colours[i])
+
+        # replot medoids to make sure they're on top
         plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+        if save_result_to_disk:
+            # save with all points
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            plt.savefig('all-points.png', format='png', bbox_inches='tight', pad_inches=0)
+        
+        plt.colorbar(img)
+        plt.axis('on')
+        
+        # Remove axis labels and whitespace
         plt.show()
 
     logger.info("Point selection complete")
-    return neighbourhood_points
+
+    if save_result_to_disk:
+        np.savetxt("data.txt", data)
+        np.savetxt('middles.txt', medoid_coordinates)
+        np.savetxt('neighbourhood_points.txt', neighbourhood_points.flatten())
+        np.savetxt('origin.txt', origin)
+
+    return data, medoid_coordinates, neighbourhood_points, origin 
 
 def read_from_memory(raw_data: np.ndarray = None):
     if raw_data is None:
@@ -443,4 +480,4 @@ if __name__ == "__main__":
     # origin = (sample_data.shape[0] // 2, sample_data.shape[1] // 2) # origin based on measurements from Aleks
     # # origin = (97, 84) # origin based on where Aleks said it was in our call
 
-    selected_points = occupancy_grid_to_points(data=data_str, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4)
+    selected_points = occupancy_grid_to_points(input_data=data_str, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4, save_result_to_disk=True)
