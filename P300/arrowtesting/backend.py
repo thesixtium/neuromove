@@ -52,11 +52,10 @@ def localBCI():
 @app.route("/dotcoords", methods=['GET', 'POST'])
 def dotcoords():
     data = request.json['data']
-    file_path = 'C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/static/centers.txt'
+    file_path = 'middles.txt'
     with open(file_path, "r") as f:
         coords = f.readlines()
-    dotarray = [[14,12],[5,17],[17,26],[6,5],[5,29]]
-    return jsonify(dotarray)
+    return jsonify(coords)
 
 @app.route("/destination")
 def destination():
@@ -104,7 +103,7 @@ def drawMap():
 
     number_of_neighbourhoods = neighbourhood_points.shape[0]
 
-    colours = ['#202020', '#F5B528', '#FE6100', '#DC267F', '#648FFF']
+    colours = ['#50629B', '#F5B528', '#FE6100', '#DC267F', '#648FFF']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -112,16 +111,16 @@ def drawMap():
     # save just colour zones
     plt.axis('off')
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
+    #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
     plt.scatter(origin[0], origin[1], color='red')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('center-points.png', format='png', bbox_inches='tight', pad_inches=0)
+    plt.savefig('static/center-points.svg', format='svg', bbox_inches='tight', pad_inches=0)
 
-    dark_colours = ['#A37104', '#7E3101', '#75013A', '#42367C']
+    '''dark_colours = ['#A37104', '#7E3101', '#75013A', '#42367C']
 
     for i in range(number_of_neighbourhoods):
         plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=dark_colours[i])
@@ -130,14 +129,13 @@ def drawMap():
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with all points
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('all-points.png', format='png', bbox_inches='tight', pad_inches=0)
+    #plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    #plt.savefig('static/all-points.svg', format='svg', bbox_inches='tight', pad_inches=0)
 
-    plt.axis('on')
+    #plt.axis('on')
     
     # Remove axis labels and whitespace
-    #plt.show()
-    plt.savefig("static/map.svg")
+    #plt.show()'''
 
 
 if __name__ == '__main__':

@@ -5,21 +5,41 @@ var dot1 = document.getElementById("dot1");
 var dot2 = document.getElementById("dot2");
 var dot3 = document.getElementById("dot3");
 var dot4 = document.getElementById("dot4");
-var dot5 = document.getElementById("dot5");
-var dots = [[]];
+var dotsArray = [[]];
+const _idoptions = [0, 1, 2, 3];
+
+const _sequence1 = [];
+const _sequence2 = [];
+const _sequence3 = [];
+const start_time = performance.now() * 1000;
+
 function drawDots(){
 //dots.style.top = '40%';
 //dots.style.left = '20%';
-getData();
+dot1.style.opacity = "1";
+dot1.style.left = "51%";
+dot1.style.top = "22.3%";
+dot2.style.left = "42.7%";
+dot2.style.top = "18.7%";
+dot3.style.left = "43.36%";
+dot3.style.top = "34.6%";
+dot4.style.left = "44.9%";
+dot4.style.top = "47%";
+dot1.style.opacity = "0";
+dot2.style.opacity = "0";
+dot3.style.opacity = "0";
+dot4.style.opacity = "0";
+
+//getData();
 }
 
 function getData() {
     fetch('/dotcoords', {
-    method: 'POST',
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({data: dots})
+    body: JSON.stringify({data: dotsArray})
   })
   .then(response => response.text())
   .then(result => {
@@ -28,6 +48,89 @@ function getData() {
   .catch(error => {
     console.error('Error:', error);
   });      
+}
+
+function sendData(time, id, target) {
+  var data = [time, id, target];
+  fetch('/localBCI', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({data: data})
+    })
+    .then(response => response.text())
+    .then(result => {
+      console.log(result);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+const _canvases = [dot1, dot2, dot3, dot4];
+const defaultColour = "white";
+function pickSequence(array, array2){
+  //decide sequence in which to flash
+  let temp = [];
+  array.forEach(element => {
+      temp.push(element);
+  });
+  console.log("temp end: " + temp[temp.length - 1]);
+  array2.length = 0;
+  array.length = 0;
+  let i =0;
+  while (i < _idoptions.length){
+      let index = Math.floor(Math.random() * _idoptions.length);
+      if ((i == 0 && temp[temp.length - 1] == _idoptions[index]) || array.includes(_idoptions[index])){
+          continue;
+      } else {
+          array.push(_idoptions[index]);
+          array2.push(_canvases[index]);
+          i++;
+      }
+  }
+  
+  array.unshift(array[0]);
+  array2.unshift(array2[0]);
+  console.log("array: " + array);
+  console.log("dots: " + array2);
+}
+
+function flashSequence(array, array2){
+  //flash the arrows
+  //for(let j = 0; j < 3; j++){
+      pickSequence(array, array2);
+      //array2[0].fillStyle = "black";
+      //array2[0].fill()
+      console.log("array at flash: " + array);
+      let i = 0;
+  let interval = setInterval(function(){
+      if (i <array2.length){
+          
+          console.log("start i: " + array[i]);
+          console.log(performance.now() / 1000- start_time);
+
+          if (i>0){
+          sendData((performance.now() / 1000 - start_time).toFixed(10), array[i], -1);
+              }
+          array2[i].style.opacity = "0";
+          setTimeout(function(){
+            array2[i].style.opacity = "1";
+          }, 100);
+          console.log("end i: " + array[i]);
+          console.log(performance.now() / 1000 - start_time);
+          i++;
+        /*  if (array[i] == "ca"){
+              l45.width +=15;
+              drawArrows();
+          }*/
+      } else {
+          clearInterval(interval);
+      }
+  }, (300));
+  console.log("end sequence: " + array[i]);
+  console.log(performance.now() / 1000 - start_time);
 }
 
 function doTheThing(){
@@ -46,13 +149,20 @@ function doTheThing(){
     _root.style.setProperty('--mleft', (sessionStorage.getItem('mleft')));}
     if(sessionStorage.getItem('mright')){
     _root.style.setProperty('--mright', (sessionStorage.getItem('mright')));}
-    if (sessionStorage.getItem('centre') == 'true'){
+    if (sessionStorage.getItem('location') == 'centre'){
         _root.style.setProperty('--pright', '-10%');
         _root.style.setProperty('--mright', '-10%');
-        _root.style.setProperty('--pleft', '10%');
+        _root.style.setProperty('--pleft', '25%');
         _root.style.setProperty('--mleft', '10%');}
+       
+    sendData(performance.now() / 1000 - start_time, -1);
+    console.log("block start: " + performance.now() / 1000-start_time);
+    for(let i = 0; i<3; i++){
+    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
+    console.log("cycle " + i + "end: " + performance.now() / 1000-start_time);
+        //flashSequence(_sequence3);
     
     }
 
-    addEventListener('DOMContentLoaded', doTheThing());
     addEventListener('DOMContentLoaded', drawDots());
+    addEventListener('DOMContentLoaded', doTheThing());
