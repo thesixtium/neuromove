@@ -66,9 +66,6 @@ def occupancy_grid_to_points(
     '''
 
     data, origin = read_from_memory(raw_data=input_data)
-
-    if len(data.shape) != 2:
-        raise ValueError("Data must be a 2D array")
     
     if number_of_neighbourhoods < 1 or number_of_points_per_neighbourhood < 1:
         raise ValueError("Number of neighbourhoods and number of points per neighbourhood must be greater than 0")
@@ -164,6 +161,9 @@ def read_from_memory(raw_data: np.ndarray = None):
 
     data = literal_eval(raw_data)
     data = np.array(data).T
+    
+    if len(data.shape) != 2:
+        raise ValueError("Data must be a 2D array")
 
     origin = (data.shape[0] // 2, data.shape[1] // 2)
 
@@ -461,23 +461,5 @@ if __name__ == "__main__":
     # load in data from testData
     with open('LiDAR/testData', 'r') as file:
         data_str = file.read()
-
-    # Convert the string representation of the list to an actual list
-    # sample_data = literal_eval(data_str)
-
-    # # TODO: make sure this works properly with data from shared memory
-    # # rotate data 90 degress ccw & mirror over y-axis
-    # sample_data = np.array(sample_data).T
-
-    # plt.imshow(sample_data, cmap='grey_r', interpolation='nearest')
-    # plt.colorbar()
-    # plt.gca().invert_yaxis()
-    # plt.scatter(88, 88, color='red')
-    # plt.show()
-    
-    # # Convert the list to a numpy array
-    # sample_data = np.array(sample_data)
-    # origin = (sample_data.shape[0] // 2, sample_data.shape[1] // 2) # origin based on measurements from Aleks
-    # # origin = (97, 84) # origin based on where Aleks said it was in our call
 
     selected_points = occupancy_grid_to_points(input_data=data_str, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4, save_result_to_disk=True)
