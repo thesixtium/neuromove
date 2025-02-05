@@ -281,7 +281,7 @@ function doTheThing(){
     //setTimeout(function(){
     sendData(performance.now() / 1000 - start_time, -1);
     console.log("block start: " + performance.now() / 1000-start_time);
-    for(let i = 0; i<8; i++){
+    for(let i = 0; i<3; i++){
     setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
     console.log("cycle " + i + "end: " + performance.now() / 1000-start_time);
     //flashSequence(_sequence3);

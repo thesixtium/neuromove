@@ -1,5 +1,14 @@
 from flask import Flask,render_template, request, jsonify
 from bci_essentials import *
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+from ast import literal_eval
+import logging
+from queue import Queue
+from kmedoids import fasterpam
+from scipy.spatial.distance import pdist, squareform, cdist
+
 
 from pylsl import StreamInfo, StreamOutlet, local_clock
 '''import os
@@ -46,11 +55,12 @@ def dotcoords():
     file_path = 'C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/static/centers.txt'
     with open(file_path, "r") as f:
         coords = f.readlines()
-    dotarray = [[14,12][5,17][17,26][6,5][5,29]]
+    dotarray = [[14,12],[5,17],[17,26],[6,5],[5,29]]
     return jsonify(dotarray)
 
 @app.route("/destination")
 def destination():
+    drawMap()
     return render_template('destination.html')
 
 @app.route("/stop_go", methods=['GET'])
@@ -85,6 +95,50 @@ def outputpls(timeID):
 def eyetrackingside():
     data = request.form.get('data')
     return 
+
+def drawMap():
+    data = np.loadtxt('data.txt')
+    medoid_coordinates = np.loadtxt('middles.txt')
+    neighbourhood_points = np.loadtxt('neighbourhood_points.txt').reshape((4,4,2))
+    origin = np.loadtxt('origin.txt')
+
+    number_of_neighbourhoods = neighbourhood_points.shape[0]
+
+    colours = ['#202020', '#F5B528', '#FE6100', '#DC267F', '#648FFF']
+    colourmap = ListedColormap(colours)
+    plt.imshow(data, cmap=colourmap, interpolation='nearest')
+    plt.gca().invert_yaxis()
+
+    # save just colour zones
+    plt.axis('off')
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
+    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+    # save with origin and centers
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig('center-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
+    dark_colours = ['#A37104', '#7E3101', '#75013A', '#42367C']
+
+    for i in range(number_of_neighbourhoods):
+        plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=dark_colours[i])
+
+    # replot medoids to make sure they're on top
+    plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+    # save with all points
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig('all-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
+    plt.axis('on')
+    
+    # Remove axis labels and whitespace
+    #plt.show()
+    plt.savefig("static/map.svg")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
