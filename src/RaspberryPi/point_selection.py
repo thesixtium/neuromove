@@ -1,5 +1,7 @@
+from matplotlib.colors import ListedColormap
 import numpy as np
 from ast import literal_eval    # only used to read in sample data
+from typing import Tuple
 import matplotlib.pyplot as plt
 import logging
 from queue import Queue
@@ -15,35 +17,37 @@ logger = logging.getLogger("point selection")
 logger.setLevel(logging.DEBUG)
 logger.debug("Logging initialized")
 
-# TODO: make object oriented to prevent running helper functions. aka only allow running of occupancy_grid_to_points
-
+# TODO: make object oriented to prevent running helper functions. 
+# aka only allow running of occupancy_grid_to_points
 def occupancy_grid_to_points(
-        data: np.ndarray, 
-        origin: tuple = None, 
-        number_of_neighbourhoods: int = 5, number_of_points_per_neighbourhood: int = 5,
-        plot_result: bool = False) -> np.ndarray:
+        input_data: str = None, 
+        number_of_neighbourhoods: int = 4, number_of_points_per_neighbourhood: int = 4,
+        plot_result: bool = False, save_result_to_disk: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, tuple]:
     '''
     Takes an occupancy grid with 0s as open spaces and 1s as obstacles and returns a list of points sorted into neighbourhoods.
 
     Args: 
     -------
-        data : np.ndarray
-            2D array containig the occupancy grid. Must be a 2D array with 0s as 
-            open spaces and 1s as obstacles.
+        data : str
+            The string representation of the data. None by default. When data is none, it will be read from shared memory. Only use this value for debugging
         origin : tuple, optional
             The origin of the grid. If not provided, the origin is set to the 
             middle of the grid.
         number_of_neighbourhoods : int, optional
-            The number of neighbourhoods to divide the data into. Default is 5.
+            The number of neighbourhoods to divide the data into. Default is 4.
         number_of_points_per_neighbourhood : int, optional
-            The number of points to select per neighbourhood. Default is 5.
+            The number of points to select per neighbourhood. Default is 4.
 
     Returns:
     -------
-        np.ndarray
-            A 3D array containing the points in each neighbourhood. The first 
-            dimension is the neighbourhood, the second dimension is the point, 
-            and the third dimension is the x and y coordinates of the point.
+        np.ndarray - data
+            A 2D array containing all the data of the room. It is represented by values -1 to number_of_neighbourhoods where -1 is an obstacle and all other numbers are neighbourhoods. Access by using data[y][x]
+        np.ndarray - medoid_coordinates
+            a 2D array containing the centre point of each neighbourhood. Stored in order from neighbourhood 0 to N in [y,x] format.
+        np.ndarray - neighbourhood_points
+            a 3D array containing all selected points in each neighbourhood. The array will be of shape (N,M,2) where N is the number of neighbourhoods and M is the number of points per neighbourhood. The first point of each sub-list will be the medoid followed by all selected points. The lists are in order from neighbourhood 0 to N. Points are listed in [y,x] format
+        tuple - origin
+            The origin of the LiDAR sensor. In [y,x] format.
 
     Raises:
     -------
@@ -61,10 +65,8 @@ def occupancy_grid_to_points(
     ```
     '''
 
-    # error checking
-    if data is None:
-        raise ValueError("Data cannot be None")
-    
+    data, origin = read_from_memory(raw_data=input_data)
+
     if len(data.shape) != 2:
         raise ValueError("Data must be a 2D array")
     
@@ -93,6 +95,9 @@ def occupancy_grid_to_points(
     reachable_points = bfs(data, origin)
     logger.debug(f"Reachable points found")
 
+    if np.count_nonzero(reachable_points == 0) < number_of_neighbourhoods:
+        raise Exception(f"Could not find enough points in the data. Need at least {number_of_neighbourhoods}, only have {np.count_nonzero(reachable_points == 0)} point(s)")
+
     # run PAM to get the neighbourhoods
     medoid_coordinates, data = run_PAM(reachable_points, number_of_neighbourhoods)
 
@@ -100,25 +105,71 @@ def occupancy_grid_to_points(
         raise ValueError(f"Expected {number_of_neighbourhoods} neighbourhoods, but only found {len(medoid_coordinates)}")
 
     # get points in each neighbourhood
-    neighbourhood_points = get_points_in_neighbourhood(data, medoid_coordinates, number_of_points_per_neighbourhood)
+    neighbourhood_points = get_points_in_neighbourhood(data, origin, medoid_coordinates, number_of_points_per_neighbourhood)
     logger.debug(f"neighbourhood_points shape: {neighbourhood_points.shape}")
 
     if plot_result:
-        plt.imshow(data, cmap='Pastel1', interpolation='nearest')
-        plt.colorbar()
+        colours = ['#202020', '#FFE18D', '#B3D88D', '#FF8383', '#E9BFE9']
+        colourmap = ListedColormap(colours)
+        img = plt.imshow(data, cmap=colourmap, interpolation='nearest')
         plt.gca().invert_yaxis()
+
+        if save_result_to_disk:
+            # save just colour zones
+            plt.axis('off')
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
         plt.scatter(origin[0], origin[1], color='red')
-        colours = ['steelblue', 'darkslateblue', 'darkgoldenrod', 'darkmagenta', 'slategrey']
+        plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+        if save_result_to_disk:
+            # save with origin and centers
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            plt.savefig('center-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
+        dark_colours = ['#B78B14', '#547A2E', '#A62424', '#864385']
 
         for i in range(number_of_neighbourhoods):
-            plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=colours[i])
+            plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=dark_colours[i])
+
+        # replot medoids to make sure they're on top
         plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+        if save_result_to_disk:
+            # save with all points
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            plt.savefig('all-points.png', format='png', bbox_inches='tight', pad_inches=0)
+        
+        plt.colorbar(img)
+        plt.axis('on')
+        
+        # Remove axis labels and whitespace
         plt.show()
 
     logger.info("Point selection complete")
-    return neighbourhood_points
 
-def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_points) -> np.ndarray:
+    if save_result_to_disk:
+        np.savetxt("data.txt", data)
+        np.savetxt('middles.txt', medoid_coordinates)
+        np.savetxt('neighbourhood_points.txt', neighbourhood_points.flatten())
+        np.savetxt('origin.txt', origin)
+
+    return data, medoid_coordinates, neighbourhood_points, origin 
+
+def read_from_memory(raw_data: np.ndarray = None):
+    if raw_data is None:
+        memory = SharedMemory(shem_name="point_selection")
+        raw_data = memory.read_grid()
+
+    data = literal_eval(raw_data)
+    data = np.array(data).T
+
+    origin = (data.shape[0] // 2, data.shape[1] // 2)
+
+    return data, origin
+
+def get_points_in_neighbourhood(data: np.ndarray, origin: np.ndarray, medoids: np.ndarray, num_points: int) -> np.ndarray:
     '''
     Given a map of clusters and their medoids, find num_points points in each neighbourhood.
 
@@ -151,11 +202,19 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
     for i in range(num_neighbourhoods):
         neighbourhoods.append(np.argwhere(data == i))
 
+    # append origin temporarily to medoids
+    # x and y are reversed in origin
+    medoids = np.vstack([[origin[1], origin[0]], medoids])
+
     selected_points = np.array(medoids)
     remaining_points = np.array([p for p in coords if not np.any(np.all(p == medoids, axis=1))])
 
+    # remove origin from medoids
+    medoids = medoids[:-1]
+
     i = 0
-    while selected_points.shape[0] < num_points * num_neighbourhoods:
+    # need the +1 to account for the origin
+    while selected_points.shape[0] < num_points * num_neighbourhoods + 1:
         current_neighbourhood = neighbourhoods[i]
 
         # calculate distances between all points in the neighbourhood and the selected points
@@ -167,13 +226,29 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
         # find the point with the maximum minimum distance
         best_point_index = np.argmax(min_distances)
 
-        # add the best point to the selected points
-        selected_points = np.append(selected_points, [current_neighbourhood[best_point_index]], axis=0)
+        # check if the point is isolated from the neighbourhood
+        valid_point = check_point_neighbours(current_neighbourhood[best_point_index], current_neighbourhood)
+
+        if valid_point is True:
+            # add the best point to the selected points
+            selected_points = np.append(selected_points, [current_neighbourhood[best_point_index]], axis=0)
+
+            i = (i + 1) % num_neighbourhoods
+        else:
+            # remove point from neighbourhood
+            # since it has no neighbours, it shouldn't affect anything else
+            neighbourhood_without_point = []
+            for j in range(len(current_neighbourhood)):
+                if j != best_point_index:
+                    neighbourhood_without_point.append(current_neighbourhood[j])
+
+            neighbourhoods[i] = np.array(neighbourhood_without_point)
 
         # remove the best point from the remaining points
         remaining_points = np.array([p for p in remaining_points if not np.all(p == current_neighbourhood[best_point_index])])
 
-        i = (i + 1) % num_neighbourhoods
+    # remove the first point from selected points (the origin)
+    selected_points = selected_points[1:]
 
     # split the selected points into the different neighbourhoods
     selected_points_split = []
@@ -181,6 +256,35 @@ def get_points_in_neighbourhood(data: np.ndarray, medoids: np.ndarray, num_point
         selected_points_split.append(selected_points[i::num_neighbourhoods])
 
     return np.array(selected_points_split)
+
+def check_point_neighbours(point: list, neighbourhood: list) -> bool:
+    '''
+    Given a point and its neighbourhood, check if the point has any adjacent points in the neighbourhood. 
+
+    Args:
+    -----
+        point : list
+            a 2-long list with a coordinate point.
+        neighbourhood : list
+            List of coordinates included in the neighbourhood. 
+
+    Returns:
+    --------
+        bool
+            True if there is an adjacent point to the given one. False otherwise.
+    '''
+
+    adjacent_points = []
+    for i in range(-1,2):
+        for j in range (-1,2):
+            if i == 0 and j == 0:
+                continue
+
+            adjacent_points.append([point[0]+i, point[1]+j])
+
+    valid_point = any(np.any(np.all(neighbourhood == target, axis=1)) for target in adjacent_points)
+
+    return valid_point
 
 def run_PAM(data: np.ndarray, num_clusters: int) -> tuple[np.ndarray, np.ndarray]:
     '''
@@ -344,7 +448,7 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
     # add border of 1s around the room
     trimmed_data = np.pad(trimmed_data, 1, constant_values=1)
 
-     # adjust origin based on room size
+    # adjust origin based on room size
     if origin[0] < bottom_left[0] or origin[0] > top_right[0] or origin[1] < bottom_left[1] or origin[1] > top_right[1]:
         raise ValueError(f"Origin {origin} is not within the found room size")
     
@@ -355,25 +459,25 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
 if __name__ == "__main__":
     # load in data from testData
-    with open('testData', 'r') as file:
+    with open('LiDAR/testData', 'r') as file:
         data_str = file.read()
-    
+
     # Convert the string representation of the list to an actual list
-    sample_data = literal_eval(data_str)
+    # sample_data = literal_eval(data_str)
 
-    # TODO: make sure this works properly with data from shared memory
-    # rotate data 90 degress ccw & mirror over y-axis
-    sample_data = np.array(sample_data).T
+    # # TODO: make sure this works properly with data from shared memory
+    # # rotate data 90 degress ccw & mirror over y-axis
+    # sample_data = np.array(sample_data).T
 
-    plt.imshow(sample_data, cmap='grey_r', interpolation='nearest')
-    plt.colorbar()
-    plt.gca().invert_yaxis()
-    plt.scatter(88, 88, color='red')
-    plt.show()
+    # plt.imshow(sample_data, cmap='grey_r', interpolation='nearest')
+    # plt.colorbar()
+    # plt.gca().invert_yaxis()
+    # plt.scatter(88, 88, color='red')
+    # plt.show()
     
-    # Convert the list to a numpy array
-    sample_data = np.array(sample_data)
-    origin = (sample_data.shape[0] // 2, sample_data.shape[1] // 2) # origin based on measurements from Aleks
-    # origin = (97, 84) # origin based on where Aleks said it was in our call
+    # # Convert the list to a numpy array
+    # sample_data = np.array(sample_data)
+    # origin = (sample_data.shape[0] // 2, sample_data.shape[1] // 2) # origin based on measurements from Aleks
+    # # origin = (97, 84) # origin based on where Aleks said it was in our call
 
-    selected_points = occupancy_grid_to_points(sample_data, origin, plot_result=True)
+    selected_points = occupancy_grid_to_points(input_data=data_str, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4, save_result_to_disk=True)
