@@ -100,11 +100,35 @@ margin-bottom: -3%;}
 }
 
 .grid-item{
-    //margin: 5em;
+    //margin: 5em;=
     background: black;
     //background: black;
    /*background-color: lime;*/
    max-height: 30vh;
+   z-index: 1;
+}
+
+.training-grid-item{
+    //margin: 5em;=
+    position: absolute;
+    background: black;
+    //background: black;
+   /*background-color: lime;*/
+   max-height: 30vh;
+   z-index: 1;
+
+}
+
+#startbox{
+    position: absolute;
+    background: black;
+    height: 70vh;
+    width: 60vw;
+    font-size: 5em;
+    font-family: 'Quicksand', sans-serif;
+    color: white;
+    text-align: center;
+    z-index: 20;
 }
 
 #tl, #tr, #cen, #bl, #br, #returning, #newb{

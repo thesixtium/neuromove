@@ -48,6 +48,10 @@ def localBCI():
     #print(timeID)
     outputpls(data)
     return jsonify({'result': 'success'})
+
+@app.route("/training")
+def training():
+    return render_template('training.html')
     
 @app.route("/dotcoords", methods=['GET', 'POST'])
 def dotcoords():

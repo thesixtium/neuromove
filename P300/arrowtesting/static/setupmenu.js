@@ -13,8 +13,11 @@ topLeftClick = function() {
     sessionStorage.setItem('mleft', '-20%');
     sessionStorage.setItem('pleft', '0%');
     sessionStorage.setItem('mright', '10%');
-
+    if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
+    }
+    else if (sessionStorage.getItem('userType') == 'new'){}
+    window.location.href = "/training";
 }
 
 topRightClick = function() {
@@ -25,8 +28,11 @@ topRightClick = function() {
     sessionStorage.setItem('mright', '-20%');
     sessionStorage.setItem('pright', '0%');
     sessionStorage.setItem('mleft', '10%');
-
+    if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
+    }
+    else if (sessionStorage.getItem('userType') == 'new'){}
+    window.location.href = "/training";
 }
 
 bottomLeftClick = function() {
@@ -38,8 +44,11 @@ bottomLeftClick = function() {
     sessionStorage.setItem('mleft', '-20%');
     sessionStorage.setItem('pleft', '0%');
     sessionStorage.setItem('mright', '10%');
-
+    if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
+    }
+    else if (sessionStorage.getItem('userType') == 'new'){}
+    window.location.href = "/training";
 }
 
 bottomRightClick = function() {
@@ -51,8 +60,11 @@ bottomRightClick = function() {
     sessionStorage.setItem('mright', '-20%');
     sessionStorage.setItem('pright', '0%');
     sessionStorage.setItem('mleft', '10%');
-
+    if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
+    }
+    else if (sessionStorage.getItem('userType') == 'new'){}
+    window.location.href = "/training";
 }
 
 centreClick = function() {
@@ -63,7 +75,11 @@ centreClick = function() {
     sessionStorage.setItem('top', '15%');
     sessionStorage.setItem('mleft', '10%');
     sessionStorage.setItem('mright', '10%');
+    if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
+    }
+    else if (sessionStorage.getItem('userType') == 'new'){}
+    window.location.href = "/training";
 }
 function toggleFullScreen() {
     if (!document.fullscreenElement) {

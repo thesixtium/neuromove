@@ -5,6 +5,7 @@ const _sequence2 = [];
 const _sequence3 = [];
 var _root = document.querySelector(':root');
 var start_time;
+var train_target = (-1);
 /*const l45 = document.getElementById("ca");
 l45.width = 100;
 l45.height = 100;
@@ -93,7 +94,7 @@ function flashSequence(array, array2){
             console.log(performance.now() - start_time);
 
             if (i>0){
-            sendData((performance.now() - start_time).toFixed(10), array[i], -1);
+            sendData((performance.now() - start_time).toFixed(10), array[i], train_target);
                 }
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
@@ -210,14 +211,14 @@ function doTheThing(){
 //flashSequence(_sequence1, _sequence2);
    //flashSequence(_sequence1);
     //setTimeout(function(){
-    sendData(performance.now() - start_time, -1);
-    console.log("block start: " + performance.now() - start_time);
-    for(let i = 0; i<3; i++){
+    sendData(performance.now() - start_time, -1, -1);
+    for(let i = 0; i<20; i++){
     setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
     console.log("cycle " + i + "end: " + performance.now() - start_time);
+    }
     //flashSequence(_sequence3);
     
-}
+
 function toggleFullScreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();

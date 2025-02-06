@@ -4,6 +4,7 @@ var r = document.querySelector(':root');
 
 topLeftClick = function() {
     console.log("new user!!");
+    sessionStorage.setItem('userType', 'new');
 
     window.location.href = "/screenside";
 }
@@ -11,6 +12,7 @@ topLeftClick = function() {
 topRightClick = function() {
 
     console.log("existing user!!");
+    sessionStorage.setItem('userType', 'returning');
 
     window.location.href = "/screenside";
 }

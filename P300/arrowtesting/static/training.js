@@ -5,6 +5,7 @@ const _sequence2 = [];
 const _sequence3 = [];
 var _root = document.querySelector(':root');
 var start_time;
+var numcycles = 20;
 /*const l45 = document.getElementById("ca");
 l45.width = 100;
 l45.height = 100;
@@ -25,6 +26,7 @@ const sw = document.getElementById("ch");
 const csw = sw.getContext("2d");/*
 const r135 = document.getElementById("ci");
 const cr135 = r135.getContext("2d");*/
+document.getElementById("startbox").style.opacity = '1';
 
 switchClick = function() {
     console.log("switch mode!");
@@ -78,7 +80,8 @@ function pickSequence(array, array2){
     console.log("array: " + array);
     console.log("arrows: " + array2);
 }
-function flashSequence(array, array2){
+function flashSequence(array, array2, train_target){
+
     //flash the arrows
     //for(let j = 0; j < 3; j++){
         pickSequence(array, array2);
@@ -87,13 +90,14 @@ function flashSequence(array, array2){
         console.log("array at flash: " + array);
         let i = 0;
     let interval = setInterval(function(){
+      
         if (i <array2.length){
             
             console.log("start i: " + array[i]);
             console.log(performance.now() - start_time);
 
             if (i>0){
-            sendData((performance.now() - start_time).toFixed(10), array[i], -1);
+            sendData((performance.now() - start_time).toFixed(10), array[i], train_target);
                 }
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
@@ -114,6 +118,10 @@ function flashSequence(array, array2){
             drawArrows();
             clearInterval(interval);
         }
+      
+    if (index == 19 || index == 39 || index == 59 || index == 79 || index == 99){      
+      sendData(performance.now() - start_time, "Trial Ends", -1);
+      }
     }, (300));
     console.log("end sequence: " + array[i]);
     console.log(performance.now() - start_time);
@@ -204,20 +212,55 @@ function doTheThing(){
     _root.style.setProperty('--mleft', sessionStorage.getItem('mleft'));}
     if(sessionStorage.getItem('mright')){
     _root.style.setProperty('--mright', sessionStorage.getItem('mright'));}
+    }
 
+function flashStuff(){
+  document.getElementById("startbox").style.opacity = '0';
     start_time = performance.now();
 
 //flashSequence(_sequence1, _sequence2);
    //flashSequence(_sequence1);
     //setTimeout(function(){
-    sendData(performance.now() - start_time, -1);
+    sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);
     console.log("block start: " + performance.now() - start_time);
-    for(let i = 0; i<3; i++){
-    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
-    console.log("cycle " + i + "end: " + performance.now() - start_time);
-    //flashSequence(_sequence3);
     
-}
+    console.log("block start: " + performance.now() - start_time);
+    for(let index = 0; index<5*numcycles + 1; index++){
+    setTimeout(function(){      
+      if(index<numcycles){
+        train_target = 0;
+      }
+      else if (index>=numcycles && index<2*numcycles){
+        train_target = 1;
+      }
+      else if (index>=2*numcycles && index<3*numcycles){
+        train_target = 2;
+      }
+      else if (index>=3*numcycles && index<4*numcycles){
+        train_target = 3;
+      }
+      else if (index>=4*numcycles && index<5*numcycles){
+        train_target = 4;
+      }
+      
+      if (index != 5*numcycles){
+      flashSequence(_sequence1, _sequence2, train_target);
+      }
+      
+    if (index % numcycles == 0 && index != 0){      
+      sendData((performance.now() - start_time).toFixed(10), "Trial Ends", -1);
+      if (index != 5*numcycles){
+      sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);}
+      }
+    if (index == 5*numcycles){
+      sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);}
+
+    
+    }, (2000*index+(Math.random()*150+50)));
+      }
+    console.log("cycle " + index + "end: " + performance.now() - start_time);
+    }
+    //flashSequence(_sequence3);
 function toggleFullScreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -228,7 +271,7 @@ function toggleFullScreen() {
   document.addEventListener(
     "keydown",
     (e) => {
-      if (e.key === "Enter") {
+      if (e.key === "a") {
         toggleFullScreen();
       }
     },
@@ -238,6 +281,15 @@ function toggleFullScreen() {
 //console.log("block end: " + Date.now()-start_time);
 //}
 addEventListener('DOMContentLoaded', drawArrows());
+document.addEventListener('DOMContentLoaded', doTheThing());
+document.addEventListener(
+  "keydown",
+  (e) => {
+    if (e.key === "Enter") {
+      flashStuff();
+    }
+  },
+  false,
+);
 document.getElementById("h").addEventListener("click", switchClick);
-addEventListener('DOMContentLoaded', doTheThing());
 //src = "test-logic.js"
