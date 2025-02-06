@@ -26,9 +26,31 @@ h1{
     font-family: 'Quicksand', sans-serif;
 }
 
+
+#map0{
+    z-index: 1;
+    position: absolute;
+}
+#map1{
+    z-index: 10;
+    position: absolute;
+}
+#map2{
+    z-index: 20;
+    position: absolute;
+}
+#map3{
+    z-index: 30;
+    position: absolute;
+}
+#map4{
+    z-index: 40;
+    position: absolute;
+}
+
 h2{
     color: black;
-    padding: 0.5em;
+    padding: 0em;
     text-align: center;
     text-shadow: 0em 0em 1em white;
     font-size: 2.5em;
@@ -43,14 +65,21 @@ h2{
     height: 20px;
     border-radius: 50%;
     z-index: 7;
-    background-color: blue; // Optional: Set a background color 
+    background-color: white;
+    stroke: black;
+    border: 0.3em, solid, black;
   
   }
 
+#final-header{
+    padding-top: 0%;
+    margin-top: 0%
+}
+
 #subheader{
-    padding-top: 15%;
-padding-bottom: -20%;
-margin-bottom: -20%;}
+    padding-top: 10%;
+padding-bottom: -3%;
+margin-bottom: -3%;}
 
 #screen_area_select{
     padding-top: -15%;
@@ -61,14 +90,15 @@ margin-bottom: -20%;}
     background-color: transparent;
 }
 #setup-grid-container{
-    padding-top: 18%;
-    grid-gap: 1em;
+    padding-top: 4%;
+    grid-gap: 0.5em, 1em;
     display: grid;
     grid-template:  'item1 item1 item1'
                     'item1 item1 item1'
                     'item1 item1 item1';
     justify-content: center;
 }
+
 .grid-item{
     //margin: 5em;
     background: black;
@@ -81,10 +111,11 @@ margin-bottom: -20%;}
     background: black;
     color: white;
     font-size: 1em;
-    height: 15vh;
-    width: 15vh;
+    height: 17vh;
+    width: 17vh;
     text-align: center;
 }
+
 .returning{
     margin-top: 0.1em;
 }
@@ -93,6 +124,9 @@ margin-bottom: -20%;}
     text-align: center;
     font-size: 0.5em;
     text-shadow: none;
+}
+.newb{
+    margin-top: -1.5%;
 }
 .stop-grid-container {
     padding-top: 15%;
@@ -121,14 +155,15 @@ margin-bottom: -20%;}
                     'item1 item1 item1';
     
 }
-#map{
+
+.map{
     //position: relative;
     padding-top: var(--top);
     padding-left: var(--pleft);
     padding-right: var(--pright);
     margin-right: var(--mright);
     margin-left: var(--mleft);
-    z-index: 1;
+    max-height: 70vh;
 }
 #a, #b, #c, #d, #e, #f, #g, #h, #i, #stop, #go, #go2 {
     //padding: 1em;
@@ -145,4 +180,8 @@ canvas{
 }
 #empty{
     background: transparent;
+}
+
+.bci-setup-grid-container{
+    grid-gap: 1em;
 }

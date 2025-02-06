@@ -102,8 +102,8 @@ def drawMap():
     origin = np.loadtxt('origin.txt')
 
     number_of_neighbourhoods = neighbourhood_points.shape[0]
-
-    colours = ['#50629B', '#F5B528', '#FE6100', '#DC267F', '#648FFF']
+    #base map
+    colours = ['#b0b9cc', '#F5B528', '#FE6100', '#DC267F', '#648FFF']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -120,22 +120,102 @@ def drawMap():
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     plt.savefig('static/center-points.svg', format='svg', bbox_inches='tight', pad_inches=0)
 
-    '''dark_colours = ['#A37104', '#7E3101', '#75013A', '#42367C']
+    #map with region 1 flashed
+    
+    colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#000000']
+    colourmap = ListedColormap(colours)
+    plt.imshow(data, cmap=colourmap, interpolation='nearest')
+    plt.gca().invert_yaxis()
 
-    for i in range(number_of_neighbourhoods):
-        plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=dark_colours[i])
+    # save just colour zones
+    plt.axis('off')
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    # replot medoids to make sure they're on top
+    plt.scatter(origin[0], origin[1], color='red')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
-    # save with all points
-    #plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    #plt.savefig('static/all-points.svg', format='svg', bbox_inches='tight', pad_inches=0)
-
-    #plt.axis('on')
+    # save with origin and centers
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig('static/center-points0.svg', format='svg', bbox_inches='tight', pad_inches=0)
+    #map with region 1 flashed
     
-    # Remove axis labels and whitespace
-    #plt.show()'''
+    colours = ['#b0b9cc', '#FFFFFF', '#000000', '#000000', '#000000']
+    colourmap = ListedColormap(colours)
+    plt.imshow(data, cmap=colourmap, interpolation='nearest')
+    plt.gca().invert_yaxis()
+
+    # save just colour zones
+    plt.axis('off')
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
+    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+    # save with origin and centers
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig('static/center-points1.svg', format='svg', bbox_inches='tight', pad_inches=0)
+
+    #map with region 2 flashed
+    
+    colours = ['#b0b9cc', '#000000', '#FFFFFF', '#000000', '#000000']
+    colourmap = ListedColormap(colours)
+    plt.imshow(data, cmap=colourmap, interpolation='nearest')
+    plt.gca().invert_yaxis()
+
+    # save just colour zones
+    plt.axis('off')
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
+    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+    # save with origin and centers
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig('static/center-points2.svg', format='svg', bbox_inches='tight', pad_inches=0)
+
+
+    #map with region 3 flashed
+    
+    colours = ['#b0b9cc', '#000000', '#000000', '#FFFFFF', '#000000']
+    colourmap = ListedColormap(colours)
+    plt.imshow(data, cmap=colourmap, interpolation='nearest')
+    plt.gca().invert_yaxis()
+
+    # save just colour zones
+    plt.axis('off')
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
+    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+    # save with origin and centers
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig('static/center-points3.svg', format='svg', bbox_inches='tight', pad_inches=0)
+
+
+    #map with region 4 flashed
+    
+    colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#FFFFFF']
+    colourmap = ListedColormap(colours)
+    plt.imshow(data, cmap=colourmap, interpolation='nearest')
+    plt.gca().invert_yaxis()
+
+    # save just colour zones
+    plt.axis('off')
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
+
+    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
+
+    # save with origin and centers
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig('static/center-points4.svg', format='svg', bbox_inches='tight', pad_inches=0)
+
 
 
 if __name__ == '__main__':

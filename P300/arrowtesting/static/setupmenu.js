@@ -34,7 +34,7 @@ bottomLeftClick = function() {
     sessionStorage.setItem('location', 'bottomleft');
     
     sessionStorage.setItem('pright', '50%');
-    sessionStorage.setItem('top', '40%');
+    sessionStorage.setItem('top', '25%');
     sessionStorage.setItem('mleft', '-20%');
     sessionStorage.setItem('pleft', '0%');
     sessionStorage.setItem('mright', '10%');
@@ -47,7 +47,7 @@ bottomRightClick = function() {
     sessionStorage.setItem('location', 'bottomright');
     
     sessionStorage.setItem('pleft', '50%');
-    sessionStorage.setItem('top', '40%');
+    sessionStorage.setItem('top', '25%');
     sessionStorage.setItem('mright', '-20%');
     sessionStorage.setItem('pright', '0%');
     sessionStorage.setItem('mleft', '10%');
@@ -60,11 +60,28 @@ centreClick = function() {
     sessionStorage.setItem('location', 'centre');
     sessionStorage.setItem('pright', '0%');
     sessionStorage.setItem('pleft', '0%');
-    sessionStorage.setItem('top', '20%');
+    sessionStorage.setItem('top', '15%');
     sessionStorage.setItem('mleft', '10%');
     sessionStorage.setItem('mright', '10%');
     window.location.href = "/local";
 }
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Enter") {
+        toggleFullScreen();
+      }
+    },
+    false,
+  );
+
 
 topLeft.addEventListener("click", topLeftClick);
 topRight.addEventListener("click", topRightClick);

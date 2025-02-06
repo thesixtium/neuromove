@@ -163,5 +163,22 @@ function doTheThing(){
     setTimeout(function(){flashSequence(_sequence1, _sequence2); }, (1260*i+(Math.random()*150)));}
     console.log("cycle " + i + "end: " + performance.now() * 1000-start_time);    
 }
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Enter") {
+        toggleFullScreen();
+      }
+    },
+    false,
+  );
+
 addEventListener('DOMContentLoaded', draw());
 addEventListener('DOMContentLoaded', doTheThing());

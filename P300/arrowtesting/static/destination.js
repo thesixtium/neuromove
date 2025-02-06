@@ -1,34 +1,24 @@
 var _root = document.querySelector(':root');
-var map = document.getElementById("map");
-var dots = document.getElementsByClassName('dot');
-var dot1 = document.getElementById("dot1");
-var dot2 = document.getElementById("dot2");
-var dot3 = document.getElementById("dot3");
-var dot4 = document.getElementById("dot4");
+var map0 = document.getElementById("map0");
+var map1 = document.getElementById("map1");
+var map2 = document.getElementById("map2");
+var map3 = document.getElementById("map3");
+var map4 = document.getElementById("map4");
 var dotsArray = [[]];
 const _idoptions = [0, 1, 2, 3];
 
 const _sequence1 = [];
 const _sequence2 = [];
 const _sequence3 = [];
-const start_time = performance.now() * 1000;
+var start_time;
 
 function drawDots(){
 //dots.style.top = '40%';
 //dots.style.left = '20%';
-dot1.style.opacity = "1";
-dot1.style.left = "51%";
-dot1.style.top = "22.3%";
-dot2.style.left = "42.7%";
-dot2.style.top = "18.7%";
-dot3.style.left = "43.36%";
-dot3.style.top = "34.6%";
-dot4.style.left = "44.9%";
-dot4.style.top = "47%";
-dot1.style.opacity = "0";
-dot2.style.opacity = "0";
-dot3.style.opacity = "0";
-dot4.style.opacity = "0";
+map1.style.opacity = "0";
+map2.style.opacity = "0";
+map3.style.opacity = "0";
+map4.style.opacity = "0";
 
 //getData();
 }
@@ -68,7 +58,7 @@ function sendData(time, id, target) {
     });
 }
 
-const _canvases = [dot1, dot2, dot3, dot4];
+const _canvases = [map1, map2, map3, map4];
 const defaultColour = "white";
 function pickSequence(array, array2){
   //decide sequence in which to flash
@@ -109,17 +99,17 @@ function flashSequence(array, array2){
       if (i <array2.length){
           
           console.log("start i: " + array[i]);
-          console.log(performance.now() / 1000- start_time);
+          console.log(performance.now()- start_time);
 
           if (i>0){
-          sendData((performance.now() / 1000 - start_time).toFixed(10), array[i], -1);
+          sendData((performance.now() - start_time).toFixed(10), array[i], -1);
               }
           array2[i].style.opacity = "0";
           setTimeout(function(){
             array2[i].style.opacity = "1";
           }, 100);
           console.log("end i: " + array[i]);
-          console.log(performance.now() / 1000 - start_time);
+          console.log(performance.now() - start_time);
           i++;
         /*  if (array[i] == "ca"){
               l45.width +=15;
@@ -130,7 +120,7 @@ function flashSequence(array, array2){
       }
   }, (300));
   console.log("end sequence: " + array[i]);
-  console.log(performance.now() / 1000 - start_time);
+  console.log(performance.now() - start_time);
 }
 
 function doTheThing(){
@@ -150,19 +140,70 @@ function doTheThing(){
     if(sessionStorage.getItem('mright')){
     _root.style.setProperty('--mright', (sessionStorage.getItem('mright')));}
     if (sessionStorage.getItem('location') == 'centre'){
+        _root.style.setProperty('--top', '10%');
         _root.style.setProperty('--pright', '-10%');
         _root.style.setProperty('--mright', '-10%');
-        _root.style.setProperty('--pleft', '25%');
+        _root.style.setProperty('--pleft', '10%');
         _root.style.setProperty('--mleft', '10%');}
-       
-    sendData(performance.now() / 1000 - start_time, -1);
-    console.log("block start: " + performance.now() / 1000-start_time);
+        
+    if (sessionStorage.getItem('location') == 'topleft'){
+      _root.style.setProperty('--top', '0%');
+      _root.style.setProperty('--pright', '60%');
+      _root.style.setProperty('--mright', '60%');
+      _root.style.setProperty('--pleft', '-15%');
+      _root.style.setProperty('--mleft', '-15%');}
+        
+    if (sessionStorage.getItem('location') == 'topright'){
+      _root.style.setProperty('--top', '0%');
+      _root.style.setProperty('--pright', '-15%');
+      _root.style.setProperty('--mright', '-15%');
+      _root.style.setProperty('--pleft', '29%');
+      _root.style.setProperty('--mleft', '29%');}
+        
+      if (sessionStorage.getItem('location') == 'bottomleft'){
+        _root.style.setProperty('--top', '20%');
+        _root.style.setProperty('--pright', '60%');
+        _root.style.setProperty('--mright', '60%');
+        _root.style.setProperty('--pleft', '-15%');
+        _root.style.setProperty('--mleft', '-15%');}
+
+
+        start_time = performance.now();       
+    }
+    function randomFlash(){sendData(performance.now() - start_time, -1);
+    console.log("block start: " + performance.now() - start_time);
     for(let i = 0; i<3; i++){
     setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
-    console.log("cycle " + i + "end: " + performance.now() / 1000-start_time);
+    console.log("cycle " + i + "end: " + performance.now() - start_time);
         //flashSequence(_sequence3);
     
     }
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+
+      function simulateKeyPress(key) {
+        const event = new KeyboardEvent('keydown', {key});
+        textField.dispatchEvent(event);
+      }
+
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key === "a") {
+            toggleFullScreen();
+          }
+        },
+        false,
+      );
+    
 
     addEventListener('DOMContentLoaded', drawDots());
+   // addEventListener('DOMContentLoaded', simulateKeyPress('a'));
     addEventListener('DOMContentLoaded', doTheThing());
+    addEventListener('DOMContentLoaded', randomFlash());
+
