@@ -138,7 +138,7 @@ def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -158,7 +158,7 @@ def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -178,7 +178,7 @@ def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -199,7 +199,7 @@ def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -220,7 +220,7 @@ def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers

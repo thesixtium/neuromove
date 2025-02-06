@@ -16,8 +16,8 @@ topLeftClick = function() {
     if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
     }
-    else if (sessionStorage.getItem('userType') == 'new'){}
-    window.location.href = "/training";
+    else if (sessionStorage.getItem('userType') == 'new'){
+    window.location.href = "/training";}
 }
 
 topRightClick = function() {
@@ -31,8 +31,8 @@ topRightClick = function() {
     if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
     }
-    else if (sessionStorage.getItem('userType') == 'new'){}
-    window.location.href = "/training";
+    else if (sessionStorage.getItem('userType') == 'new'){
+    window.location.href = "/training";}
 }
 
 bottomLeftClick = function() {
@@ -47,8 +47,8 @@ bottomLeftClick = function() {
     if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
     }
-    else if (sessionStorage.getItem('userType') == 'new'){}
-    window.location.href = "/training";
+    else if (sessionStorage.getItem('userType') == 'new'){
+    window.location.href = "/training";}
 }
 
 bottomRightClick = function() {
@@ -63,8 +63,8 @@ bottomRightClick = function() {
     if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
     }
-    else if (sessionStorage.getItem('userType') == 'new'){}
-    window.location.href = "/training";
+    else if (sessionStorage.getItem('userType') == 'new'){
+    window.location.href = "/training";}
 }
 
 centreClick = function() {
@@ -78,8 +78,9 @@ centreClick = function() {
     if (sessionStorage.getItem('userType') == 'returning'){
     window.location.href = "/local";
     }
-    else if (sessionStorage.getItem('userType') == 'new'){}
+    else if (sessionStorage.getItem('userType') == 'new'){
     window.location.href = "/training";
+    }
 }
 function toggleFullScreen() {
     if (!document.fullscreenElement) {
