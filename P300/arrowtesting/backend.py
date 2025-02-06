@@ -8,6 +8,7 @@ import logging
 from queue import Queue
 from kmedoids import fasterpam
 from scipy.spatial.distance import pdist, squareform, cdist
+import threading
 
 
 from pylsl import StreamInfo, StreamOutlet, local_clock
@@ -104,27 +105,28 @@ def drawMap():
     medoid_coordinates = np.loadtxt('middles.txt')
     neighbourhood_points = np.loadtxt('neighbourhood_points.txt').reshape((4,4,2))
     origin = np.loadtxt('origin.txt')
-
     number_of_neighbourhoods = neighbourhood_points.shape[0]
+    t0 = threading.Thread(map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods)) 
+    t1 = threading.Thread(map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods)) 
+    t2 = threading.Thread(map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods)) 
+    t3 = threading.Thread(map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods)) 
+    t4 = threading.Thread(map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods)) 
+    
+    t0.start()
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+
+    t0.join()
+    t1.join()
+    t2.join()
+    t3.join()
+    t4.join()
+
+
     #base map
-    colours = ['#b0b9cc', '#F5B528', '#FE6100', '#DC267F', '#648FFF']
-    colourmap = ListedColormap(colours)
-    plt.imshow(data, cmap=colourmap, interpolation='nearest')
-    plt.gca().invert_yaxis()
-
-    # save just colour zones
-    plt.axis('off')
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
-
-    plt.scatter(origin[0], origin[1], color='red')
-    plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
-
-    # save with origin and centers
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('static/center-points.svg', format='svg', bbox_inches='tight', pad_inches=0)
-
-    #map with region 1 flashed
+def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
     colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#000000']
     colourmap = ListedColormap(colours)
@@ -142,7 +144,9 @@ def drawMap():
     # save with origin and centers
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     plt.savefig('static/center-points0.svg', format='svg', bbox_inches='tight', pad_inches=0)
+
     #map with region 1 flashed
+def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
     colours = ['#b0b9cc', '#FFFFFF', '#000000', '#000000', '#000000']
     colourmap = ListedColormap(colours)
@@ -161,6 +165,7 @@ def drawMap():
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     plt.savefig('static/center-points1.svg', format='svg', bbox_inches='tight', pad_inches=0)
 
+def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     #map with region 2 flashed
     
     colours = ['#b0b9cc', '#000000', '#FFFFFF', '#000000', '#000000']
@@ -182,6 +187,7 @@ def drawMap():
 
 
     #map with region 3 flashed
+def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
     colours = ['#b0b9cc', '#000000', '#000000', '#FFFFFF', '#000000']
     colourmap = ListedColormap(colours)
@@ -202,6 +208,7 @@ def drawMap():
 
 
     #map with region 4 flashed
+def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
     colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#FFFFFF']
     colourmap = ListedColormap(colours)
