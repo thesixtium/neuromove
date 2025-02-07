@@ -74,3 +74,15 @@ class NotEnoughSharedMemory(InternalException):
 class UnknownDestinationDrivingState(InternalException):
     def __init__(self, state):
         super().__init__(13, ExceptionTypes.TEMPORARY, f"Destination Driving entered unknown state: {str(state)}")
+
+class InvalidValueToPointSelection(InternalException):
+    def __init__(self, err_str):
+        super().__init__(14, ExceptionTypes.TEMPORARY, err_str)
+
+class NotEnoughSpaceInRoom(InternalException):
+    def __init__(self, min_space: int, act_space: int):
+        super().__init__(15, ExceptionTypes.TEMPORARY, f"Not enough space to do point selection. Need at least {min_space} open spaces but only found {act_space} spaces")
+
+class PamFailedPointSelection(InternalException):
+    def __init__(self, expected: int, actual: int):
+        super().__init__(16, ExceptionTypes.TEMPORARY, f"PAM failed to find the correct number of medoids. Expected {expected} but got {actual}")

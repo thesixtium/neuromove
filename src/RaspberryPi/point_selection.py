@@ -8,13 +8,15 @@ from queue import Queue
 from kmedoids import fasterpam
 from scipy.spatial.distance import pdist, squareform, cdist
 
+from src.RaspberryPi.InternalException import InvalidValueToPointSelection, NotEnoughSpaceInRoom, PamFailedPointSelection
+
 # NOTE: data in the grid is stored with x direction in the columns and y direction in the rows
 # so to index the coordinates, it is data[y, x]
 
 # set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("point selection")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.debug("Logging initialized")
 
 # TODO: make object oriented to prevent running helper functions. 
@@ -65,12 +67,12 @@ def occupancy_grid_to_points(
     ```
     '''
 
-    data, origin = read_from_memory(raw_data=input_data)
+    data, origin = format_data(raw_data=input_data)
     
     if number_of_neighbourhoods < 1 or number_of_points_per_neighbourhood < 1:
-        raise ValueError("Number of neighbourhoods and number of points per neighbourhood must be greater than 0")
+        raise InvalidValueToPointSelection("Number of neighbourhoods and number of points per neighbourhood must be greater than 0")
     elif number_of_neighbourhoods > 5 or number_of_points_per_neighbourhood > 5:
-        raise ValueError("Maximum number of neighbourhoods and points per neighbourhood is 5")
+        raise InvalidValueToPointSelection("Maximum number of neighbourhoods and points per neighbourhood is 5")
     
     #NOTE: do we need to account for cases where number of points or neighbourhoods is greater than the number of points in the data?
     
@@ -78,7 +80,7 @@ def occupancy_grid_to_points(
         # initialize origin to middle of the data
         origin = (data.shape[0] // 2, data.shape[1] // 2) 
     elif origin[0] < 0 or origin[0] >= data.shape[1] or origin[1] < 0 or origin[1] >= data.shape[0]:
-        raise ValueError(f"Origin is not within the data with shape {data.shape}")
+        raise InvalidValueToPointSelection(f"Origin {origin} is not within the data with shape {data.shape}")
     
     logger.debug(f"Data has shape {data.shape}")
     logger.debug(f"Origin: {origin}")
@@ -93,13 +95,13 @@ def occupancy_grid_to_points(
     logger.debug(f"Reachable points found")
 
     if np.count_nonzero(reachable_points == 0) < number_of_neighbourhoods:
-        raise Exception(f"Could not find enough points in the data. Need at least {number_of_neighbourhoods}, only have {np.count_nonzero(reachable_points == 0)} point(s)")
+        raise NotEnoughSpaceInRoom(number_of_neighbourhoods, np.count_nonzero(reachable_points == 0))
 
     # run PAM to get the neighbourhoods
     medoid_coordinates, data = run_PAM(reachable_points, number_of_neighbourhoods)
 
     if medoid_coordinates is None or len(medoid_coordinates) != number_of_neighbourhoods:
-        raise ValueError(f"Expected {number_of_neighbourhoods} neighbourhoods, but only found {len(medoid_coordinates)}")
+        raise PamFailedPointSelection(number_of_neighbourhoods, len(medoid_coordinates))
 
     # get points in each neighbourhood
     neighbourhood_points = get_points_in_neighbourhood(data, origin, medoid_coordinates, number_of_points_per_neighbourhood)
@@ -154,16 +156,12 @@ def occupancy_grid_to_points(
 
     return data, medoid_coordinates, neighbourhood_points, origin 
 
-def read_from_memory(raw_data: np.ndarray = None):
-    if raw_data is None:
-        memory = SharedMemory(shem_name="point_selection")
-        raw_data = memory.read_grid()
-
+def format_data(raw_data: np.ndarray = None) -> Tuple[np.ndarray, tuple]:
     data = literal_eval(raw_data)
     data = np.array(data).T
     
     if len(data.shape) != 2:
-        raise ValueError("Data must be a 2D array")
+        raise InvalidValueToPointSelection("Data must be a 2D array")
 
     origin = (data.shape[0] // 2, data.shape[1] // 2)
 
@@ -315,7 +313,7 @@ def run_PAM(data: np.ndarray, num_clusters: int) -> tuple[np.ndarray, np.ndarray
     try:
         data = data.astype(float)
     except:
-        raise ValueError("Data must be convertible to float")
+        raise InvalidValueToPointSelection("Data must be convertible to float")
 
     # get coordinates of all reachable points
     reachable_coordinates = np.argwhere(data == 0)
@@ -450,7 +448,7 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
     # adjust origin based on room size
     if origin[0] < bottom_left[0] or origin[0] > top_right[0] or origin[1] < bottom_left[1] or origin[1] > top_right[1]:
-        raise ValueError(f"Origin {origin} is not within the found room size")
+        raise InvalidValueToPointSelection(f"Origin {origin} is not within the found room size")
     
     # +1 is needed due to the padding added to the room
     origin = (origin[0] - bottom_left[0]+1, origin[1] - bottom_left[1]+1)
@@ -459,7 +457,7 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
 if __name__ == "__main__":
     # load in data from testData
-    with open('LiDAR/testData', 'r') as file:
+    with open('src/LiDAR/testData', 'r') as file:
         data_str = file.read()
 
     selected_points = occupancy_grid_to_points(input_data=data_str, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4, save_result_to_disk=True)
