@@ -89,9 +89,20 @@ margin-bottom: -3%;}
 #filler{
     background-color: transparent;
 }
-#setup-grid-container{
+.setup-grid-container{
     padding-top: 4%;
-    grid-gap: 0.5em, 1em;
+    column-gap: 1em;
+    row-gap: 0.5em;
+    display: grid;
+    grid-template:  'item1 item1 item1'
+                    'item1 item1 item1'
+                    'item1 item1 item1';
+    justify-content: center;
+}
+
+.bci-setup-grid-container{
+    padding-top: 4%;
+    grid-gap: 1em;
     display: grid;
     grid-template:  'item1 item1 item1'
                     'item1 item1 item1'

@@ -5,7 +5,7 @@ const _sequence2 = [];
 const _sequence3 = [];
 var _root = document.querySelector(':root');
 var start_time;
-var numcycles = 20;
+var numcycles = 5;
 /*const l45 = document.getElementById("ca");
 l45.width = 100;
 l45.height = 100;
@@ -119,9 +119,6 @@ function flashSequence(array, array2, train_target){
             clearInterval(interval);
         }
       
-    if (index == 19 || index == 39 || index == 59 || index == 79 || index == 99){      
-      sendData(performance.now() - start_time, "Trial Ends", -1);
-      }
     }, (300));
     console.log("end sequence: " + array[i]);
     console.log(performance.now() - start_time);
@@ -253,7 +250,9 @@ function flashStuff(){
       sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);}
       }
     if (index == 5*numcycles){
-      sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);}
+      sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);
+      window.href("/stop_go")
+    }
 
     
     }, (2000*index+(Math.random()*150+50)));

@@ -84,21 +84,30 @@ def outputpls(timeID):
     # format data sample 
     # TODO: get what is flashing (for training) or a flag saying we're not training
     current_target = -1
-    flashed_as_num = ord(timeID[1]) - 98
+    if (len(timeID[1]) == 1):
+        flashed_as_num = ord(timeID[1]) - 98
+    else:
+        flashed_as_num = timeID[1]
     marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
 
     # convert from microseconds to seconds
     #timestamp = float(timeID[0]) / (10 ** 6) + local_clock()
 
     # broadcast to LSL
-    marker_outlet.push_sample([marker], timeID[0])
+    marker_outlet.push_sample([marker], float(timeID[0]))
 
     return 1
 
 @app.route('/eyetrackingside', methods=['POST'])
 def eyetrackingside():
-    data = request.form.get('data')
-    return 
+    data = request.json['data']
+    eyeoutput(data)
+    return jsonify({'result': 'success'})
+
+def eyeoutput(val):
+    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt"
+    with open(file_path, "a") as f:  # Open in append mode
+        f.write(str(val) + '\n')
 
 def drawMap():
     data = np.loadtxt('data.txt')
