@@ -2,6 +2,7 @@ import asyncio
 
 import joblib
 
+from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
 from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource
 
 from src.bci_essentials_wrappers.bci_essentials_wrapper import Bessy
@@ -62,8 +63,15 @@ async def main():
 
     bessy.setup_offline_processing(marker_source, eeg_source)
 
+async def online_main():
+    eeg_source = LslEegSource()
+    marker_source = LslMarkerSource()
+
+    bessy = Bessy(9)
+    bessy.setup_online_processing(marker_source, eeg_source)
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(online_main())
     # test_bessy()
 
     # markersource = BessyInput("data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")

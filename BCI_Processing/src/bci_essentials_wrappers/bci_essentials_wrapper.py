@@ -77,8 +77,8 @@ class Bessy:
         self.__bci_controller.step()
 
     # TODO: implement online processing
-    def setup_online_processing(self, marker_souurce: LslMarkerSource, eeg_source: LslEegSource):
-        self.__marker_source = marker_souurce
+    def setup_online_processing(self, marker_source: LslMarkerSource, eeg_source: LslEegSource):
+        self.__marker_source = marker_source
         self.__eeg_source = eeg_source
 
         if self.__bci_controller is not None:
