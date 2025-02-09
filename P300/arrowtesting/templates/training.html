@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>p300test</title>
+</head>
+<body>
+    <div class = "grid-container">
+    <div id = "startbox"> 
+        <p> press enter to <br>start training <p>
+    </div>
+
+   <div class = "training-grid-item" id="empty"><!--<canvas id = "ca" width = "100" height = 100> </canvas>--></div>
+    <!--<div class = "grid-item" id="d"><canvas id = "cd" width = "100" height = 100> </canvas></div>-->
+    <div class = "training-grid-item" id="b"><canvas id = "cb" width = "100" height = 100> </canvas></div>
+    <div class = "training-grid-item" id="empty"><!--<canvas id = "ca" width = "100" height = 100> </canvas>--></div>
+    <div class = "training-grid-item" id="d"><canvas id = "cd" width = "100" height = 100> </canvas></div>
+   <!-- <div class = "grid-item" id="a"><canvas id = "ca" width = "100" height = 100> </canvas></div>-->
+    <div class = "training-grid-item" id="e"><canvas id = "ce" width = "100" height = 100> </canvas> </div>
+    <!--<div class = "grid-item" id="c"><canvas id = "cc" width = "100" height = 100> </canvas></div>-->
+    <div class = "training-grid-item" id="f"><canvas id = "cf" width = "100" height = 100> </canvas></div>
+    <div class = "training-grid-item" id="empty"><!--<canvas id = "cg" width = "100" height = 100> </canvas>--></div>
+    <div class = "training-grid-item" id="h"><canvas id = "ch" width = "100" height = 100> </canvas></div>
+    <div class = "training-grid-item" id="empty"><!--<canvas id = "ci" width = "100" height = 100> </canvas>--></div>
+</div>
+<script src = "{{url_for('static', filename='training.js') }}"> 
+/* const _idoptions = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+const _sequence1 = [];
+const _sequence2 = [];
+const _sequence3 = [];
+const defaultColour = "aliceblue";
+function pickSequence(array){
+    let temp = [];
+    array.forEach(element => {
+        temp.push(element);
+    });
+    console.log("temp end: " + temp[temp.length - 1]);
+    array.length = 0;
+    let i =0;
+    while (i < _idoptions.length){
+        let index = Math.floor(Math.random() * _idoptions.length);
+        if ((i == 0 && temp[temp.length - 1] == _idoptions[index]) || array.includes(_idoptions[index])){
+            continue;
+        } else {
+            array.push(_idoptions[index]);
+            i++;
+        }
+    }
+    console.log("array: " + array[0]);
+}
+function flashSequence(array){
+    //for(let j = 0; j < 3; j++){
+        pickSequence(array);
+    let i = 0;
+    let interval = setInterval(function(){
+        if (i < _idoptions.length){
+            document.getElementById(array[i]).style.backgroundColor = "salmon";
+            setTimeout(function(){
+                document.getElementById(array[i]).style.backgroundColor = defaultColour;
+            }, 100);
+            i++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 220);
+}
+function doTheThing(){
+   //flashSequence(_sequence1);
+    //setTimeout(function(){
+    for(let i = 0; i<7; i++){
+    setTimeout(function(){flashSequence(_sequence1);}, (2000*i));}//}, 2500);
+    //flashSequence(_sequence3);
+}
+//}
+addEventListener('DOMContentLoaded', doTheThing);
+//src = "test-logic.js" */
+
+</script>
+</body>
+</html>

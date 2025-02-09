@@ -1,0 +1,222 @@
+:root {
+    --top: 20%;
+    --pleft: 0%;
+    --pright: 0%;
+    --mleft: 10%;
+    --mright: 10%;
+}
+.quicksand {
+    font-family: "Quicksand", serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+  }
+body{
+    background-color: rgb(80, 97, 155);
+    margin-left: 15%;
+    margin-right:15%;
+    font-family: 'Quicksand', sans-serif;
+}
+
+h1{
+    color: black;
+    text-align: center;
+    text-shadow: 0em 0em 1em white;
+    font-size: 5em;
+    font-family: 'Quicksand', sans-serif;
+}
+
+
+#map0{
+    z-index: 1;
+    position: absolute;
+}
+#map1{
+    z-index: 10;
+    position: absolute;
+}
+#map2{
+    z-index: 20;
+    position: absolute;
+}
+#map3{
+    z-index: 30;
+    position: absolute;
+}
+#map4{
+    z-index: 40;
+    position: absolute;
+}
+
+h2{
+    color: black;
+    padding: 0em;
+    text-align: center;
+    text-shadow: 0em 0em 1em white;
+    font-size: 2.5em;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.dot{
+    position: absolute;
+    left: 30%;
+    top: 40%;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    z-index: 7;
+    background-color: white;
+    stroke: black;
+    border: 0.3em, solid, black;
+  
+  }
+
+#final-header{
+    padding-top: 0%;
+    margin-top: 0%
+}
+
+#subheader{
+    padding-top: 10%;
+padding-bottom: -3%;
+margin-bottom: -3%;}
+
+#screen_area_select{
+    padding-top: -15%;
+    margin-top: -15%;
+
+}
+#filler{
+    background-color: transparent;
+}
+.setup-grid-container{
+    padding-top: 4%;
+    column-gap: 1em;
+    row-gap: 0.5em;
+    display: grid;
+    grid-template:  'item1 item1 item1'
+                    'item1 item1 item1'
+                    'item1 item1 item1';
+    justify-content: center;
+}
+
+.bci-setup-grid-container{
+    padding-top: 4%;
+    grid-gap: 1em;
+    display: grid;
+    grid-template:  'item1 item1 item1'
+                    'item1 item1 item1'
+                    'item1 item1 item1';
+    justify-content: center;
+}
+
+.grid-item{
+    //margin: 5em;=
+    background: black;
+    //background: black;
+   /*background-color: lime;*/
+   max-height: 30vh;
+   z-index: 1;
+}
+
+.training-grid-item{
+    //margin: 5em;=
+    position: absolute;
+    background: black;
+    //background: black;
+   /*background-color: lime;*/
+   max-height: 30vh;
+   z-index: 1;
+
+}
+
+#startbox{
+    position: absolute;
+    background: black;
+    height: 70vh;
+    width: 60vw;
+    font-size: 5em;
+    font-family: 'Quicksand', sans-serif;
+    color: white;
+    text-align: center;
+    z-index: 20;
+}
+
+#tl, #tr, #cen, #bl, #br, #returning, #newb{
+    background: black;
+    color: white;
+    font-size: 1em;
+    height: 17vh;
+    width: 17vh;
+    text-align: center;
+}
+
+.returning{
+    margin-top: 0.1em;
+}
+#menutext{
+    padding-top: 23%;
+    text-align: center;
+    font-size: 0.5em;
+    text-shadow: none;
+}
+.newb{
+    margin-top: -1.5%;
+}
+.stop-grid-container {
+    padding-top: 15%;
+    grid-gap: 1em;
+    display: grid;
+    grid-template: 'item1 item1'
+                    'item1 item1';
+    justify-content: center;
+}
+.stop-grid-item{
+    //margin: 5em;
+    background: black;
+    //background: black;
+   /*background-color: lime;*/
+   max-height: 30vh;
+}
+.grid-container {
+    padding-top: var(--top);
+    padding-left: var(--pleft);
+    padding-right: var(--pright);
+    margin-right: var(--mright);
+    margin-left: var(--mleft);
+    grid-gap: 1em;
+    display: grid;
+    grid-template: 'item1 item1 item1'
+                    'item1 item1 item1';
+    
+}
+
+.map{
+    //position: relative;
+    padding-top: var(--top);
+    padding-left: var(--pleft);
+    padding-right: var(--pright);
+    margin-right: var(--mright);
+    margin-left: var(--mleft);
+    max-height: 70vh;
+}
+#a, #b, #c, #d, #e, #f, #g, #h, #i, #stop, #go, #go2 {
+    //padding: 1em;
+    font-size: 4em;
+    //border: 10px solid #f107a7;
+    //margin: 0.5em;
+    text-align: center;
+}
+
+canvas{
+   // background-color: chartreuse;
+    //border-color: chartreuse;
+    
+}
+#empty{
+    background: transparent;
+}
+
+.bci-setup-grid-container{
+    grid-gap: 1em;
+}

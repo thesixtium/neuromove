@@ -1,11 +1,11 @@
-const _idoptions = [/*"a",*/ "b", /*"c", */"d", "e", "f"/*, "g", "h", "i"*/];
-const _arrows = [/*"ca",*/ "cb", /*"cc",*/ "cd", "ce", "cf"/*, "cg", "ch", "ci"*/];
+const _idoptions = [/*"a",*/ "b", /*"c", */"d", "e", "f"/*, "g"*/, "h"/*, "i"*/];
+const _arrows = [/*"ca",*/ "cb", /*"cc",*/ "cd", "ce", "cf"/*, "cg"*/, "ch"/*, "ci"*/];
 const _sequence1 = [];
 const _sequence2 = [];
 const _sequence3 = [];
 var _root = document.querySelector(':root');
-
-const start_time = performance.now() * 1000;
+var start_time;
+var train_target = (-1);
 /*const l45 = document.getElementById("ca");
 l45.width = 100;
 l45.height = 100;
@@ -21,15 +21,40 @@ const cstop = stop.getContext("2d");
 const r = document.getElementById("cf");
 const cr = r.getContext("2d");
 /*const l135 = document.getElementById("cg");
-const cl135 = l135.getContext("2d");
-const bwd = document.getElementById("ch");
-const cbwd = bwd.getContext("2d");
+const cl135 = l135.getContext("2d");*/
+const sw = document.getElementById("ch");
+const csw = sw.getContext("2d");/*
 const r135 = document.getElementById("ci");
 const cr135 = r135.getContext("2d");*/
 
-const _canvases = [/*cl45,*/ cfwd, /*cr45, */cl, cstop ,cr, /*cl135, cbwd, cr135*/];
+switchClick = function() {
+    console.log("switch mode!");
+    //sendData(0);
+    window.location.href = "/destination";
+}
+
+function sendData(time, id, target) {
+    var data = [time, id, target];
+    fetch('/localBCI', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({data: data})
+      })
+      .then(response => response.text())
+      .then(result => {
+        console.log(result);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+}
+
+const _canvases = [/*cl45,*/ cfwd, /*cr45, */cl, cstop ,cr, csw /*cl135, cbwd, cr135*/];
 const defaultColour = "white";
 function pickSequence(array, array2){
+    //decide sequence in which to flash
     let temp = [];
     array.forEach(element => {
         temp.push(element);
@@ -55,6 +80,7 @@ function pickSequence(array, array2){
     console.log("arrows: " + array2);
 }
 function flashSequence(array, array2){
+    //flash the arrows
     //for(let j = 0; j < 3; j++){
         pickSequence(array, array2);
         //array2[0].fillStyle = "black";
@@ -65,7 +91,11 @@ function flashSequence(array, array2){
         if (i <array2.length){
             
             console.log("start i: " + array[i]);
-            console.log(performance.now() * 1000- start_time);
+            console.log(performance.now() - start_time);
+
+            if (i>0){
+            sendData((performance.now() - start_time).toFixed(10), array[i], train_target);
+                }
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
             array2[i].fill();
@@ -73,9 +103,9 @@ function flashSequence(array, array2){
                 document.getElementById(array[i]).style.backgroundColor = "white";
                 array2[i].fillStyle = "black";
                 array2[i].fill();
-            }, 200);
+            }, 100);
             console.log("end i: " + array[i]);
-            console.log(performance.now() * 1000 - start_time);
+            console.log(performance.now() - start_time);
             i++;
           /*  if (array[i] == "ca"){
                 l45.width +=15;
@@ -85,27 +115,13 @@ function flashSequence(array, array2){
             drawArrows();
             clearInterval(interval);
         }
-    }, 640);
+    }, (300));
+    console.log("end sequence: " + array[i]);
+    console.log(performance.now() - start_time);
 }
 
 function drawArrows(){
-   /* 
-    cl45.beginPath();
-    cl45.moveTo(85, 100);
-    cl45.lineTo(35, 60);
-    cl45.lineTo(17, 80);
-    cl45.lineTo(20, 30);
-    cl45.lineTo(70, 30);
-    cl45.lineTo(55, 45);
-    cl45.lineTo(85, 100);
-    cl45.lineWidth = 10;
-    cl45.strokeStyle = "black";
-    cl45.stroke();
-    //_canvases[0].fillStyle = "pink";
-    cl45.fillStyle = "white";
-    cl45.fill();
-    document.getElementById("a").style.backgroundColor = "black";
-*/
+
     cfwd.beginPath();
     cfwd.moveTo(40, 95);
     cfwd.lineTo(40, 45);
@@ -120,60 +136,6 @@ function drawArrows(){
     cfwd.fillStyle = "white";
     cfwd.fill();
     document.getElementById("b").style.backgroundColor = "black";
-/*
-    cr45.beginPath();
-    cr45.moveTo(15, 100);
-    cr45.lineTo(65, 60);
-    cr45.lineTo(83, 80);
-    cr45.lineTo(80, 30);
-    cr45.lineTo(30, 30);
-    cr45.lineTo(45, 45);
-    cr45.lineTo(15, 100);
-    cr45.lineWidth = 10;
-    cr45.stroke();
-    cr45.fillStyle = "white";
-    cr45.fill();
-    document.getElementById("c").style.backgroundColor = "black";
-
-    cl135.beginPath();
-    cl135.moveTo(85, 20);
-    cl135.lineTo(35, 60);
-    cl135.lineTo(17, 40);
-    cl135.lineTo(20, 90);
-    cl135.lineTo(70, 90);
-    cl135.lineTo(55, 75);
-    cl135.lineTo(85, 20);
-    cl135.lineWidth = 10;
-    cl135.stroke();
-    cl135.fillStyle = "white";
-    cl135.fill();
-
-    cbwd.beginPath();
-    cbwd.moveTo(40, 10);
-    cbwd.lineTo(40, 60);
-    cbwd.lineTo(10, 60)
-    cbwd.lineTo(50, 100);
-    cbwd.lineTo(90, 60);
-    cbwd.lineTo(60, 60);
-    cbwd.lineTo(60, 10);
-    cbwd.lineTo(40, 10);
-    cbwd.lineWidth = 10;
-    cbwd.stroke();
-    cbwd.fillStyle = "white";
-    cbwd.fill();
-
-    cr135.beginPath();
-    cr135.moveTo(15, 20);
-    cr135.lineTo(65, 60);
-    cr135.lineTo(83, 40);
-    cr135.lineTo(80, 90);
-    cr135.lineTo(30, 90);
-    cr135.lineTo(45, 75);
-    cr135.lineTo(15, 20);
-    cr135.lineWidth = 10;
-    cr135.stroke();
-    cr135.fillStyle = "white";
-    cr135.fill();*/
 
     cl.beginPath();
     cl.moveTo(90, 70);
@@ -220,6 +182,17 @@ function drawArrows(){
     cstop.fillStyle = "white";
     cstop.fill();
     document.getElementById("e").style.backgroundColor = "black";
+
+    csw.beginPath();
+    csw.arc(30, 50, 40, Math.PI+1.5, Math.PI/2);
+    csw.lineTo(20, 90);
+    csw.lineTo(20, 10);
+    csw.lineTo(30, 10);
+    csw.lineWidth = 10;
+    csw.stroke();
+    csw.fillStyle = "white";
+    csw.fill();
+    document.getElementById("h").style.backgroundColor = "black";
 }
 function doTheThing(){
     if(sessionStorage.getItem('pright')){
@@ -233,18 +206,39 @@ function doTheThing(){
     if(sessionStorage.getItem('mright')){
     _root.style.setProperty('--mright', sessionStorage.getItem('mright'));}
 
+    start_time = performance.now();
+
 //flashSequence(_sequence1, _sequence2);
    //flashSequence(_sequence1);
     //setTimeout(function(){
-    console.log("block start: " + performance.now() * 1000-start_time);
-    for(let i = 0; i<2; i++){
-    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2650*i));}//}, 2500);*/
-    console.log("cycle " + i + "end: " + performance.now() * 1000-start_time);
+    sendData(performance.now() - start_time, -1, -1);
+    for(let i = 0; i<20; i++){
+    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
+    console.log("cycle " + i + "end: " + performance.now() - start_time);
+    }
     //flashSequence(_sequence3);
     
-}
+
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Enter") {
+        toggleFullScreen();
+      }
+    },
+    false,
+  );
+
 //console.log("block end: " + Date.now()-start_time);
 //}
 addEventListener('DOMContentLoaded', drawArrows());
+document.getElementById("h").addEventListener("click", switchClick);
 addEventListener('DOMContentLoaded', doTheThing());
 //src = "test-logic.js"
