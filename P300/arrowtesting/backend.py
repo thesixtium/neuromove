@@ -20,7 +20,7 @@ app = Flask(__name__,template_folder="templates")
 
 # create LSL stream
 marker_info = StreamInfo(name='MarkerStream',
-                        type='Markers',
+                        type='LSL_Marker_Strings',
                         channel_count=1,
                         nominal_srate=250,
                         channel_format='string',
