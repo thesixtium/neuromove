@@ -2,11 +2,11 @@ import asyncio
 import joblib
 from sklearn.pipeline import Pipeline
 
+# from bci_essentials_wrappers.output.shared_memory_messenger import SharedMemoryMessenger
+from src.bci_essentials_wrappers.input.xdf_input import OldXdfFormatInput
+from src.bci_essentials_wrappers.output.shared_memory_messenger import SharedMemoryMessenger
+from internal_exception2 import BciSetupException
 from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
-
-from .input.xdf_input import OldXdfFormatInput
-from lib.bci_essentials.bci_essentials.io.sources import EegSource, MarkerSource
-from src.bci_essentials_wrappers.output.text_file_messenger import TextFileMessenger
 
 from lib.bci_essentials.bci_essentials.io.messenger import Messenger
 from lib.bci_essentials.bci_essentials.paradigm.p300_paradigm import P300Paradigm
@@ -21,7 +21,7 @@ class Bessy:
     Bessy is a wrapper class for bci_essentials. It is based on the class of the same name from [FlickTok](https://github.com/kirtonBCIlab/FlickTok/blob/main/src/apps/server/src/Bessy.py).
     '''
     
-    def __init__(self, num_classes: int, messenger: Messenger = None, model: Pipeline = None):
+    def __init__(self, num_classes: int = 5, online: bool = True, xdf_filepath: str = None, messenger: Messenger = None, model: Pipeline = None):
         # variables constant for NeuroMove but set for easy editing later
         self.__paradigm = "p300"
         self.__flash_scheme = "s" # s for single item flashing at a time
@@ -40,16 +40,50 @@ class Bessy:
                     self.__pre_trained = True
                     self.__classifier.clf = model
             case _:
-                raise ValueError(f"Paradigm  \"{self.__paradigm}\" not recognized")
+                raise BciSetupException(f"Paradigm  \"{self.__paradigm}\" not recognized")
             
         if messenger is None:
-            self.__messenger = TextFileMessenger("data/class_output.txt")
+            # pass
+            self.__messenger = SharedMemoryMessenger(debug=False)
         else:
             self.__messenger = messenger
     
         self.__data_tank = DataTank()
 
-        self.__bci_controller = None
+        self.__online = online
+        if online == False and xdf_filepath is None:
+            raise BciSetupException(f"Offline processing selected but no XDF filepath provided")
+
+
+        # if both onine = true and xdf filepath given, assume online processing
+        if online == True:
+            self.__eeg_source = LslEegSource()
+            self.__marker_source = LslMarkerSource()
+        else:
+            self.__eeg_source = XdfEegSource(xdf_filepath)
+            self.__marker_source = OldXdfFormatInput(xdf_filepath)
+
+        self.__bci_controller = BciController(
+            eeg_source=self.__eeg_source,
+            marker_source=self.__marker_source,
+            paradigm=self.__paradigm,
+            classifier=self.__classifier,
+            data_tank=self.__data_tank,
+            messenger=self.__messenger
+        )
+
+        self.__bci_controller.setup(online=online, train_complete=self.__pre_trained)
+        
+        self.__bci_controller.event_timestamp_buffer = []
+        self.__bci_controller.event_marker_buffer = []
+
+    def run(self):
+        if self.__online:
+            pass
+
+        else:
+            # just run step once for offline data
+            self.__bci_controller.step()
 
     def setup_offline_processing(self, marker_source: XdfMarkerSource, eeg_source: XdfEegSource) -> None:
         self.__marker_source = marker_source
@@ -73,8 +107,7 @@ class Bessy:
         self.__bci_controller.event_timestamp_buffer = []
         self.__bci_controller.event_marker_buffer = []
 
-        # just run step once for XDF data
-        self.__bci_controller.step()
+
 
     # TODO: implement online processing
     def setup_online_processing(self, marker_source: LslMarkerSource, eeg_source: LslEegSource):

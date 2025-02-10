@@ -1,6 +1,6 @@
 from lib.bci_essentials.bci_essentials.io.messenger import Messenger
 
-from .....src.RaspberryPi.SharedMemory import SharedMemory
+from shared_memory2 import SharedMemory
 
 class SharedMemoryMessenger(Messenger):
     def __init__(self, debug: bool=False):

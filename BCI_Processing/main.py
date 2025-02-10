@@ -2,8 +2,9 @@ import asyncio
 
 import joblib
 
+from src.bci_essentials_wrappers.output.text_file_messenger import TextFileMessenger
 from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
-from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource
+from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
 
 from src.bci_essentials_wrappers.bci_essentials_wrapper import Bessy
 from src.bci_essentials_wrappers.input.xdf_input import OldXdfFormatInput
@@ -50,28 +51,51 @@ from src.bci_essentials_wrappers.input.xdf_input import OldXdfFormatInput
     # controller.run(max_loops=100)
 """
     
+# async def main():
+#     eeg_source = XdfEegSource("data/sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
+#     # marker_source = bci_essentials.io.xdf_sources.XdfMarkerSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
+#     marker_source = OldXdfFormatInput("data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
+
+#     # model = joblib.load("test_save.pk1")
+
+#     bessy = Bessy(9, model=None)
+
+#     input("press enter to continue")
+
+#     bessy.setup_offline_processing(marker_source, eeg_source)
+
 async def main():
     eeg_source = XdfEegSource("data/sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
+    # eeg_source = XdfEegSource("C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-HEADSET/ses-S002/eeg/sub-HEADSET_ses-S002_task-Default_run-004_eeg.xdf")
     # marker_source = bci_essentials.io.xdf_sources.XdfMarkerSource("sub-DANI_ses-S001_task-Default_run-001_eeg.xdf")
     marker_source = OldXdfFormatInput("data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
+    # marker_source = XdfMarkerSource("C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-HEADSET/ses-S002/eeg/sub-HEADSET_ses-S002_task-Default_run-004_eeg.xdf")
 
-    model = joblib.load("test_save.pk1")
+    # model = joblib.load("test_save.pk1")
+    # model = None
 
-    bessy = Bessy(9, model=model)
+    messenger = TextFileMessenger("data/output.txt")
 
-    input("press enter to continue")
+    bessy = Bessy(5, online=False, xdf_filepath="data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf", messenger=messenger)
+    bessy.run()
 
-    bessy.setup_offline_processing(marker_source, eeg_source)
+    # input("press enter to continue")
+
+    # bessy.setup_offline_processing(marker_source, eeg_source)
 
 async def online_main():
     eeg_source = LslEegSource()
+    print("RESOLVED EEG")
     marker_source = LslMarkerSource()
+    print("Streams resolved(?)")
 
-    bessy = Bessy(9)
+    bessy = Bessy(5)
+    input("constructor done. press enter to continue")
     bessy.setup_online_processing(marker_source, eeg_source)
 
 if __name__ == "__main__":
-    asyncio.run(online_main())
+    # asyncio.run(online_main())
+    asyncio.run(main())
     # test_bessy()
 
     # markersource = BessyInput("data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")
