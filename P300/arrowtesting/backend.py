@@ -2,12 +2,13 @@ from flask import Flask,render_template, request, jsonify
 from bci_essentials import *
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
+from matplotlib.colors import ListedColormap 
+'''
 from ast import literal_eval
 import logging
 from queue import Queue
 from kmedoids import fasterpam
-from scipy.spatial.distance import pdist, squareform, cdist
+from scipy.spatial.distance import pdist, squareform, cdist'''
 import threading
 
 
@@ -90,8 +91,6 @@ def outputpls(timeID):
         flashed_as_num = timeID[1]
     marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
 
-    # convert from microseconds to seconds
-    #timestamp = float(timeID[0]) / (10 ** 6) + local_clock()
 
     # broadcast to LSL
     marker_outlet.push_sample([marker], float(timeID[0]))
@@ -137,7 +136,7 @@ def drawMap():
     #base map
 def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#000000']
+    colours = ['#948876', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -147,7 +146,7 @@ def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red', marker='*')
+    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -157,7 +156,7 @@ def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 1 flashed
 def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#b0b9cc', '#FFFFFF', '#000000', '#000000', '#000000']
+    colours = ['#948876', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -167,7 +166,7 @@ def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red', marker='*')
+    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -177,7 +176,7 @@ def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     #map with region 2 flashed
     
-    colours = ['#b0b9cc', '#000000', '#FFFFFF', '#000000', '#000000']
+    colours = ['#948876', '#FFFFFF', '#000000', '#ffffff', '#ffffff']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -187,7 +186,7 @@ def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red', marker='*')
+    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -198,7 +197,7 @@ def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 3 flashed
 def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#b0b9cc', '#000000', '#000000', '#FFFFFF', '#000000']
+    colours = ['#948876', '#FFFFFF', '#FFFFFF', '#000000', '#FFFFFF']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -208,7 +207,7 @@ def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red', marker='*')
+    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -219,7 +218,7 @@ def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 4 flashed
 def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#FFFFFF']
+    colours = ['#948876', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#000000']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -229,7 +228,7 @@ def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], color='red', marker='*')
+    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers

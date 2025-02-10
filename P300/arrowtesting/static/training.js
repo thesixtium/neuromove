@@ -1,36 +1,26 @@
-const _idoptions = [/*"a",*/ "b", /*"c", */"d", "e", "f"/*, "g"*/, "h"/*, "i"*/];
+const _idoptions = ["a", "b", "c", "d", "e"];
 const _arrows = [/*"ca",*/ "cb", /*"cc",*/ "cd", "ce", "cf"/*, "cg"*/, "ch"/*, "ci"*/];
 const _sequence1 = [];
 const _sequence2 = [];
 const _sequence3 = [];
 var _root = document.querySelector(':root');
 var start_time;
-var numcycles = 5;
-/*const l45 = document.getElementById("ca");
-l45.width = 100;
-l45.height = 100;
-const cl45 = l45.getContext("2d");*/
+var numcycles = 1;
+
 const fwd = document.getElementById("cb");
 const cfwd = fwd.getContext("2d");
-//const r45 = document.getElementById("cc");
-//const cr45 = r45.getContext("2d");
 const l = document.getElementById("cd");
 const cl = l.getContext("2d");
 const stop = document.getElementById("ce");
 const cstop = stop.getContext("2d");
 const r = document.getElementById("cf");
 const cr = r.getContext("2d");
-/*const l135 = document.getElementById("cg");
-const cl135 = l135.getContext("2d");*/
 const sw = document.getElementById("ch");
-const csw = sw.getContext("2d");/*
-const r135 = document.getElementById("ci");
-const cr135 = r135.getContext("2d");*/
+const csw = sw.getContext("2d");
 document.getElementById("startbox").style.opacity = '1';
 
 switchClick = function() {
     console.log("switch mode!");
-    //sendData(0);
     window.location.href = "/destination";
 }
 
@@ -52,7 +42,7 @@ function sendData(time, id, target) {
       });
 }
 
-const _canvases = [/*cl45,*/ cfwd, /*cr45, */cl, cstop ,cr, csw /*cl135, cbwd, cr135*/];
+const _canvases = [cfwd, cl, cstop ,cr, csw ];
 const defaultColour = "white";
 function pickSequence(array, array2){
     //decide sequence in which to flash
@@ -83,18 +73,11 @@ function pickSequence(array, array2){
 function flashSequence(array, array2, train_target){
 
     //flash the arrows
-    //for(let j = 0; j < 3; j++){
         pickSequence(array, array2);
-        //array2[0].fillStyle = "black";
-        //array2[0].fill()
-        console.log("array at flash: " + array);
         let i = 0;
     let interval = setInterval(function(){
       
         if (i <array2.length){
-            
-            console.log("start i: " + array[i]);
-            console.log(performance.now() - start_time);
 
             if (i>0){
             sendData((performance.now() - start_time).toFixed(10), array[i], train_target);
@@ -107,21 +90,13 @@ function flashSequence(array, array2, train_target){
                 array2[i].fillStyle = "black";
                 array2[i].fill();
             }, 100);
-            console.log("end i: " + array[i]);
-            console.log(performance.now() - start_time);
             i++;
-          /*  if (array[i] == "ca"){
-                l45.width +=15;
-                drawArrows();
-            }*/
         } else {
             drawArrows();
             clearInterval(interval);
         }
       
     }, (300));
-    console.log("end sequence: " + array[i]);
-    console.log(performance.now() - start_time);
 }
 
 function drawArrows(){
@@ -139,7 +114,7 @@ function drawArrows(){
     cfwd.stroke();
     cfwd.fillStyle = "white";
     cfwd.fill();
-    document.getElementById("b").style.backgroundColor = "black";
+    document.getElementById("a").style.backgroundColor = "black";
 
     cl.beginPath();
     cl.moveTo(90, 70);
@@ -154,7 +129,7 @@ function drawArrows(){
     cl.stroke();
     cl.fillStyle = "white";
     cl.fill();
-    document.getElementById("d").style.backgroundColor = "black";
+    document.getElementById("b").style.backgroundColor = "black";
 
     cr.beginPath();
     cr.moveTo(10, 70);
@@ -169,7 +144,7 @@ function drawArrows(){
     cr.stroke();
     cr.fillStyle = "white";
     cr.fill();
-    document.getElementById("f").style.backgroundColor = "black";
+    document.getElementById("d").style.backgroundColor = "black";
 
     cstop.beginPath();
     cstop.moveTo(32, 25);
@@ -185,7 +160,7 @@ function drawArrows(){
     cstop.stroke();
     cstop.fillStyle = "white";
     cstop.fill();
-    document.getElementById("e").style.backgroundColor = "black";
+    document.getElementById("c").style.backgroundColor = "black";
 
     csw.beginPath();
     csw.arc(30, 50, 40, Math.PI+1.5, Math.PI/2);
@@ -196,7 +171,7 @@ function drawArrows(){
     csw.stroke();
     csw.fillStyle = "white";
     csw.fill();
-    document.getElementById("h").style.backgroundColor = "black";
+    document.getElementById("e").style.backgroundColor = "black";
 }
 function doTheThing(){
     if(sessionStorage.getItem('pright')){
@@ -219,9 +194,6 @@ function flashStuff(){
    //flashSequence(_sequence1);
     //setTimeout(function(){
     sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);
-    console.log("block start: " + performance.now() - start_time);
-    
-    console.log("block start: " + performance.now() - start_time);
     for(let index = 0; index<5*numcycles + 1; index++){
     setTimeout(function(){      
       if(index<numcycles){
@@ -251,13 +223,12 @@ function flashStuff(){
       }
     if (index == 5*numcycles){
       sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);
-      window.href("/stop_go")
+      document.getElementById("startbox").style.opacity = '1';
     }
 
     
     }, (2000*index+(Math.random()*150+50)));
       }
-    console.log("cycle " + index + "end: " + performance.now() - start_time);
     }
     //flashSequence(_sequence3);
 function toggleFullScreen() {
@@ -277,8 +248,6 @@ function toggleFullScreen() {
     false,
   );
 
-//console.log("block end: " + Date.now()-start_time);
-//}
 addEventListener('DOMContentLoaded', drawArrows());
 document.addEventListener('DOMContentLoaded', doTheThing());
 document.addEventListener(
@@ -291,4 +260,3 @@ document.addEventListener(
   false,
 );
 document.getElementById("h").addEventListener("click", switchClick);
-//src = "test-logic.js"
