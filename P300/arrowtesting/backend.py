@@ -6,7 +6,7 @@ from matplotlib.colors import ListedColormap
 from ast import literal_eval
 import logging
 from queue import Queue
-from kmedoids import fasterpam
+# from kmedoids import fasterpam
 from scipy.spatial.distance import pdist, squareform, cdist
 import threading
 
@@ -77,24 +77,26 @@ def setup():
     return render_template('setupmenu.html')
 
 def outputpls(timeID):
-    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.txt"
+    # file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.txt"
+    file_path = "test1.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(timeID) + '\n')
 
-    # format data sample 
-    # TODO: get what is flashing (for training) or a flag saying we're not training
-    current_target = -1
+    # format data sample 1
     if (len(timeID[1]) == 1):
+        # for a square flashed, we need the special format
         flashed_as_num = ord(timeID[1]) - 98
+        current_target = timeID[2]
+        marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
     else:
-        flashed_as_num = timeID[1]
-    marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
+        # for an "event" marker we just need the string
+        marker = timeID[1]
 
-    # convert from microseconds to seconds
-    #timestamp = float(timeID[0]) / (10 ** 6) + local_clock()
+    # add in lsl timestamp
+    timestamp = float(timeID[0]) + local_clock()
 
     # broadcast to LSL
-    marker_outlet.push_sample([marker], float(timeID[0]))
+    marker_outlet.push_sample([marker], timestamp)
 
     return 1
 
