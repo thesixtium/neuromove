@@ -120,8 +120,11 @@ class Bessy:
     async def __bessy_step(self):
         self.__bci_controller.step()
 
+    # Aleks do your funky model compression stuff here pls
+    def __save_model(self, save_name: str):
+        # save the model
+        joblib.dump(self.__bci_controller._classifier.clf, save_name)
+
     def __del__(self):
         self.__stop_event.set()
-
-        # save the model
-        joblib.dump(self.__bci_controller._classifier.clf, 'test_save.pk1')
+        self.__save_model("save_on_exit.pk1")
