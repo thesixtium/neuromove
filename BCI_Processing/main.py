@@ -76,22 +76,26 @@ async def main():
 
     messenger = TextFileMessenger("data/output.txt")
 
-    bessy = Bessy(5, online=False, xdf_filepath="data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf", messenger=messenger)
-    bessy.run()
+    bessy = Bessy(online=False, xdf_filepath="data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf", messenger=messenger)
+        
+    try:
+        await bessy.run()
+    except KeyboardInterrupt:
+        bessy.set_stop()
 
     # input("press enter to continue")
 
     # bessy.setup_offline_processing(marker_source, eeg_source)
 
 async def online_main():
-    eeg_source = LslEegSource()
-    print("RESOLVED EEG")
-    marker_source = LslMarkerSource()
-    print("Streams resolved(?)")
 
-    bessy = Bessy(5)
+    bessy = Bessy()
     input("constructor done. press enter to continue")
-    bessy.setup_online_processing(marker_source, eeg_source)
+    
+    try:
+        bessy.run()
+    except KeyboardInterrupt:
+        bessy.set_stop()
 
 if __name__ == "__main__":
     # asyncio.run(online_main())
