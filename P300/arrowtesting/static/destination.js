@@ -98,18 +98,14 @@ function flashSequence(array, array2){
   let interval = setInterval(function(){
       if (i <array2.length){
           
-          console.log("start i: " + array[i]);
-          console.log(performance.now()- start_time);
 
           if (i>0){
-          sendData((performance.now() - start_time).toFixed(10), array[i], -1);
+          sendData(((performance.now() - start_time)/1000).toFixed(10), array[i], -1);
               }
           array2[i].style.opacity = "0";
           setTimeout(function(){
             array2[i].style.opacity = "1";
           }, 100);
-          console.log("end i: " + array[i]);
-          console.log(performance.now() - start_time);
           i++;
         /*  if (array[i] == "ca"){
               l45.width +=15;
@@ -170,13 +166,10 @@ function doTheThing(){
 
         start_time = performance.now();       
     }
-    function randomFlash(){sendData(performance.now() - start_time, -1);
-    console.log("block start: " + performance.now() - start_time);
+    function randomFlash(){sendData((performance.now() - start_time)/1000, -1);
     for(let i = 0; i<3; i++){
-    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
-    console.log("cycle " + i + "end: " + performance.now() - start_time);
-        //flashSequence(_sequence3);
-    
+    setTimeout(function(){flashSequence(_sequence1, _sequence2);}, (2000*i+(Math.random()*150+50)));}
+      
     }
     function toggleFullScreen() {
         if (!document.fullscreenElement) {
