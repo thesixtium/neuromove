@@ -35,7 +35,7 @@ switchClick = function() {
 
 function sendData(time, id, target) {
     var data = [time, id, target];
-    fetch('/localBCI', {
+    fetch('/outputpls', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -59,7 +59,6 @@ function pickSequence(array, array2){
     array.forEach(element => {
         temp.push(element);
     });
-    console.log("temp end: " + temp[temp.length - 1]);
     array2.length = 0;
     array.length = 0;
     let i =0;
@@ -76,25 +75,16 @@ function pickSequence(array, array2){
     
     array.unshift(array[0]);
     array2.unshift(array2[0]);
-    console.log("array: " + array);
-    console.log("arrows: " + array2);
 }
 function flashSequence(array, array2){
     //flash the arrows
-    //for(let j = 0; j < 3; j++){
         pickSequence(array, array2);
-        //array2[0].fillStyle = "black";
-        //array2[0].fill()
-        console.log("array at flash: " + array);
         let i = 0;
     let interval = setInterval(function(){
         if (i <array2.length){
-            
-            console.log("start i: " + array[i]);
-            console.log(performance.now() - start_time);
 
             if (i>0){
-            sendData(((performance.now() - start_time)/1000).toFixed(10), array[i], train_target);
+            sendData(((performance.now() - start_time)/1000).toFixed(10), (array[i]).codePointAt(0)-97, train_target);
                 }
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
@@ -105,10 +95,6 @@ function flashSequence(array, array2){
                 array2[i].fill();
             }, 100);
             i++;
-          /*  if (array[i] == "ca"){
-                l45.width +=15;
-                drawArrows();
-            }*/
         } else {
             drawArrows();
             clearInterval(interval);

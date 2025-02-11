@@ -3,24 +3,16 @@ from bci_essentials import *
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap 
-'''
+
 from ast import literal_eval
 import logging
 from queue import Queue
-<<<<<<< HEAD
 from kmedoids import fasterpam
-from scipy.spatial.distance import pdist, squareform, cdist'''
-=======
-# from kmedoids import fasterpam
 from scipy.spatial.distance import pdist, squareform, cdist
->>>>>>> d8e5ee9449ba7bf8eb23cd470ecdbcb2d1c7a3c5
 import threading
 
 
 from pylsl import StreamInfo, StreamOutlet, local_clock
-'''import os
-import csv
-import sqlite3 as sql'''
 
 app = Flask(__name__,template_folder="templates")
 
@@ -82,32 +74,32 @@ def stopBCI():
 def setup():
     return render_template('setupmenu.html')
 
-def outputpls(timeID):
-    # file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.txt"
+@app.route("/outputpls", methods=['POST'])
+def outputpls():
+    
+    timeID = request.json['data']
+
+    #can remove text file writing if have other testing method.
     file_path = "test1.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(timeID) + '\n')
 
     # format data sample 1
-    if (len(timeID[1]) == 1):
+    if (len(str(timeID[1])) <=2): # 2 because the -1 flag
         # for a square flashed, we need the special format
-        flashed_as_num = ord(timeID[1]) - 98
+        flashed_as_num = timeID[1]
         current_target = timeID[2]
         marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
     else:
         # for an "event" marker we just need the string
         marker = timeID[1]
-
-<<<<<<< HEAD
-=======
     # add in lsl timestamp
     timestamp = float(timeID[0]) + local_clock()
->>>>>>> d8e5ee9449ba7bf8eb23cd470ecdbcb2d1c7a3c5
 
     # broadcast to LSL
     marker_outlet.push_sample([marker], timestamp)
 
-    return 1
+    return jsonify({'result': 'success'})
 
 @app.route('/eyetrackingside', methods=['POST'])
 def eyetrackingside():

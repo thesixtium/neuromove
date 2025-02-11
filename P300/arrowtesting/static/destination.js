@@ -42,7 +42,7 @@ function getData() {
 
 function sendData(time, id, target) {
   var data = [time, id, target];
-  fetch('/localBCI', {
+  fetch('/outputpls', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -181,7 +181,7 @@ function doTheThing(){
 
       function simulateKeyPress(key) {
         const event = new KeyboardEvent('keydown', {key});
-        textField.dispatchEvent(event);
+        document.dispatchEvent(event);
       }
 
       document.addEventListener(
@@ -196,7 +196,7 @@ function doTheThing(){
     
 
     addEventListener('DOMContentLoaded', drawDots());
-   // addEventListener('DOMContentLoaded', simulateKeyPress('a'));
+    addEventListener('DOMContentLoaded', simulateKeyPress('a'));
     addEventListener('DOMContentLoaded', doTheThing());
     addEventListener('DOMContentLoaded', randomFlash());
 
