@@ -26,7 +26,7 @@ switchClick = function() {
 
 function sendData(time, id, target) {
     var data = [time, id, target];
-    fetch('/localBCI', {
+    fetch('/outputpls', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -50,7 +50,6 @@ function pickSequence(array, array2){
     array.forEach(element => {
         temp.push(element);
     });
-    console.log("temp end: " + temp[temp.length - 1]);
     array2.length = 0;
     array.length = 0;
     let i =0;
@@ -80,7 +79,7 @@ function flashSequence(array, array2, train_target){
         if (i <array2.length){
 
             if (i>0){
-            sendData((performance.now() - start_time).toFixed(10), array[i], train_target);
+            sendData((performance.now() - start_time).toFixed(10), (array[i]).codePointAt(0)-97, train_target);
                 }
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
