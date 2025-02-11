@@ -3,8 +3,8 @@ import enum
 import joblib
 from sklearn.pipeline import Pipeline
 
-from src.bci_essentials_wrappers.input.xdf_input import OldXdfFormatInput
-from src.bci_essentials_wrappers.output.shared_memory_messenger import SharedMemoryMessenger
+from src.RaspberryPi.BCI.input.xdf_input import OldXdfFormatInput
+from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
 from src.RaspberryPi.InternalException import BciSetupException
 
 from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
