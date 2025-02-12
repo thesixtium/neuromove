@@ -4,11 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap 
 
-from ast import literal_eval
+'''from ast import literal_eval
 import logging
 from queue import Queue
 from kmedoids import fasterpam
-from scipy.spatial.distance import pdist, squareform, cdist
+from scipy.spatial.distance import pdist, squareform, cdist'''
 import threading
 
 
@@ -45,7 +45,7 @@ def localBCI():
    # idrt = data.get('id')
    # timeID = [time, idrt]
     #print(timeID)
-    outputpls(data)
+    outputpls()
     return jsonify({'result': 'success'})
 
 @app.route("/training")
@@ -79,11 +79,6 @@ def outputpls():
     
     timeID = request.json['data']
 
-    #can remove text file writing if have other testing method.
-    file_path = "test1.txt"
-    with open(file_path, "a") as f:  # Open in append mode
-        f.write(str(timeID) + '\n')
-
     # format data sample 1
     if (len(str(timeID[1])) <=2): # 2 because the -1 flag
         # for a square flashed, we need the special format
@@ -94,10 +89,16 @@ def outputpls():
         # for an "event" marker we just need the string
         marker = timeID[1]
     # add in lsl timestamp
-    timestamp = float(timeID[0]) + local_clock()
+    # timestamp = float(timeID[0]) + local_clock()
+    timestamp = local_clock()
 
     # broadcast to LSL
     marker_outlet.push_sample([marker], timestamp)
+
+    #can remove text file writing if have other testing method.
+    file_path = "test1.txt"
+    with open(file_path, "a") as f:  # Open in append mode
+        f.write(str(timeID) + '\n')
 
     return jsonify({'result': 'success'})
 

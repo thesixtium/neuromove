@@ -5,7 +5,7 @@ const _sequence2 = [];
 const _sequence3 = [];
 var _root = document.querySelector(':root');
 var start_time;
-var numcycles = 20;
+var numcycles = 1;
 var j = 0;
 var k = 0;
 
@@ -233,7 +233,7 @@ function flashStuff() {
       console.log("k = " + k);
       console.log("m = " + m);
       if (k == numcycles && m > 1) {
-        sendData((performance.now() - start_time).toFixed(10), "Trial Ended", -1);
+        sendData((performance.now() - start_time).toFixed(10), "Trial Ends", -1);
         j++;
         changeBox();
       }
