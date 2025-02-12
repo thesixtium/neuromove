@@ -5,7 +5,9 @@ const _sequence2 = [];
 const _sequence3 = [];
 var _root = document.querySelector(':root');
 var start_time;
-var numcycles = 1;
+var numcycles = 20;
+var j = 0;
+var k = 0;
 
 const fwd = document.getElementById("cb");
 const cfwd = fwd.getContext("2d");
@@ -183,52 +185,55 @@ function doTheThing(){
     _root.style.setProperty('--mleft', sessionStorage.getItem('mleft'));}
     if(sessionStorage.getItem('mright')){
     _root.style.setProperty('--mright', sessionStorage.getItem('mright'));}
+    
+    start_time = performance.now();
     }
+
+
+function changeBox(){
+  if (j == 5){
+    sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);      
+    document.getElementById("starttext").innerHTML = "Training complete. <br> Press enter to <br> go to local driving.";
+  }
+  else if (j == 1){
+      document.getElementById("starttext").innerHTML = "Press Enter to <br>continue. <br>Target now <.";
+    }
+  else if (j == 2){
+      document.getElementById("starttext").innerHTML = "Press Enter to <br>continue. <br>Target now STOP.";
+    }
+  else if (j == 3){
+      document.getElementById("starttext").innerHTML = "Press Enter to <br>continue. <br>Target now >.";
+    }
+  else if (j == 4){
+      document.getElementById("starttext").innerHTML = "Press Enter to <br>continue. <br>Target now D.";
+    }
+
+    document.getElementById("startbox").style.opacity = '1';
+}
 
 function flashStuff(){
   document.getElementById("startbox").style.opacity = '0';
-    start_time = performance.now();
-
-//flashSequence(_sequence1, _sequence2);
-   //flashSequence(_sequence1);
-    //setTimeout(function(){
-    sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);
-    for(let index = 0; index<5*numcycles + 1; index++){
-    setTimeout(function(){      
-      if(index<numcycles){
-        train_target = 0;
+  sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);    
+  k = 0;
+  let m = 0;
+  for (index = 0; index <= numcycles; index++){
+    setTimeout(function(){
+      if (k <numcycles){
+      flashSequence(_sequence1, _sequence2, j);
+      k++;
       }
-      else if (index>=numcycles && index<2*numcycles){
-        train_target = 1;
+      if (k == numcycles){
+        m++;
       }
-      else if (index>=2*numcycles && index<3*numcycles){
-        train_target = 2;
-      }
-      else if (index>=3*numcycles && index<4*numcycles){
-        train_target = 3;
-      }
-      else if (index>=4*numcycles && index<5*numcycles){
-        train_target = 4;
-      }
-      
-      if (index != 5*numcycles){
-      flashSequence(_sequence1, _sequence2, train_target);
-      }
-      
-    if (index % numcycles == 0 && index != 0){      
-      sendData((performance.now() - start_time).toFixed(10), "Trial Ends", -1);
-      if (index != 5*numcycles){
-      sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);}
-      }
-    if (index == 5*numcycles){
-      sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);
-      document.getElementById("startbox").style.opacity = '1';
-    }
-
-    
-    }, (2000*index+(Math.random()*150+50)));
-      }
-    }
+      console.log("k = " + k);
+      console.log("m = " + m);
+        if (k ==  numcycles && m>1){          
+        sendData((performance.now() - start_time).toFixed(10), "Trial Ended", -1);
+        j++;
+        changeBox();
+        }
+    }, (2000*index+(Math.random()*150+50)));}
+  }
     //flashSequence(_sequence3);
 function toggleFullScreen() {
     if (!document.fullscreenElement) {
@@ -253,9 +258,76 @@ document.addEventListener(
   "keydown",
   (e) => {
     if (e.key === "Enter") {
+      if (j!= 5){
       flashStuff();
+      }
+      if (j == 5){
+        window.location.href ="/local";
+      }
     }
   },
   false,
 );
 document.getElementById("h").addEventListener("click", switchClick);
+
+/* set variable i to be global
+create a while loop that continues while i <=5*numcycles
+if i%numcycles == 0 show box and change target
+*/
+
+/*
+    
+    sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);
+    for(let index = 0; index<=numcycles; index++){
+    setTimeout(function(){      
+      if(a == 0){
+        train_target = 0;
+      }
+      else if (a == 1){
+        train_target = 1;
+      }
+      else if (a == 2){
+        train_target = 2;
+      }
+      else if (a == 3){
+        train_target = 3;
+      }
+      else if (a == 4){
+        train_target = 4;
+      }
+      
+      if (index != numcycles && a < 5){
+      flashSequence(_sequence1, _sequence2, train_target);
+      }
+      
+    if (index % numcycles == 0 && index != 0){      
+      sendData((performance.now() - start_time).toFixed(10), "Trial Ends", -1);
+
+    }
+    if (index %numcycles == 0){
+      j++;
+    }
+    if (index == numcycles && j == 5){
+      sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);      
+      document.getElementById("starttext").innerHTML = "Training complete. <br> Press space to <br>local driving.";
+    }
+      if (j == 1){
+        document.getElementById("starttext").innerHTML = "Press Enter to <br>continue. <br>Target now <.";
+      }
+      else if (j == 2){
+        document.getElementById("starttext").innerHTML = "Press Enter to <br>continue. <br>Target now STOP.";
+      }
+      else if (j == 3){
+        document.getElementById("starttext").innerHTML = "Press Enter to <br>continue. <br>Target now >.";
+      }
+      else if (j == 4){
+        document.getElementById("starttext").innerHTML = "Press Enter to <br>continue. <br>Target now D.";
+      }
+
+      document.getElementById("startbox").style.opacity = '1';
+    
+
+    
+    }, (2000*index+(Math.random()*150+50)));
+    
+      }*/
