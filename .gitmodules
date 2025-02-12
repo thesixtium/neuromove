@@ -1,0 +1,3 @@
+[submodule "lib/bci_essentials"]
+	path = lib/bci_essentials
+	url = https://github.com/danijourdain/bci-essentials-python
