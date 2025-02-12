@@ -112,7 +112,8 @@ class Bessy:
         else:
             eeg_source = XdfEegSource(xdf_filepath)
             # TODO: Update this to XdfMarkerSource when using more recent data
-            marker_source = OldXdfFormatInput(xdf_filepath)
+            # marker_source = OldXdfFormatInput(xdf_filepath)
+            marker_source = XdfMarkerSource(xdf_filepath)
 
         self.__bci_controller = BciController(
             eeg_source=eeg_source,
