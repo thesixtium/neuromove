@@ -19,233 +19,239 @@ const sw = document.getElementById("ch");
 const csw = sw.getContext("2d");
 document.getElementById("startbox").style.opacity = '1';
 
-switchClick = function() {
-    console.log("switch mode!");
-    window.location.href = "/destination";
+switchClick = function () {
+  console.log("switch mode!");
+  window.location.href = "/destination";
 }
 
 function sendData(time, id, target) {
-    var data = [time, id, target];
-    fetch('/outputpls', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({data: data})
-      })
-      .then(response => response.text())
-      .then(result => {
-        console.log(result);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-}
-
-const _canvases = [cfwd, cl, cstop ,cr, csw ];
-const defaultColour = "white";
-function pickSequence(array, array2){
-    //decide sequence in which to flash
-    let temp = [];
-    array.forEach(element => {
-        temp.push(element);
+  var data = [time, id, target];
+  fetch('/outputpls', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ data: data })
+  })
+    .then(response => response.text())
+    .then(result => {
+      console.log(result);
+    })
+    .catch(error => {
+      console.error('Error:', error);
     });
-    array2.length = 0;
-    array.length = 0;
-    let i =0;
-    while (i < _idoptions.length){
-        let index = Math.floor(Math.random() * _idoptions.length);
-        if ((i == 0 && temp[temp.length - 1] == _idoptions[index]) || array.includes(_idoptions[index])){
-            continue;
-        } else {
-            array.push(_idoptions[index]);
-            array2.push(_canvases[index]);
-            i++;
-        }
-    }
-    
-    array.unshift(array[0]);
-    array2.unshift(array2[0]);
-    console.log("array: " + array);
-    console.log("arrows: " + array2);
-}
-function flashSequence(array, array2, train_target){
-
-    //flash the arrows
-        pickSequence(array, array2);
-        let i = 0;
-    let interval = setInterval(function(){
-      
-        if (i <array2.length){
-
-            if (i>0){
-            sendData((performance.now() - start_time).toFixed(10), (array[i]).codePointAt(0)-97, train_target);
-                }
-            document.getElementById(array[i]).style.backgroundColor = "black";
-            array2[i].fillStyle = "white";
-            array2[i].fill();
-            setTimeout(function(){
-                document.getElementById(array[i]).style.backgroundColor = "white";
-                array2[i].fillStyle = "black";
-                array2[i].fill();
-            }, 100);
-            i++;
-        } else {
-            drawArrows();
-            clearInterval(interval);
-        }
-      
-    }, (300));
 }
 
-function drawArrows(){
-
-    cfwd.beginPath();
-    cfwd.moveTo(40, 95);
-    cfwd.lineTo(40, 45);
-    cfwd.lineTo(10, 45)
-    cfwd.lineTo(50, 5);
-    cfwd.lineTo(90, 45);
-    cfwd.lineTo(60, 45);
-    cfwd.lineTo(60, 95);
-    cfwd.lineTo(35, 95);
-    cfwd.lineWidth = 10;
-    cfwd.stroke();
-    cfwd.fillStyle = "white";
-    cfwd.fill();
-    document.getElementById("a").style.backgroundColor = "black";
-
-    cl.beginPath();
-    cl.moveTo(90, 70);
-    cl.lineTo(40, 70);
-    cl.lineTo(40, 90);
-    cl.lineTo(5, 60);
-    cl.lineTo(40, 30);
-    cl.lineTo(40, 50);
-    cl.lineTo(90, 50);
-    cl.lineTo(90, 75);
-    cl.lineWidth = 10;
-    cl.stroke();
-    cl.fillStyle = "white";
-    cl.fill();
-    document.getElementById("b").style.backgroundColor = "black";
-
-    cr.beginPath();
-    cr.moveTo(10, 70);
-    cr.lineTo(60, 70);
-    cr.lineTo(60, 90);
-    cr.lineTo(95, 60);
-    cr.lineTo(60, 30);
-    cr.lineTo(60, 50);
-    cr.lineTo(10, 50);
-    cr.lineTo(10, 75);
-    cr.lineWidth = 10;
-    cr.stroke();
-    cr.fillStyle = "white";
-    cr.fill();
-    document.getElementById("d").style.backgroundColor = "black";
-
-    cstop.beginPath();
-    cstop.moveTo(32, 25);
-    cstop.lineTo(70, 25);
-    cstop.lineTo(90, 45);
-    cstop.lineTo(90, 75);
-    cstop.lineTo(70, 95);
-    cstop.lineTo(35, 95);
-    cstop.lineTo(15, 75);
-    cstop.lineTo(15, 45);
-    cstop.lineTo(35, 25); 
-    cstop.lineWidth = 10;
-    cstop.stroke();
-    cstop.fillStyle = "white";
-    cstop.fill();
-    document.getElementById("c").style.backgroundColor = "black";
-
-    csw.beginPath();
-    csw.arc(30, 50, 40, Math.PI+1.5, Math.PI/2);
-    csw.lineTo(20, 90);
-    csw.lineTo(20, 10);
-    csw.lineTo(30, 10);
-    csw.lineWidth = 10;
-    csw.stroke();
-    csw.fillStyle = "white";
-    csw.fill();
-    document.getElementById("e").style.backgroundColor = "black";
-}
-function doTheThing(){
-    if(sessionStorage.getItem('pright')){
-    _root.style.setProperty('--pright', sessionStorage.getItem('pright'));}
-    if(sessionStorage.getItem('pleft')){
-    _root.style.setProperty('--pleft', sessionStorage.getItem('pleft'));}
-    if(sessionStorage.getItem('top')){
-    _root.style.setProperty('--top', sessionStorage.getItem('top'));}
-    if(sessionStorage.getItem('mleft')){
-    _root.style.setProperty('--mleft', sessionStorage.getItem('mleft'));}
-    if(sessionStorage.getItem('mright')){
-    _root.style.setProperty('--mright', sessionStorage.getItem('mright'));}
-    }
-
-function flashStuff(){
-  document.getElementById("startbox").style.opacity = '0';
-    start_time = performance.now();
-
-//flashSequence(_sequence1, _sequence2);
-   //flashSequence(_sequence1);
-    //setTimeout(function(){
-    sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);
-    for(let index = 0; index<5*numcycles + 1; index++){
-    setTimeout(function(){      
-      if(index<numcycles){
-        train_target = 0;
-      }
-      else if (index>=numcycles && index<2*numcycles){
-        train_target = 1;
-      }
-      else if (index>=2*numcycles && index<3*numcycles){
-        train_target = 2;
-      }
-      else if (index>=3*numcycles && index<4*numcycles){
-        train_target = 3;
-      }
-      else if (index>=4*numcycles && index<5*numcycles){
-        train_target = 4;
-      }
-      
-      if (index != 5*numcycles){
-      flashSequence(_sequence1, _sequence2, train_target);
-      }
-      
-    if (index % numcycles == 0 && index != 0){      
-      sendData((performance.now() - start_time).toFixed(10), "Trial Ends", -1);
-      if (index != 5*numcycles){
-      sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);}
-      }
-    if (index == 5*numcycles){
-      sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);
-      document.getElementById("startbox").style.opacity = '1';
-    }
-
-    
-    }, (2000*index+(Math.random()*150+50)));
-      }
-    }
-    //flashSequence(_sequence3);
-function toggleFullScreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else if (document.exitFullscreen) {
-      document.exitFullscreen();
+const _canvases = [cfwd, cl, cstop, cr, csw];
+const defaultColour = "white";
+function pickSequence(array, array2) {
+  //decide sequence in which to flash
+  let temp = [];
+  array.forEach(element => {
+    temp.push(element);
+  });
+  array2.length = 0;
+  array.length = 0;
+  let i = 0;
+  while (i < _idoptions.length) {
+    let index = Math.floor(Math.random() * _idoptions.length);
+    if ((i == 0 && temp[temp.length - 1] == _idoptions[index]) || array.includes(_idoptions[index])) {
+      continue;
+    } else {
+      array.push(_idoptions[index]);
+      array2.push(_canvases[index]);
+      i++;
     }
   }
-  document.addEventListener(
-    "keydown",
-    (e) => {
-      if (e.key === "a") {
-        toggleFullScreen();
+
+  array.unshift(array[0]);
+  array2.unshift(array2[0]);
+  console.log("array: " + array);
+  console.log("arrows: " + array2);
+}
+function flashSequence(array, array2, train_target) {
+
+  //flash the arrows
+  pickSequence(array, array2);
+  let i = 0;
+  let interval = setInterval(function () {
+
+    if (i < array2.length) {
+
+      if (i > 0) {
+        sendData((performance.now() - start_time).toFixed(10), (array[i]).codePointAt(0) - 97, train_target);
       }
-    },
-    false,
-  );
+      document.getElementById(array[i]).style.backgroundColor = "black";
+      array2[i].fillStyle = "white";
+      array2[i].fill();
+      setTimeout(function () {
+        document.getElementById(array[i]).style.backgroundColor = "white";
+        array2[i].fillStyle = "black";
+        array2[i].fill();
+      }, 100);
+      i++;
+    } else {
+      drawArrows();
+      clearInterval(interval);
+    }
+
+  }, (300));
+}
+
+function drawArrows() {
+
+  cfwd.beginPath();
+  cfwd.moveTo(40, 95);
+  cfwd.lineTo(40, 45);
+  cfwd.lineTo(10, 45)
+  cfwd.lineTo(50, 5);
+  cfwd.lineTo(90, 45);
+  cfwd.lineTo(60, 45);
+  cfwd.lineTo(60, 95);
+  cfwd.lineTo(35, 95);
+  cfwd.lineWidth = 10;
+  cfwd.stroke();
+  cfwd.fillStyle = "white";
+  cfwd.fill();
+  document.getElementById("a").style.backgroundColor = "black";
+
+  cl.beginPath();
+  cl.moveTo(90, 70);
+  cl.lineTo(40, 70);
+  cl.lineTo(40, 90);
+  cl.lineTo(5, 60);
+  cl.lineTo(40, 30);
+  cl.lineTo(40, 50);
+  cl.lineTo(90, 50);
+  cl.lineTo(90, 75);
+  cl.lineWidth = 10;
+  cl.stroke();
+  cl.fillStyle = "white";
+  cl.fill();
+  document.getElementById("b").style.backgroundColor = "black";
+
+  cr.beginPath();
+  cr.moveTo(10, 70);
+  cr.lineTo(60, 70);
+  cr.lineTo(60, 90);
+  cr.lineTo(95, 60);
+  cr.lineTo(60, 30);
+  cr.lineTo(60, 50);
+  cr.lineTo(10, 50);
+  cr.lineTo(10, 75);
+  cr.lineWidth = 10;
+  cr.stroke();
+  cr.fillStyle = "white";
+  cr.fill();
+  document.getElementById("d").style.backgroundColor = "black";
+
+  cstop.beginPath();
+  cstop.moveTo(32, 25);
+  cstop.lineTo(70, 25);
+  cstop.lineTo(90, 45);
+  cstop.lineTo(90, 75);
+  cstop.lineTo(70, 95);
+  cstop.lineTo(35, 95);
+  cstop.lineTo(15, 75);
+  cstop.lineTo(15, 45);
+  cstop.lineTo(35, 25);
+  cstop.lineWidth = 10;
+  cstop.stroke();
+  cstop.fillStyle = "white";
+  cstop.fill();
+  document.getElementById("c").style.backgroundColor = "black";
+
+  csw.beginPath();
+  csw.arc(30, 50, 40, Math.PI + 1.5, Math.PI / 2);
+  csw.lineTo(20, 90);
+  csw.lineTo(20, 10);
+  csw.lineTo(30, 10);
+  csw.lineWidth = 10;
+  csw.stroke();
+  csw.fillStyle = "white";
+  csw.fill();
+  document.getElementById("e").style.backgroundColor = "black";
+}
+function doTheThing() {
+  if (sessionStorage.getItem('pright')) {
+    _root.style.setProperty('--pright', sessionStorage.getItem('pright'));
+  }
+  if (sessionStorage.getItem('pleft')) {
+    _root.style.setProperty('--pleft', sessionStorage.getItem('pleft'));
+  }
+  if (sessionStorage.getItem('top')) {
+    _root.style.setProperty('--top', sessionStorage.getItem('top'));
+  }
+  if (sessionStorage.getItem('mleft')) {
+    _root.style.setProperty('--mleft', sessionStorage.getItem('mleft'));
+  }
+  if (sessionStorage.getItem('mright')) {
+    _root.style.setProperty('--mright', sessionStorage.getItem('mright'));
+  }
+}
+
+function flashStuff() {
+  document.getElementById("startbox").style.opacity = '0';
+  start_time = performance.now();
+
+  //flashSequence(_sequence1, _sequence2);
+  //flashSequence(_sequence1);
+  //setTimeout(function(){
+  sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);
+  for (let index = 0; index < 5 * numcycles + 1; index++) {
+    setTimeout(function () {
+      if (index < numcycles) {
+        train_target = 0;
+      }
+      else if (index >= numcycles && index < 2 * numcycles) {
+        train_target = 1;
+      }
+      else if (index >= 2 * numcycles && index < 3 * numcycles) {
+        train_target = 2;
+      }
+      else if (index >= 3 * numcycles && index < 4 * numcycles) {
+        train_target = 3;
+      }
+      else if (index >= 4 * numcycles && index < 5 * numcycles) {
+        train_target = 4;
+      }
+
+      if (index != 5 * numcycles) {
+        flashSequence(_sequence1, _sequence2, train_target);
+      }
+
+      if (index % numcycles == 0 && index != 0) {
+        sendData((performance.now() - start_time).toFixed(10), "Trial Ends", -1);
+        if (index != 5 * numcycles) {
+          sendData((performance.now() - start_time).toFixed(10), "Trial Started", -1);
+        }
+      }
+      if (index == 5 * numcycles) {
+        sendData((performance.now() - start_time).toFixed(10), "Training Complete", -1);
+        document.getElementById("startbox").style.opacity = '1';
+      }
+
+
+    }, (2000 * index + (Math.random() * 150 + 50)));
+  }
+}
+//flashSequence(_sequence3);
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
+}
+document.addEventListener(
+  "keydown",
+  (e) => {
+    if (e.key === "a") {
+      toggleFullScreen();
+    }
+  },
+  false,
+);
 
 addEventListener('DOMContentLoaded', drawArrows());
 document.addEventListener('DOMContentLoaded', doTheThing());
