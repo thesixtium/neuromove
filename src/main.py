@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
+
 # pipreqs src --ignore src/LiDAR
 # tach mod
 # tach sync
 # tach show --web
 
-#!/usr/bin/env python3
 import numpy as np
 
 from src.Arduino.ArduinoUno import ArduinoUno
@@ -95,7 +96,7 @@ def main():
                             # Get point selections
                             occupancy_grid = np.array(occupancy_grid_memory.read_grid())
                             origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
-                            selected_points = occupancy_grid_to_points(occupancy_grid, origin, plot_result=True)
+                            selected_points = occupancy_grid_to_points(occupancy_grid, origin, plot_result=False)
                             point_selection_memory.write_np_array(selected_points)
 
                             destination_driving_state_memory.write_string("s")
