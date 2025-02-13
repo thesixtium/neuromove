@@ -86,3 +86,7 @@ class NotEnoughSpaceInRoom(InternalException):
 class PamFailedPointSelection(InternalException):
     def __init__(self, expected: int, actual: int):
         super().__init__(16, ExceptionTypes.TEMPORARY, f"PAM failed to find the correct number of medoids. Expected {expected} but got {actual}")
+
+class BciSetupException(InternalException):
+    def __init__(self, message: str):
+        super().__init__(17, ExceptionTypes.PERMANENT, message)

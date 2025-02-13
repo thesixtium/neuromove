@@ -4,7 +4,7 @@ from termcolor import colored
 from pylsl import StreamInfo, StreamOutlet
 
 mac_address = "E5:1E:FD:F5:15:26"
-RECORDING_TIMER = (60 * 5)  # = 60 seconds * n minutes
+RECORDING_TIMER = (60 * 20)  # = 60 seconds * n minutes
 
 async def init_guardian_client() -> GuardianClient:
     '''
@@ -53,7 +53,7 @@ async def check_impedance(client: GuardianClient):
     input_task = asyncio.create_task(wait_for_input(client))
 
     try:
-        await asyncio.gather(client.stream_impedance(handler=_print_impedance), input_task)
+        await asyncio.gather(client.stream_impedance(handler=_print_impedance, mains_freq_60hz=True), input_task)
     except Exception as e:
         print(e)
         print("Error in impedance check")
@@ -85,7 +85,7 @@ async def main():
     
     await check_impedance(client)
 
-    # await start_recording(client)
+    await start_recording(client)
 
     print("Done Impedance Check")
 
