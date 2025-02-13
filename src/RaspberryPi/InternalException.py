@@ -90,3 +90,7 @@ class PamFailedPointSelection(InternalException):
 class BciSetupException(InternalException):
     def __init__(self, message: str):
         super().__init__(17, ExceptionTypes.PERMANENT, message)
+
+class ArduinoNotConnected(InternalException):
+    def __init__(self):
+        super().__init__(17, ExceptionTypes.PERMANENT, "Arduino not connected")

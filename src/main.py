@@ -4,7 +4,7 @@
 import numpy as np
 import subprocess
 
-from src.RaspberryPi.ArduinoUno import ArduinoUno
+from src.Arduino.ArduinoUno import ArduinoUno
 from src.RaspberryPi.InternalException import *
 from src.RaspberryPi.Socket import Socket
 from src.RaspberryPi.SharedMemory import SharedMemory
