@@ -6,7 +6,7 @@ from src.RaspberryPi.ArduinoUno import ArduinoUno
 from src.RaspberryPi.ArduinoUno import MotorDirections
 
 def main():
-    arduino_uno = ArduinoUno()
+    arduino_uno = ArduinoUno(port='COM3')
 
     running = True
 
