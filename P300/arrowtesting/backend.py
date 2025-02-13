@@ -2,23 +2,25 @@ from flask import Flask,render_template, request, jsonify
 from bci_essentials import *
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap 
-
-'''from ast import literal_eval
+from matplotlib.colors import ListedColormap
+from ast import literal_eval
 import logging
 from queue import Queue
-from kmedoids import fasterpam
-from scipy.spatial.distance import pdist, squareform, cdist'''
+# from kmedoids import fasterpam
+from scipy.spatial.distance import pdist, squareform, cdist
 import threading
 
 
 from pylsl import StreamInfo, StreamOutlet, local_clock
+'''import os
+import csv
+import sqlite3 as sql'''
 
 app = Flask(__name__,template_folder="templates")
 
 # create LSL stream
 marker_info = StreamInfo(name='MarkerStream',
-                        type='LSL_Marker_Strings',
+                        type='Markers',
                         channel_count=1,
                         nominal_srate=250,
                         channel_format='string',
@@ -38,26 +40,14 @@ def local():
 def screenside():
     return render_template('screenside.html')
 
-@app.route("/acceptclick", methods= ['POST'])
-def acceptclick():
-    selection = request.json['selection']
-    file_path = "test2.txt"
-    with open(file_path, "a") as f:  # Open in append mode
-        f.write(str(selection) + '\n')
-    return jsonify({'result': 'success'})
-
 @app.route("/localBCI", methods=['POST'])
 def localBCI():
     data = request.json['data']
-<<<<<<< Updated upstream
    # time = data.get('time')
    # idrt = data.get('id')
    # timeID = [time, idrt]
     #print(timeID)
-    outputpls()
-=======
     outputpls(data)
->>>>>>> Stashed changes
     return jsonify({'result': 'success'})
 
 @app.route("/training")
@@ -88,31 +78,29 @@ def setup():
 
 @app.route("/outputpls", methods=['POST'])
 def outputpls():
-    
     timeID = request.json['data']
+    # file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.txt"
+    file_path = "test1.txt"
+    with open(file_path, "a") as f:  # Open in append mode
+        f.write(str(timeID) + '\n')
 
     # format data sample 1
-    if (len(str(timeID[1])) <=2): # 2 because the -1 flag
+    if (len(timeID[1]) == 1):
         # for a square flashed, we need the special format
-        flashed_as_num = timeID[1]
+        flashed_as_num = ord(timeID[1]) - 98
         current_target = timeID[2]
         marker = f"p300,s,{NUMBER_OF_OPTIONS},{current_target},{flashed_as_num}"
     else:
         # for an "event" marker we just need the string
         marker = timeID[1]
+
     # add in lsl timestamp
-    # timestamp = float(timeID[0]) + local_clock()
-    timestamp = local_clock()
+    timestamp = float(timeID[0]) + local_clock()
 
     # broadcast to LSL
-    marker_outlet.push_sample([marker], timestamp)
+    marker_outlet.push_sample([marker], float(timeID[0]))
 
-    #can remove text file writing if have other testing method.
-    file_path = "test1.txt"
-    with open(file_path, "a") as f:  # Open in append mode
-        f.write(str(timeID) + '\n')
-
-    return jsonify({'result': 'success'})
+    return 1
 
 @app.route('/eyetrackingside', methods=['POST'])
 def eyetrackingside():
@@ -121,7 +109,7 @@ def eyetrackingside():
     return jsonify({'result': 'success'})
 
 def eyeoutput(val):
-    file_path = "test.txt"#C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt"
+    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(val) + '\n')
 
@@ -153,7 +141,7 @@ def drawMap():
     #base map
 def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#948876', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF']
+    colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#000000']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -163,7 +151,7 @@ def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -173,7 +161,7 @@ def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 1 flashed
 def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#948876', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF']
+    colours = ['#b0b9cc', '#FFFFFF', '#000000', '#000000', '#000000']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -183,7 +171,7 @@ def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -193,7 +181,7 @@ def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     #map with region 2 flashed
     
-    colours = ['#948876', '#FFFFFF', '#000000', '#ffffff', '#ffffff']
+    colours = ['#b0b9cc', '#000000', '#FFFFFF', '#000000', '#000000']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -203,7 +191,7 @@ def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -214,7 +202,7 @@ def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 3 flashed
 def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#948876', '#FFFFFF', '#FFFFFF', '#000000', '#FFFFFF']
+    colours = ['#b0b9cc', '#000000', '#000000', '#FFFFFF', '#000000']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -224,7 +212,7 @@ def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
@@ -235,7 +223,7 @@ def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 4 flashed
 def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#948876', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#000000']
+    colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#FFFFFF']
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -245,7 +233,7 @@ def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
-    plt.scatter(origin[0], origin[1], s= 20, color='red', marker='*')
+    plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
 
     # save with origin and centers
