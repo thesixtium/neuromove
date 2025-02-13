@@ -1,23 +1,18 @@
 import asyncio
 
-import joblib
-
 from src.RaspberryPi.BCI.output.text_file_messenger import TextFileMessenger
-from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
-from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
-
 from src.RaspberryPi.BCI.bci_essentials_wrapper import Bessy
-from src.RaspberryPi.BCI.input.xdf_input import OldXdfFormatInput
     
 async def main():
     # model = joblib.load("test_save.pk1")
     # model = None
 
     messenger = TextFileMessenger("BCI_Processing/data/output.txt")
-    xdf_filepath ="C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-DEBUG/ses-S001/eeg/sub-DEBUG_ses-S001_task-Default_run-003_eeg.xdf"
+    # xdf_filepath ="C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-DEBUG/ses-S002/eeg/sub-DEBUG_ses-S002_task-Default_run-001_eeg.xdf"
     # xdf_filepath = "C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-DANI/ses-S001/eeg/sub-DANI_ses-S001_task-Default_run-001_eeg.xdf"
+    xdf_filepath = None
 
-    bessy = Bessy(online=False, xdf_filepath=xdf_filepath, messenger=messenger)
+    bessy = Bessy(online=True, xdf_filepath=xdf_filepath, messenger=messenger)
         
     try:
         await bessy.run()
