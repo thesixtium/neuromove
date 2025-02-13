@@ -4,8 +4,9 @@ var map1 = document.getElementById("map1");
 var map2 = document.getElementById("map2");
 var map3 = document.getElementById("map3");
 var map4 = document.getElementById("map4");
+var localSwitch = document.getElementById("localSwitch");
 var dotsArray = [[]];
-const _idoptions = [0, 1, 2, 3];
+const _idoptions = [0, 1, 2, 3, 4];
 
 const _sequence1 = [];
 const _sequence2 = [];
@@ -42,7 +43,7 @@ function getData() {
 
 function sendData(time, id, target) {
   var data = [time, id, target];
-  fetch('/localBCI', {
+  fetch('/outputpls', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -58,7 +59,7 @@ function sendData(time, id, target) {
     });
 }
 
-const _canvases = [map1, map2, map3, map4];
+const _canvases = [map1, map2, map3, map4, localSwitch];
 const defaultColour = "white";
 function pickSequence(array, array2){
   //decide sequence in which to flash
@@ -98,18 +99,14 @@ function flashSequence(array, array2){
   let interval = setInterval(function(){
       if (i <array2.length){
           
-          console.log("start i: " + array[i]);
-          console.log(performance.now()- start_time);
 
           if (i>0){
-          sendData((performance.now() - start_time).toFixed(10), array[i], -1);
+          sendData(((performance.now() - start_time)/1000).toFixed(10), array[i], -1);
               }
           array2[i].style.opacity = "0";
           setTimeout(function(){
             array2[i].style.opacity = "1";
           }, 100);
-          console.log("end i: " + array[i]);
-          console.log(performance.now() - start_time);
           i++;
         /*  if (array[i] == "ca"){
               l45.width +=15;
@@ -170,13 +167,10 @@ function doTheThing(){
 
         start_time = performance.now();       
     }
-    function randomFlash(){sendData(performance.now() - start_time, -1);
-    console.log("block start: " + performance.now() - start_time);
+    function randomFlash(){sendData((performance.now() - start_time)/1000, -1);
     for(let i = 0; i<3; i++){
-    setTimeout(function(){flashSequence(_sequence1, _sequence2); /*console.log("cycle "+ i+ " start: " + Date.now()-start_time);*/}, (2000*i+(Math.random()*150+50)));}//}, 2500);*/
-    console.log("cycle " + i + "end: " + performance.now() - start_time);
-        //flashSequence(_sequence3);
-    
+    setTimeout(function(){flashSequence(_sequence1, _sequence2);}, (2000*i+(Math.random()*150+50)));}
+      
     }
     function toggleFullScreen() {
         if (!document.fullscreenElement) {
@@ -188,7 +182,7 @@ function doTheThing(){
 
       function simulateKeyPress(key) {
         const event = new KeyboardEvent('keydown', {key});
-        textField.dispatchEvent(event);
+        document.dispatchEvent(event);
       }
 
       document.addEventListener(
@@ -203,7 +197,8 @@ function doTheThing(){
     
 
     addEventListener('DOMContentLoaded', drawDots());
-   // addEventListener('DOMContentLoaded', simulateKeyPress('a'));
+    addEventListener('DOMContentLoaded', simulateKeyPress('a'));
+    localSwitch.addEventListener("click", function(){window.location.href = "/local";});
     addEventListener('DOMContentLoaded', doTheThing());
     addEventListener('DOMContentLoaded', randomFlash());
 

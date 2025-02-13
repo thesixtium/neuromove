@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <title>destination selection</title>
 </head>
 <body>  
+    <div id = "destinationGrid"> 
+        <div class = "maps">
             <div class = "map" id = "map0">
             <img src="{{ url_for('static', filename='center-points0.svg') }}" alt="Map"/>
             </div>
@@ -24,6 +29,9 @@
             <div class = "map" id = "map4">
             <img src="{{ url_for('static', filename='center-points4.svg') }}" alt="Map"/>
             </div>
+        </div>
+            <div id= "localSwitch"><h2 id = "L">L</h2></div> 
+        </div>
 
 <script src = "{{url_for('static', filename='destination.js') }}"> 
 /* const _idoptions = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];

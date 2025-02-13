@@ -191,7 +191,7 @@ margin-bottom: -3%;}
     
 }
 
-.map{
+#destinationGrid{
     //position: relative;
     padding-top: var(--top);
     padding-left: var(--pleft);
@@ -199,6 +199,9 @@ margin-bottom: -3%;}
     margin-right: var(--mright);
     margin-left: var(--mleft);
     max-height: 70vh;
+    display: grid;
+    grid-template: 'item1'
+                    'item2';
 }
 #a, #b, #c, #d, #e, #f, #g, #h, #i, #stop, #go, #go2 {
     //padding: 1em;
@@ -219,4 +222,16 @@ canvas{
 
 .bci-setup-grid-container{
     grid-gap: 1em;
+}
+#localSwitch{
+    max-width: 34%;
+    max-height: 7%;
+    background: white;
+    margin-top:47.5%;
+    z-index: 100;
+}
+#L{
+    margin-top: -3%;
+    text-align: center;
+
 }
