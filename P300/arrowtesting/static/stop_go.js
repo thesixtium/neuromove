@@ -11,11 +11,11 @@ const _sequence1 = [];
 const _sequence2 = [];
 const _sequence3 = [];
 var _root = document.querySelector(':root');
+var train_target = (-1);
+const start_time = performance.now();
 
-const start_time = performance.now() * 1000;
-
-function sendData(time, id) {
-    var data = [time, id];
+function sendData(time, id, target) {
+    var data = [time, id, target];
     fetch('/localBCI', {
         method: 'POST',
         headers: {
@@ -68,11 +68,9 @@ function flashSequence(array, array2){
     let interval = setInterval(function(){
         if (i <array2.length){
             
-            console.log("start i: " + array[i]);
-            console.log(performance.now() * 1000- start_time);
 
             if (i>0){
-            sendData((performance.now() * 1000 - start_time).toFixed(10), array[i]);
+                sendData(((performance.now() - start_time)/1000).toFixed(10), array[i], train_target);
                 }
             document.getElementById(array[i]).style.backgroundColor = "black";
             array2[i].fillStyle = "white";
@@ -82,16 +80,12 @@ function flashSequence(array, array2){
                 array2[i].fillStyle = "black";
                 array2[i].fill();
             }, 100);
-            console.log("end i: " + array[i]);
-            console.log(performance.now() * 1000 - start_time);
             i++;
         } else {
             draw();
             clearInterval(interval);
         }
     }, (300));
-    console.log("end sequence: " + array[i]);
-    console.log(performance.now() * 1000 - start_time);
 }
 
 function draw(){
@@ -157,11 +151,9 @@ function doTheThing(){
     if(sessionStorage.getItem('mright')){
     _root.style.setProperty('--mright', sessionStorage.getItem('mright'));}
 
-    sendData(performance.now() * 1000 - start_time);
-    console.log("block start: " + performance.now() * 1000-start_time);
+    sendData(((performance.now() - start_time)/1000).toFixed(10), array[i], train_target);
     for(let i = 0; i<8; i++){
-    setTimeout(function(){flashSequence(_sequence1, _sequence2); }, (1260*i+(Math.random()*150)));}
-    console.log("cycle " + i + "end: " + performance.now() * 1000-start_time);    
+    setTimeout(function(){flashSequence(_sequence1, _sequence2); }, (1260*i+(Math.random()*150)));} 
 }
 function toggleFullScreen() {
     if (!document.fullscreenElement) {
