@@ -38,14 +38,26 @@ def local():
 def screenside():
     return render_template('screenside.html')
 
+@app.route("/acceptclick", methods= ['POST'])
+def acceptclick():
+    selection = request.json['selection']
+    file_path = "test2.txt"
+    with open(file_path, "a") as f:  # Open in append mode
+        f.write(str(selection) + '\n')
+    return jsonify({'result': 'success'})
+
 @app.route("/localBCI", methods=['POST'])
 def localBCI():
     data = request.json['data']
+<<<<<<< Updated upstream
    # time = data.get('time')
    # idrt = data.get('id')
    # timeID = [time, idrt]
     #print(timeID)
     outputpls()
+=======
+    outputpls(data)
+>>>>>>> Stashed changes
     return jsonify({'result': 'success'})
 
 @app.route("/training")
@@ -109,7 +121,7 @@ def eyetrackingside():
     return jsonify({'result': 'success'})
 
 def eyeoutput(val):
-    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt"
+    file_path = "test.txt"#C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(val) + '\n')
 

@@ -1,0 +1,4 @@
+fwd
+right
+stop
+left

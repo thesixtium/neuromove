@@ -4,8 +4,9 @@ var map1 = document.getElementById("map1");
 var map2 = document.getElementById("map2");
 var map3 = document.getElementById("map3");
 var map4 = document.getElementById("map4");
+var localSwitch = document.getElementById("localSwitch");
 var dotsArray = [[]];
-const _idoptions = [0, 1, 2, 3];
+const _idoptions = [0, 1, 2, 3, 4];
 
 const _sequence1 = [];
 const _sequence2 = [];
@@ -58,7 +59,7 @@ function sendData(time, id, target) {
     });
 }
 
-const _canvases = [map1, map2, map3, map4];
+const _canvases = [map1, map2, map3, map4, localSwitch];
 const defaultColour = "white";
 function pickSequence(array, array2){
   //decide sequence in which to flash
@@ -197,6 +198,7 @@ function doTheThing(){
 
     addEventListener('DOMContentLoaded', drawDots());
     addEventListener('DOMContentLoaded', simulateKeyPress('a'));
+    localSwitch.addEventListener("click", function(){window.location.href = "/local";});
     addEventListener('DOMContentLoaded', doTheThing());
     addEventListener('DOMContentLoaded', randomFlash());
 

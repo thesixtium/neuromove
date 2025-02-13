@@ -6,6 +6,11 @@ const _sequence3 = [];
 var _root = document.querySelector(':root');
 var start_time;
 var train_target = (-1);
+var acount = 0;
+var bcount = 0;
+var ccount = 0;
+var dcount = 0;
+var ecount = 0;
 /*const l45 = document.getElementById("ca");
 l45.width = 100;
 l45.height = 100;
@@ -27,10 +32,10 @@ const csw = sw.getContext("2d");/*
 const r135 = document.getElementById("ci");
 const cr135 = r135.getContext("2d");*/
 
-switchClick = function() {
+function switchClick(){
     console.log("switch mode!");
     //sendData(0);
-    window.location.href = "/destination";
+    //window.location.href = "/destination";
 }
 
 function sendData(time, id, target) {
@@ -49,6 +54,30 @@ function sendData(time, id, target) {
       .catch(error => {
         console.error('Error:', error);
       });
+}
+
+
+function sendLocation(id){
+  var selection = id;
+  
+  if (id != "e"){
+  fetch('/acceptclick', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({selection: selection})
+    })
+    .then(response => response.text())
+    .then(result => {
+      console.log(result);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });}
+  else if (selection == "e"){
+    window.location.href = "/destination";
+  }
 }
 
 const _canvases = [/*cl45,*/ cfwd, /*cr45, */cl, cstop ,cr, csw /*cl135, cbwd, cr135*/];
@@ -221,6 +250,10 @@ function toggleFullScreen() {
 //console.log("block end: " + Date.now()-start_time);
 //}
 addEventListener('DOMContentLoaded', drawArrows());
-document.getElementById("e").addEventListener("click", switchClick);
+document.getElementById("a").addEventListener("click", function(){sendLocation("fwd");});
+document.getElementById("b").addEventListener("click", function(){sendLocation("left");});
+document.getElementById("c").addEventListener("click", function(){sendLocation("stop");});
+document.getElementById("d").addEventListener("click", function(){sendLocation("right");});
+document.getElementById("e").addEventListener("click", function(){sendLocation("e");});
 addEventListener('DOMContentLoaded', doTheThing());
 //src = "test-logic.js"

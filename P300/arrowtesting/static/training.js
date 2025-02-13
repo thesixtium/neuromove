@@ -274,4 +274,4 @@ document.addEventListener(
   },
   false,
 );
-document.getElementById("h").addEventListener("click", switchClick);
+//document.getElementById("e").addEventListener("click", (window.location.href = "/destination"));
