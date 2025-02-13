@@ -1,25 +1,29 @@
 # pipreqs src --ignore src/LiDAR
+# tach mod
+# tach sync
+# tach show --web
 
 #!/usr/bin/env python3
 import numpy as np
-import subprocess
 
 from src.Arduino.ArduinoUno import ArduinoUno
+
 from src.RaspberryPi.InternalException import *
 from src.RaspberryPi.Socket import Socket
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
-from src.LiDAR.build.RunLiDAR import RunLiDAR
 from src.RaspberryPi.States import States, DestinationDrivingStates
 
+from src.LiDAR.build.RunLiDAR import RunLiDAR
 
 def main():
     # Starting variables
     state = States.START
     next_state = States.START
+    initialized = False
     current_exception = None
-    arduino_uno = None
-    lidar = None
+
+    # Memories
     eye_tracking_memory = None
     occupancy_grid_memory = None
     point_selection_memory = None
@@ -27,8 +31,11 @@ def main():
     imu_memory = None
     requested_next_state_memory = None
     destination_driving_state_memory = None
+
+    # Connections
+    arduino_uno = None
+    lidar = None
     p300_socket = None
-    initialized = False
 
     while state != States.OFF:
         try:
@@ -51,8 +58,6 @@ def main():
                         arduino_uno = ArduinoUno()
                         lidar = RunLiDAR()
 
-                        next_state = States.SETUP
-
                         eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=1, create=True)
                         local_driving_memory = SharedMemory(shem_name="local_driving", size=1, create=True)
                         requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=1, create=True)
@@ -65,9 +70,13 @@ def main():
 
                         initialized = True
 
+                        next_state = States.SETUP
+
+
 
                 case States.SETUP:
                     print("Setup")
+                    next_state = States.LOCAL
 
 
                 case States.LOCAL:
