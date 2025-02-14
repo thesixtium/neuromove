@@ -6,7 +6,7 @@ import webbrowser
 
 
 print("src.RaspberryPi._ imports")
-from src.RaspberryPi.ArduinoUno import ArduinoUno
+from src.Arduino.ArduinoUno import ArduinoUno
 from src.RaspberryPi.InternalException import *
 from src.RaspberryPi.Socket import Socket
 from src.RaspberryPi.SharedMemory import SharedMemory
@@ -47,7 +47,7 @@ def main():
                 state = States.RECOVERY
             else:
                 state = next_state
-                # Requested next state from the UI
+
                 if initialized:
                     requested_next_state = requested_next_state_memory.read_requested_next_state()
                     if requested_next_state:
@@ -58,6 +58,9 @@ def main():
                 case States.START:
                     print("Start")
                     if not initialized:
+                        backend.start()
+                        webbrowser.open('http://127.0.0.1:5000', new=2)
+
                         arduino_uno = ArduinoUno()
                         lidar = RunLiDAR()
 
@@ -72,8 +75,6 @@ def main():
                         destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=1, create=True)
 
                         p300_socket = Socket(12347, 12348)
-                        backend.start()
-                        webbrowser.open('http://127.0.0.1:5000', new=2)
 
                         initialized = True
 

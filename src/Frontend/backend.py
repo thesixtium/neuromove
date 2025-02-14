@@ -4,10 +4,16 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import threading
 from pylsl import StreamInfo, StreamOutlet, local_clock
+import logging
+
+COLOR = "#b0b9cc"
+BLACK = "#000000"
+WHITE = "#FFFFFF"
 
 app = Flask(__name__,template_folder="templates")
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
-print("App started")
 # create LSL stream
 marker_info = StreamInfo(name='MarkerStream',
                         type='Markers',
@@ -15,9 +21,7 @@ marker_info = StreamInfo(name='MarkerStream',
                         nominal_srate=250,
                         channel_format='string',
                         source_id='Marker_Outlet')
-print("Marker made")
 marker_outlet = StreamOutlet(marker_info, 20, 360)
-print("Marker outlet made")
 NUMBER_OF_OPTIONS = 5
 
 @app.route("/")
@@ -35,10 +39,6 @@ def screenside():
 @app.route("/localBCI", methods=['POST'])
 def localBCI():
     data = request.json['data']
-   # time = data.get('time')
-   # idrt = data.get('id')
-   # timeID = [time, idrt]
-    #print(timeID)
     outputpls(data)
     return jsonify({'result': 'success'})
 
@@ -71,7 +71,6 @@ def setup():
 @app.route("/outputpls", methods=['POST'])
 def outputpls():
     timeID = request.json['data']
-    # file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/Frontend/test1.txt"
     file_path = "test1.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(timeID) + '\n')
@@ -133,7 +132,7 @@ def drawMap():
     #base map
 def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#000000']
+    colours = [COLOR, BLACK, BLACK, BLACK, BLACK]
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -141,7 +140,6 @@ def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     # save just colour zones
     plt.axis('off')
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    #plt.savefig('no-points.png', format='png', bbox_inches='tight', pad_inches=0)
 
     plt.scatter(origin[0], origin[1], color='red', marker='*')
     plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
@@ -153,7 +151,7 @@ def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 1 flashed
 def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#b0b9cc', '#FFFFFF', '#000000', '#000000', '#000000']
+    colours = [COLOR, WHITE, BLACK, BLACK, BLACK]
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -173,7 +171,7 @@ def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     #map with region 2 flashed
     
-    colours = ['#b0b9cc', '#000000', '#FFFFFF', '#000000', '#000000']
+    colours = [COLOR, BLACK, WHITE, BLACK, BLACK]
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -194,7 +192,7 @@ def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 3 flashed
 def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#b0b9cc', '#000000', '#000000', '#FFFFFF', '#000000']
+    colours = [COLOR, BLACK, BLACK, WHITE, BLACK]
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -215,7 +213,7 @@ def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     #map with region 4 flashed
 def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     
-    colours = ['#b0b9cc', '#000000', '#000000', '#000000', '#FFFFFF']
+    colours = [COLOR, BLACK, BLACK, BLACK, WHITE]
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
@@ -233,11 +231,12 @@ def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
     plt.savefig('static/center-points4.svg', format='svg', bbox_inches='tight', pad_inches=0)
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)
 
-def start():
-    print("Entered")
+def _start():
     app.run(host="localhost", port=5000, debug=False)
-    print("Started")
+
+def start():
+    web_thread = threading.Thread(target=_start)
+    web_thread.start()
