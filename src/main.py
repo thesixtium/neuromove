@@ -2,7 +2,7 @@
 
 #!/usr/bin/env python3
 import numpy as np
-import subprocess
+import webbrowser
 
 
 print("src.RaspberryPi._ imports")
