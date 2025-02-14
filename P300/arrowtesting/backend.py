@@ -109,7 +109,7 @@ def eyetrackingside():
     return jsonify({'result': 'success'})
 
 def eyeoutput(val):
-    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt"
+    file_path = "test.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(val) + '\n')
 
