@@ -1,30 +1,35 @@
-#!/usr/bin/env python3
-
 # pipreqs src --ignore src/LiDAR
-# tach mod
-# tach sync
-# tach show --web
 
+#!/usr/bin/env python3
 import numpy as np
+import subprocess
 
-from src.Arduino.ArduinoUno import ArduinoUno
 
+print("src.RaspberryPi._ imports")
+from src.RaspberryPi.ArduinoUno import ArduinoUno
 from src.RaspberryPi.InternalException import *
 from src.RaspberryPi.Socket import Socket
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
 from src.RaspberryPi.States import States, DestinationDrivingStates
 
+
+print("src.LiDAR._ imports")
 from src.LiDAR.build.RunLiDAR import RunLiDAR
+
+
+print("src.Frontend imports")
+from src.Frontend import backend
+
 
 def main():
     # Starting variables
+    print("Init variables")
     state = States.START
     next_state = States.START
-    initialized = False
     current_exception = None
-
-    # Memories
+    arduino_uno = None
+    lidar = None
     eye_tracking_memory = None
     occupancy_grid_memory = None
     point_selection_memory = None
@@ -32,24 +37,21 @@ def main():
     imu_memory = None
     requested_next_state_memory = None
     destination_driving_state_memory = None
-
-    # Connections
-    arduino_uno = None
-    lidar = None
     p300_socket = None
+    initialized = False
 
     while state != States.OFF:
         try:
-            # Requested next state from the UI
-            requested_next_state = requested_next_state_memory.read_requested_next_state()
-            if requested_next_state:
-                next_state = requested_next_state
-
             # Advance state
             if current_exception is not None:
                 state = States.RECOVERY
             else:
                 state = next_state
+                # Requested next state from the UI
+                if initialized:
+                    requested_next_state = requested_next_state_memory.read_requested_next_state()
+                    if requested_next_state:
+                        next_state = requested_next_state
 
             # Use state
             match state:
@@ -58,6 +60,8 @@ def main():
                     if not initialized:
                         arduino_uno = ArduinoUno()
                         lidar = RunLiDAR()
+
+                        next_state = States.SETUP
 
                         eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=1, create=True)
                         local_driving_memory = SharedMemory(shem_name="local_driving", size=1, create=True)
@@ -68,16 +72,14 @@ def main():
                         destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=1, create=True)
 
                         p300_socket = Socket(12347, 12348)
+                        backend.start()
+                        webbrowser.open('http://127.0.0.1:5000', new=2)
 
                         initialized = True
-
-                        next_state = States.SETUP
-
 
 
                 case States.SETUP:
                     print("Setup")
-                    next_state = States.LOCAL
 
 
                 case States.LOCAL:
@@ -96,7 +98,7 @@ def main():
                             # Get point selections
                             occupancy_grid = np.array(occupancy_grid_memory.read_grid())
                             origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
-                            selected_points = occupancy_grid_to_points(occupancy_grid, origin, plot_result=False)
+                            selected_points = occupancy_grid_to_points(occupancy_grid, origin, plot_result=True)
                             point_selection_memory.write_np_array(selected_points)
 
                             destination_driving_state_memory.write_string("s")

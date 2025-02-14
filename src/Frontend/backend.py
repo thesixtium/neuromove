@@ -1,23 +1,13 @@
 from flask import Flask,render_template, request, jsonify
-from bci_essentials import *
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from ast import literal_eval
-import logging
-from queue import Queue
-# from kmedoids import fasterpam
-from scipy.spatial.distance import pdist, squareform, cdist
 import threading
-
-
 from pylsl import StreamInfo, StreamOutlet, local_clock
-'''import os
-import csv
-import sqlite3 as sql'''
 
 app = Flask(__name__,template_folder="templates")
 
+print("App started")
 # create LSL stream
 marker_info = StreamInfo(name='MarkerStream',
                         type='Markers',
@@ -25,7 +15,9 @@ marker_info = StreamInfo(name='MarkerStream',
                         nominal_srate=250,
                         channel_format='string',
                         source_id='Marker_Outlet')
-marker_outlet = StreamOutlet(marker_info, 20, 360)  
+print("Marker made")
+marker_outlet = StreamOutlet(marker_info, 20, 360)
+print("Marker outlet made")
 NUMBER_OF_OPTIONS = 5
 
 @app.route("/")
@@ -79,7 +71,7 @@ def setup():
 @app.route("/outputpls", methods=['POST'])
 def outputpls():
     timeID = request.json['data']
-    # file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test1.txt"
+    # file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/Frontend/test1.txt"
     file_path = "test1.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(timeID) + '\n')
@@ -109,14 +101,14 @@ def eyetrackingside():
     return jsonify({'result': 'success'})
 
 def eyeoutput(val):
-    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/arrowtesting/test.txt"
+    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/Frontend/test.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(val) + '\n')
 
 def drawMap():
     data = np.loadtxt('data.txt')
     medoid_coordinates = np.loadtxt('middles.txt')
-    neighbourhood_points = np.loadtxt('neighbourhood_points.txt').reshape((4,4,2))
+    neighbourhood_points = np.loadtxt('neighbourhood_points.txt').reshape((4, 4, 2))
     origin = np.loadtxt('origin.txt')
     number_of_neighbourhoods = neighbourhood_points.shape[0]
     t0 = threading.Thread(map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods)) 
@@ -244,3 +236,8 @@ def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+def start():
+    print("Entered")
+    app.run(host="localhost", port=5000, debug=False)
+    print("Started")
