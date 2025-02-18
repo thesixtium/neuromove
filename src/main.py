@@ -2,51 +2,27 @@
 
 #!/usr/bin/env python3
 import numpy as np
-import webbrowser
-import time
+import subprocess
 
-
-print("src.RaspberryPi._ imports")
-start_time = time.time()
 from src.Arduino.ArduinoUno import ArduinoUno
-print("from src.Arduino.ArduinoUno import ArduinoUno --- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
 from src.RaspberryPi.InternalException import *
-
-print("from src.RaspberryPi.InternalException import * --- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
 from src.RaspberryPi.Socket import Socket
-
-print("from src.RaspberryPi.Socket import Socket --- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
 from src.RaspberryPi.SharedMemory import SharedMemory
-
-print("from src.RaspberryPi.SharedMemory import SharedMemory --- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
-
-print("from src.RaspberryPi.point_selection import occupancy_grid_to_points --- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
 from src.RaspberryPi.States import States, DestinationDrivingStates
-
-print("from src.RaspberryPi.States import States, DestinationDrivingStates --- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
-
-print("src.LiDAR._ imports --- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
 from src.LiDAR.build.RunLiDAR import RunLiDAR
+from src.Frontend.run import RunUI
 
 
-print("src.Frontend imports --- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
-from src.Frontend import backend
+# Todo
+# - Wait until screen launched
+# - Loading screen
+# - Setup screen
+# - Local flashing
 
-
-print("--- %s seconds ---" % (time.time() - start_time))
 
 def main():
     # Starting variables
-    print("Init variables")
     state = States.START
     next_state = States.START
     current_exception = None
@@ -80,14 +56,8 @@ def main():
                 case States.START:
                     print("Start")
                     if not initialized:
-                        backend.start()
-                        webbrowser.open('http://127.0.0.1:5000', new=2)
 
-                        arduino_uno = ArduinoUno()
-                        lidar = RunLiDAR()
-
-                        next_state = States.SETUP
-
+                        print("Setting up shared memory... ", end="")
                         eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=1, create=True)
                         local_driving_memory = SharedMemory(shem_name="local_driving", size=1, create=True)
                         requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=1, create=True)
@@ -95,14 +65,36 @@ def main():
                         imu_memory = SharedMemory(shem_name="imu", size=284622, create=True)
                         point_selection_memory = SharedMemory(shem_name="point_selection", size=1000, create=True)
                         destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=1, create=True)
+                        print("Done")
 
+                        print("Setting up socket... ", end="")
                         p300_socket = Socket(12347, 12348)
+                        print("Done")
 
+                        print("Setting up UI... ", end="")
+                        frontend = RunUI()
+                        print("Done")
+
+                        print("Setting up Arduino Uno... ", end="")
+                        arduino_uno = ArduinoUno()
+                        print("Done")
+
+                        print("Setting up LiDAR... ", end="")
+                        lidar = RunLiDAR()
+                        print("Done")
+
+                        print("Setting up next state... ", end="")
+                        next_state = States.SETUP
+                        print("Done")
+
+                        print("Setting up initialized... ", end="")
                         initialized = True
+                        print("Done")
 
 
                 case States.SETUP:
                     print("Setup")
+                    next_state = States.LOCAL
 
 
                 case States.LOCAL:
@@ -153,6 +145,8 @@ def main():
                     # If is an error that we didn't throw
                     elif isinstance(current_exception, Exception):
                         print(f"External Error: {current_exception.args}")
+                        print(current_exception)
+                        print(f"\t{current_exception.with_traceback(None)}")
                         next_state = States.OFF
 
                     # If not an error
@@ -177,7 +171,7 @@ def main():
 
 
     if initialized:
-        arduino_uno.close()
+        # arduino_uno.close()
         eye_tracking_memory.close()
         p300_socket.close()
         occupancy_grid_memory.close()

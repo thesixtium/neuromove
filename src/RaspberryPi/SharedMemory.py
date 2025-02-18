@@ -13,7 +13,11 @@ class SharedMemory:
             self.size = size
             self.memory = shared_memory.SharedMemory(name=shem_name, size=size, create=create)
         except:
-            raise DidNotCreateSharedMemory(shem_name)
+            try:
+                self.memory = shared_memory.SharedMemory(name=shem_name, size=size, create=False)
+            except:
+                raise DidNotCreateSharedMemory(shem_name)
+
 
     def _check_size(self, encoded: bytes):
         if len(encoded) >= self.size:
