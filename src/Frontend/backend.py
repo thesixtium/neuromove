@@ -5,9 +5,11 @@ from matplotlib.colors import ListedColormap
 import threading
 from pylsl import StreamInfo, StreamOutlet, local_clock
 import logging
+import os
 
 COLOR = "#b0b9cc"
-BLACK = "#000000"
+# BLACK = "#000000"
+BLACK = "#206A00"
 WHITE = "#FFFFFF"
 
 app = Flask(__name__,template_folder="templates")
@@ -70,6 +72,7 @@ def setup():
 
 @app.route("/outputpls", methods=['POST'])
 def outputpls():
+    return "1"
     timeID = request.json['data']
     file_path = "test1.txt"
     with open(file_path, "a") as f:  # Open in append mode
@@ -100,7 +103,7 @@ def eyetrackingside():
     return jsonify({'result': 'success'})
 
 def eyeoutput(val):
-    file_path = "C:/Users/thepi/Documents/Capstone/neuromove/P300/Frontend/test.txt"
+    file_path = "test.txt"
     with open(file_path, "a") as f:  # Open in append mode
         f.write(str(val) + '\n')
 
@@ -146,7 +149,7 @@ def map0(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 
     # save with origin and centers
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('static/center-points0.svg', format='svg', bbox_inches='tight', pad_inches=0)
+    plt.savefig(os.path.join("static", "center-points0.svg"), format='svg', bbox_inches='tight', pad_inches=0)
 
     #map with region 1 flashed
 def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
@@ -166,7 +169,7 @@ def map1(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 
     # save with origin and centers
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('static/center-points1.svg', format='svg', bbox_inches='tight', pad_inches=0)
+    plt.savefig(os.path.join("static", "center-points1.svg"), format='svg', bbox_inches='tight', pad_inches=0)
 
 def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neighbourhoods):
     #map with region 2 flashed
@@ -186,7 +189,7 @@ def map2(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 
     # save with origin and centers
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('static/center-points2.svg', format='svg', bbox_inches='tight', pad_inches=0)
+    plt.savefig(os.path.join("static", "center-points2.svg"), format='svg', bbox_inches='tight', pad_inches=0)
 
 
     #map with region 3 flashed
@@ -207,7 +210,7 @@ def map3(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 
     # save with origin and centers
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('static/center-points3.svg', format='svg', bbox_inches='tight', pad_inches=0)
+    plt.savefig(os.path.join("static", "center-points3.svg"), format='svg', bbox_inches='tight', pad_inches=0)
 
 
     #map with region 4 flashed
@@ -228,7 +231,7 @@ def map4(data, medoid_coordinates, neighbourhood_points, origin, number_of_neigh
 
     # save with origin and centers
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig('static/center-points4.svg', format='svg', bbox_inches='tight', pad_inches=0)
+    plt.savefig(os.path.join("static", "center-points4.svg"), format='svg', bbox_inches='tight', pad_inches=0)
 
 
 if __name__ == '__main__':

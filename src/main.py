@@ -3,24 +3,46 @@
 #!/usr/bin/env python3
 import numpy as np
 import webbrowser
+import time
 
 
 print("src.RaspberryPi._ imports")
+start_time = time.time()
 from src.Arduino.ArduinoUno import ArduinoUno
+print("from src.Arduino.ArduinoUno import ArduinoUno --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 from src.RaspberryPi.InternalException import *
+
+print("from src.RaspberryPi.InternalException import * --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 from src.RaspberryPi.Socket import Socket
+
+print("from src.RaspberryPi.Socket import Socket --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 from src.RaspberryPi.SharedMemory import SharedMemory
+
+print("from src.RaspberryPi.SharedMemory import SharedMemory --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
+
+print("from src.RaspberryPi.point_selection import occupancy_grid_to_points --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 from src.RaspberryPi.States import States, DestinationDrivingStates
 
+print("from src.RaspberryPi.States import States, DestinationDrivingStates --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 
-print("src.LiDAR._ imports")
+print("src.LiDAR._ imports --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 from src.LiDAR.build.RunLiDAR import RunLiDAR
 
 
-print("src.Frontend imports")
+print("src.Frontend imports --- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
 from src.Frontend import backend
 
+
+print("--- %s seconds ---" % (time.time() - start_time))
 
 def main():
     # Starting variables
@@ -120,15 +142,17 @@ def main():
 
                     # If is an error that we threw
                     if isinstance(current_exception, InternalException):
-                        print(current_exception.print())
+                        print(f"Internal Error: {current_exception.print()}")
                         if current_exception.is_permanent():
                             next_state = States.OFF
+                            print("P")
                         else:
                             next_state = States.LOCAL
+                            print("T")
 
                     # If is an error that we didn't throw
                     elif isinstance(current_exception, Exception):
-                        print(current_exception.args)
+                        print(f"External Error: {current_exception.args}")
                         next_state = States.OFF
 
                     # If not an error

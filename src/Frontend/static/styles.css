@@ -6,24 +6,24 @@
     --mright: 10%;
 }
 .quicksand {
-    font-family: "Quicksand", serif;
+    font-family: "Monaco", serif;
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
   }
 body{
-    background-color: rgb(80, 97, 155);
+    background-color: rgb(135, 87, 179);
     margin-left: 15%;
     margin-right:15%;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Monaco', sans-serif;
 }
 
 h1{
     color: black;
     text-align: center;
-    text-shadow: 0em 0em 1em white;
+    /* text-shadow: 0em 0em 1em white; */
     font-size: 5em;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Monaco', sans-serif;
 }
 
 
@@ -52,9 +52,9 @@ h2{
     color: black;
     padding: 0em;
     text-align: center;
-    text-shadow: 0em 0em 1em white;
+    /* text-shadow: 0em 0em 1em white; */
     font-size: 2.5em;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Monaco', sans-serif;
 }
 
 .dot{
@@ -136,7 +136,7 @@ margin-bottom: -3%;}
     height: 70vh;
     width: 60vw;
     font-size: 5em;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Monaco', sans-serif;
     color: white;
     text-align: center;
     z-index: 20;
@@ -145,14 +145,34 @@ margin-bottom: -3%;}
 #tl, #tr, #cen, #bl, #br, #returning, #newb{
     background: black;
     color: white;
-    font-size: 1em;
+    font-size: 2em;
     height: 17vh;
     width: 17vh;
     text-align: center;
 }
 
+.tl{
+    margin-top: 0.25em;
+}
+
+.tr{
+    margin-top: 0.25em;
+}
+
+.cen{
+    margin-top: 0.25em;
+}
+
+.bl{
+    margin-top: 0.25em;
+}
+
+.br{
+    margin-top: 0.25em;
+}
+
 .returning{
-    margin-top: 0.1em;
+    margin-top: 0.25em;
 }
 #menutext{
     padding-top: 23%;
@@ -161,7 +181,7 @@ margin-bottom: -3%;}
     text-shadow: none;
 }
 .newb{
-    margin-top: -1.5%;
+    margin-top: 0.25em;
 }
 .stop-grid-container {
     padding-top: 15%;
