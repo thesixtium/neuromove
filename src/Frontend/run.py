@@ -16,4 +16,4 @@ class RunUI:
         self.ui_thread.start()
 
     def start(self):
-        process = run(["streamlit", "run", r"Frontend/local.py"])
+        process = run(["streamlit", "run", r"Frontend/setup.py"])

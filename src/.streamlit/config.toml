@@ -1,0 +1,5 @@
+[client]
+showSidebarNavigation = false
+
+[theme]
+backgroundColor = "#000000"

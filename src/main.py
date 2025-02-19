@@ -1,18 +1,49 @@
 # pipreqs src --ignore src/LiDAR
 
 #!/usr/bin/env python3
+
+import time
 import numpy as np
-import subprocess
 
+current_time = time.time()
+print("Importing src.Arduino.ArduinoUno... ", end="")
 from src.Arduino.ArduinoUno import ArduinoUno
-from src.RaspberryPi.InternalException import *
-from src.RaspberryPi.Socket import Socket
-from src.RaspberryPi.SharedMemory import SharedMemory
-from src.RaspberryPi.point_selection import occupancy_grid_to_points
-from src.RaspberryPi.States import States, DestinationDrivingStates
-from src.LiDAR.build.RunLiDAR import RunLiDAR
-from src.Frontend.run import RunUI
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
 
+print("Importing RaspberryPi.InternalException... ", end="")
+from src.RaspberryPi.InternalException import *
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.Socket... ", end="")
+from src.RaspberryPi.Socket import Socket
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.SharedMemory... ", end="")
+from src.RaspberryPi.SharedMemory import SharedMemory
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.point_selection... ", end="")
+from src.RaspberryPi.point_selection import occupancy_grid_to_points
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.States... ", end="")
+from src.RaspberryPi.States import States, DestinationDrivingStates
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing LiDAR.build.RunLiDAR... ", end="")
+from src.LiDAR.build.RunLiDAR import RunLiDAR
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing Frontend.run... ", end="")
+from src.Frontend.run import RunUI
+print(f"done ({time.time() - current_time}s)")
 
 # Todo
 # - Wait until screen launched
@@ -58,13 +89,13 @@ def main():
                     if not initialized:
 
                         print("Setting up shared memory... ", end="")
-                        eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=1, create=True)
-                        local_driving_memory = SharedMemory(shem_name="local_driving", size=1, create=True)
-                        requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=1, create=True)
+                        eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=True)
+                        local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
+                        requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=10, create=True)
                         occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
                         imu_memory = SharedMemory(shem_name="imu", size=284622, create=True)
                         point_selection_memory = SharedMemory(shem_name="point_selection", size=1000, create=True)
-                        destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=1, create=True)
+                        destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=10, create=True)
                         print("Done")
 
                         print("Setting up socket... ", end="")
@@ -76,30 +107,29 @@ def main():
                         print("Done")
 
                         print("Setting up Arduino Uno... ", end="")
-                        arduino_uno = ArduinoUno()
+                        #arduino_uno = ArduinoUno()
                         print("Done")
 
                         print("Setting up LiDAR... ", end="")
-                        lidar = RunLiDAR()
-                        print("Done")
-
-                        print("Setting up next state... ", end="")
-                        next_state = States.SETUP
+                        # lidar = RunLiDAR()
                         print("Done")
 
                         print("Setting up initialized... ", end="")
                         initialized = True
                         print("Done")
 
+                        requested_next_state_memory.write_string("2")
+
 
                 case States.SETUP:
                     print("Setup")
-                    next_state = States.LOCAL
 
 
                 case States.LOCAL:
                     print("Local")
-                    arduino_uno.send_direction(local_driving_memory.read_local_driving())
+                    print(local_driving_memory.read_local_driving())
+                    time.sleep(10)
+                    #arduino_uno.send_direction(local_driving_memory.read_local_driving())
 
 
                 case States.DESTINATION:
