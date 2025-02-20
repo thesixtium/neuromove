@@ -1,36 +1,92 @@
-import streamlit as st
-from src.RaspberryPi.States import States
 import time
-from streamlit_extras.stylable_container import stylable_container
-from src.RaspberryPi.SharedMemory import SharedMemory
-from random import shuffle
-from src.Frontend.style import *
 import numpy as np
+from io import BytesIO
+from random import shuffle
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from io import BytesIO
 
-with open("Frontend/frontend.css") as f:
-    st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
+import streamlit as st
+from streamlit_extras.stylable_container import stylable_container
 
-local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=False)
-requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=10, create=False)
+from pylsl import StreamInfo, StreamOutlet, local_clock
 
-if "state" not in st.session_state:
-    st.session_state["state"] = States.SETUP
+from src.RaspberryPi.States import States
+from src.RaspberryPi.SharedMemory import SharedMemory
+from src.Frontend.style import *
+
+def send_marker(number_of_options: int, flashed_as_num: int):
+    st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{-1},{flashed_as_num}"], local_clock())
+
+
+def give_local_sequence_list():
+    all_buttons = ["up", "left", "right", "stop", "switch"]
+    return_list = []
+    list_appends = 0
+
+    while list_appends < 5:
+        shuffle(all_buttons)
+        if len(return_list) == 0 or return_list[-1] != all_buttons[0]:
+            return_list += all_buttons
+            list_appends += 1
+
+    return_list = [item for pair in zip(return_list, ["break"] * len(return_list)) for item in pair][:-1]
+    st.session_state["flash_sequence"] = return_list
+
+
+def give_map_sequence_list():
+    all_buttons = ["1", "2", "3", "4", "switch"]
+    return_list = []
+    list_appends = 0
+
+    while list_appends < 5:
+        shuffle(all_buttons)
+        if len(return_list) == 0 or return_list[-1] != all_buttons[0]:
+            return_list += all_buttons
+            list_appends += 1
+
+    return_list = [item for pair in zip(return_list, ["0"] * len(return_list)) for item in pair]
+    st.session_state["map_sequence"] = return_list
+
+def direction_update(direction):
+    st.session_state["local_driving_memory"].write_string(direction)
+
 
 def switch():
     if st.session_state["state"] == States.LOCAL:
         st.session_state["state"] = States.DESTINATION
+        st.session_state["requested_next_state_memory"].write_string("4")
     else:
         st.session_state["state"] = States.LOCAL
+        st.session_state["requested_next_state_memory"].write_string("3")
+
+with open("Frontend/frontend.css") as f:
+    st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
+
+if "state" not in st.session_state:
+    st.session_state["state"] = States.SETUP
+if "local_driving_memory" not in st.session_state:
+    st.session_state["local_driving_memory"] = SharedMemory(shem_name="local_driving", size=10, create=False)
+if "requested_next_state_memory" not in st.session_state:
+    st.session_state["requested_next_state_memory"] = SharedMemory(shem_name="requested_next_state", size=10, create=False)
+if "marker_outlet" not in st.session_state:
+    marker_info = StreamInfo(name='MarkerStream',
+                             type='Markers',
+                             channel_count=1,
+                             nominal_srate=250,
+                             channel_format='string',
+                             source_id='Marker_Outlet')
+    st.session_state["marker_outlet"] =  StreamOutlet(marker_info, 20, 360)
+if "flash_sequence" not in st.session_state:
+    st.session_state["flash_sequence"] = []
+if "map_sequence" not in st.session_state:
+    st.session_state["map_sequence"] = ["0"]
 
 print(st.session_state["state"])
 
 match st.session_state["state"]:
     case States.SETUP:
         def start():
-            requested_next_state_memory.write_string("3")
+            st.session_state["requested_next_state_memory"].write_string("3")
             st.session_state["state"] = States.LOCAL
 
         with stylable_container(BUTTON_KEY, css_styles=BUTTON_VALUE):
@@ -38,83 +94,53 @@ match st.session_state["state"]:
 
 
     case States.LOCAL:
-        def give_sequence_list():
-            all_buttons = ["up", "down", "left", "right", "stop", "switch"]
-            return_list = []
-            list_appends = 0
-
-            while list_appends < 5:
-                shuffle(all_buttons)
-                if len(return_list) == 0 or return_list[-1] != all_buttons[0]:
-                    return_list += all_buttons
-                    list_appends += 1
-
-            return_list = [item for pair in zip(return_list, ["break"] * len(return_list)) for item in pair][:-1]
-            st.session_state["flash_sequence"] = return_list
-
-
-        def direction_update(direction):
-            local_driving_memory.write_string(direction)
-
-
-        if "flash_sequence" not in st.session_state or isinstance(st.session_state["flash_sequence"], bool):
-            st.session_state["flash_sequence"] = []
-
         if len(st.session_state["flash_sequence"]) > 0:
-            if st.session_state["flash_sequence"][0] == "up":
-                left_value = BUTTON_VALUE
-                right_value = BUTTON_VALUE
-                up_value = FLASH_VALUE
-                down_value = BUTTON_VALUE
-                stop_value = BUTTON_VALUE
-                switch_value = BUTTON_VALUE
-            elif st.session_state["flash_sequence"][0] == "down":
-                left_value = BUTTON_VALUE
-                right_value = BUTTON_VALUE
-                up_value = BUTTON_VALUE
-                down_value = FLASH_VALUE
-                stop_value = BUTTON_VALUE
-                switch_value = BUTTON_VALUE
-            elif st.session_state["flash_sequence"][0] == "left":
-                left_value = FLASH_VALUE
-                right_value = BUTTON_VALUE
-                up_value = BUTTON_VALUE
-                down_value = BUTTON_VALUE
-                stop_value = BUTTON_VALUE
-                switch_value = BUTTON_VALUE
-            elif st.session_state["flash_sequence"][0] == "right":
-                left_value = BUTTON_VALUE
-                right_value = FLASH_VALUE
-                up_value = BUTTON_VALUE
-                down_value = BUTTON_VALUE
-                stop_value = BUTTON_VALUE
-                switch_value = BUTTON_VALUE
-            elif st.session_state["flash_sequence"][0] == "stop":
-                left_value = BUTTON_VALUE
-                right_value = BUTTON_VALUE
-                up_value = BUTTON_VALUE
-                down_value = BUTTON_VALUE
-                stop_value = FLASH_VALUE
-                switch_value = BUTTON_VALUE
-            elif st.session_state["flash_sequence"][0] == "switch":
-                left_value = BUTTON_VALUE
-                right_value = BUTTON_VALUE
-                up_value = BUTTON_VALUE
-                down_value = BUTTON_VALUE
-                stop_value = BUTTON_VALUE
-                switch_value = FLASH_VALUE
-            else:
-                left_value = BUTTON_VALUE
-                right_value = BUTTON_VALUE
-                up_value = BUTTON_VALUE
-                down_value = BUTTON_VALUE
-                stop_value = BUTTON_VALUE
-                switch_value = BUTTON_VALUE
+            match st.session_state["flash_sequence"][0]:
+                case "up":
+                    left_value = BUTTON_VALUE
+                    right_value = BUTTON_VALUE
+                    up_value = FLASH_VALUE
+                    stop_value = BUTTON_VALUE
+                    switch_value = BUTTON_VALUE
+                    send_marker(5, 2)
+                case "left":
+                    left_value = FLASH_VALUE
+                    right_value = BUTTON_VALUE
+                    up_value = BUTTON_VALUE
+                    stop_value = BUTTON_VALUE
+                    switch_value = BUTTON_VALUE
+                    send_marker(5, 0)
+                case "right":
+                    left_value = BUTTON_VALUE
+                    right_value = FLASH_VALUE
+                    up_value = BUTTON_VALUE
+                    stop_value = BUTTON_VALUE
+                    switch_value = BUTTON_VALUE
+                    send_marker(5, 1)
+                case "stop":
+                    left_value = BUTTON_VALUE
+                    right_value = BUTTON_VALUE
+                    up_value = BUTTON_VALUE
+                    stop_value = FLASH_VALUE
+                    switch_value = BUTTON_VALUE
+                    send_marker(5, 3)
+                case "switch":
+                    left_value = BUTTON_VALUE
+                    right_value = BUTTON_VALUE
+                    up_value = BUTTON_VALUE
+                    stop_value = BUTTON_VALUE
+                    switch_value = FLASH_VALUE
+                    send_marker(5, 4)
+                case _:
+                    left_value = BUTTON_VALUE
+                    right_value = BUTTON_VALUE
+                    up_value = BUTTON_VALUE
+                    stop_value = BUTTON_VALUE
+                    switch_value = BUTTON_VALUE
         else:
             left_value = BUTTON_VALUE
             right_value = BUTTON_VALUE
             up_value = BUTTON_VALUE
-            down_value = BUTTON_VALUE
             stop_value = BUTTON_VALUE
             switch_value = BUTTON_VALUE
 
@@ -134,9 +160,6 @@ match st.session_state["state"]:
 
             with stylable_container("stop", css_styles=stop_value):
                 st.button("-", on_click=direction_update, args=("s",))
-
-            with stylable_container("down", css_styles=down_value):
-                st.button("↓", on_click=direction_update, args=("b",))
         with col3:
             with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
                 st.button("3.1")
@@ -149,7 +172,7 @@ match st.session_state["state"]:
 
         col1, col2 = st.columns([1, 1])
         with col1:
-            st.button("Run", on_click=give_sequence_list)
+            st.button("Run", on_click=give_local_sequence_list)
         with col2:
             with stylable_container("switch", css_styles=switch_value):
                 st.button("S", on_click=switch)
@@ -161,53 +184,39 @@ match st.session_state["state"]:
 
 
     case States.DESTINATION:
-
-        def give_sequence_list():
-            all_buttons = ["1", "2", "3", "4", "switch"]
-            return_list = []
-            list_appends = 0
-
-            while list_appends < 5:
-                shuffle(all_buttons)
-                if len(return_list) == 0 or return_list[-1] != all_buttons[0]:
-                    return_list += all_buttons
-                    list_appends += 1
-
-            return_list = [item for pair in zip(return_list, ["0"] * len(return_list)) for item in pair]
-            st.session_state["map_sequence"] = return_list
-
-
-        if "map_sequence" not in st.session_state or isinstance(st.session_state["map_sequence"], bool):
-            st.session_state["map_sequence"] = ["0"]
-
-
         data = np.loadtxt('Frontend/data.txt')
         medoid_coordinates = np.loadtxt('Frontend/middles.txt')
         neighbourhood_points = np.loadtxt('Frontend/neighbourhood_points.txt').reshape((4, 4, 2))
         origin = np.loadtxt('Frontend/origin.txt')
         number_of_neighbourhoods = neighbourhood_points.shape[0]
 
+        match st.session_state["map_sequence"][0]:
+            case "1":
+                colours = [BLACK, WHITE, GREEN, GREEN, GREEN]
+                switch_value = BUTTON_VALUE
+                send_marker(5, 1)
+            case "2":
+                colours = [BLACK, GREEN, WHITE, GREEN, GREEN]
+                switch_value = BUTTON_VALUE
+                send_marker(5, 2)
+            case "3":
+                colours = [BLACK, GREEN, GREEN, WHITE, GREEN]
+                switch_value = BUTTON_VALUE
+                send_marker(5, 3)
+            case "4":
+                colours = [BLACK, GREEN, GREEN, GREEN, WHITE]
+                switch_value = BUTTON_VALUE
+                send_marker(5, 4)
+            case "switch":
+                colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
+                switch_value = FLASH_VALUE
+                send_marker(5, 0)
+            case _:
+                colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
+                switch_value = BUTTON_VALUE
+
         fig = plt.figure(figsize=(7, 5))
         fig.patch.set_visible(False)
-        if st.session_state["map_sequence"][0] == "1":
-            colours = [BLACK, WHITE, GREEN, GREEN, GREEN]
-            switch_value = BUTTON_VALUE
-        elif st.session_state["map_sequence"][0] == "2":
-            colours = [BLACK, GREEN, WHITE, GREEN, GREEN]
-            switch_value = BUTTON_VALUE
-        elif st.session_state["map_sequence"][0] == "3":
-            colours = [BLACK, GREEN, GREEN, WHITE, GREEN]
-            switch_value = BUTTON_VALUE
-        elif st.session_state["map_sequence"][0] == "4":
-            colours = [BLACK, GREEN, GREEN, GREEN, WHITE]
-            switch_value = BUTTON_VALUE
-        elif st.session_state["map_sequence"][0] == "switch":
-            colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
-            switch_value = FLASH_VALUE
-        else:
-            colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
-            switch_value = BUTTON_VALUE
-
         colourmap = ListedColormap(colours)
         plt.imshow(data, cmap=colourmap, interpolation='nearest')
         plt.gca().invert_yaxis()
@@ -215,20 +224,18 @@ match st.session_state["state"]:
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
         plt.scatter(origin[0], origin[1], color='red', marker='*')
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-
         buf = BytesIO()
         fig.savefig(buf, format="png")
         st.image(buf)
 
         if len(st.session_state["map_sequence"]) > 1:
             st.session_state["map_sequence"] = st.session_state["map_sequence"][1:]
-            print(st.session_state["map_sequence"])
             time.sleep(0.1)
             st.rerun()
 
         col1, col2 = st.columns([1, 1])
         with col1:
-            st.button("Run", on_click=give_sequence_list)
+            st.button("Run", on_click=give_map_sequence_list)
         with col2:
             with stylable_container("switch", css_styles=switch_value):
                 st.button("S", on_click=switch)
