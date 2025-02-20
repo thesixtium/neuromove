@@ -23,27 +23,28 @@ class Sensors(Enum):
 class ArduinoUno:
 
     def __init__(self, port='/dev/ttyACM0', baudrate=9600, timeout=1, ultrasonic_minimum_distance=10):
-        print("Flashing board")
-        arduino = pyduinocli.Arduino("./arduino-cli")
-        print(f"\tArduino: {arduino}")
-        brds = arduino.board.list()
-        print(f"\tBoards: {brds}")
+        #print("\nFlashing board")
+        #arduino = pyduinocli.Arduino("./arduino-cli")
+        #print(f"\tArduino: {arduino}")
+        #brds = arduino.board.list()
+        #print(f"\tBoards: {brds}")
 
-        try:
-            port = brds['result'][0]['port']['address']
-            print(f"\tPort: {port}")
-            fqbn = brds['result'][0]['matching_boards'][0]['fqbn']
-            print(f"\tFQBN: {fqbn}")
-        except:
-            raise ArduinoNotConnected()
+        #try:
+        #    port = brds['result'][0]['port']['address']
+        #    print(f"\tPort: {port}")
+        #    fqbn = brds['result'][0]['matching_boards'][0]['fqbn']
+        #    print(f"\tFQBN: {fqbn}")
+        #except:
+        #    raise ArduinoNotConnected()
 
-        arduino.compile(fqbn=fqbn, sketch="Arduino")
-        arduino.upload(fqbn=fqbn, sketch="Arduino", port=port)
+        #arduino.compile(fqbn=fqbn, sketch="Arduino")
+        #arduino.upload(fqbn=fqbn, sketch="Arduino", port=port)
 
-        self.sensor_values = dict()
-        self.ultrasonic_minimum_distance = ultrasonic_minimum_distance
+        #self.sensor_values = dict()
+        #self.ultrasonic_minimum_distance = ultrasonic_minimum_distance
 
         # Open serial port
+        port='COM3'
         try:
             self.ser = serial.Serial(port, baudrate, timeout=timeout)
             self.ser.reset_input_buffer()

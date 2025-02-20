@@ -66,6 +66,7 @@ def main():
     imu_memory = None
     requested_next_state_memory = None
     destination_driving_state_memory = None
+    frontend_origin_memory = None
     p300_socket = None
     initialized = False
 
@@ -96,6 +97,7 @@ def main():
                         imu_memory = SharedMemory(shem_name="imu", size=284622, create=True)
                         point_selection_memory = SharedMemory(shem_name="point_selection", size=1000, create=True)
                         destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=10, create=True)
+                        frontend_origin_memory = SharedMemory(shem_name="frontend_origin_memory", size=100, create=True)
                         print("Done")
 
                         print("Setting up socket... ", end="")
@@ -107,7 +109,7 @@ def main():
                         print("Done")
 
                         print("Setting up Arduino Uno... ", end="")
-                        #arduino_uno = ArduinoUno()
+                        arduino_uno = ArduinoUno()
                         print("Done")
 
                         print("Setting up LiDAR... ", end="")
@@ -128,8 +130,8 @@ def main():
                 case States.LOCAL:
                     print("Local")
                     print(local_driving_memory.read_local_driving())
-                    time.sleep(10)
-                    #arduino_uno.send_direction(local_driving_memory.read_local_driving())
+                    arduino_uno.send_direction(local_driving_memory.read_local_driving())
+                    time.sleep(0.25)
 
 
                 case States.DESTINATION:
@@ -143,6 +145,7 @@ def main():
                             # Get point selections
                             occupancy_grid = np.array(occupancy_grid_memory.read_grid())
                             origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
+                            frontend_origin_memory.write_string(f"{origin}")
                             selected_points = occupancy_grid_to_points(occupancy_grid, origin, plot_result=True)
                             point_selection_memory.write_np_array(selected_points)
 
@@ -201,7 +204,7 @@ def main():
 
 
     if initialized:
-        # arduino_uno.close()
+        arduino_uno.close()
         eye_tracking_memory.close()
         p300_socket.close()
         occupancy_grid_memory.close()
@@ -209,6 +212,7 @@ def main():
         local_driving_memory.close()
         requested_next_state_memory.close()
         destination_driving_state_memory.close()
+        frontend_origin_memory.close()
         imu_memory.close()
 
     if isinstance(current_exception, InternalException):

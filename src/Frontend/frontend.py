@@ -22,12 +22,8 @@ if "local_driving_memory" not in st.session_state:
 if "requested_next_state_memory" not in st.session_state:
     st.session_state["requested_next_state_memory"] = SharedMemory(shem_name="requested_next_state", size=10, create=False)
 if "marker_outlet" not in st.session_state:
-    marker_info = StreamInfo(name='MarkerStream',
-                             type='Markers',
-                             channel_count=1,
-                             nominal_srate=250,
-                             channel_format='string',
-                             source_id='Marker_Outlet')
+    marker_info = StreamInfo(name='MarkerStream', type='Markers', channel_count=1, nominal_srate=250,
+                             channel_format='string', source_id='Marker_Outlet')
     st.session_state["marker_outlet"] =  StreamOutlet(marker_info, 20, 360)
 if "flash_sequence" not in st.session_state:
     st.session_state["flash_sequence"] = []
@@ -47,55 +43,29 @@ match st.session_state["state"]:
 
 
     case States.LOCAL:
+        left_value = BUTTON_VALUE
+        right_value = BUTTON_VALUE
+        up_value = BUTTON_VALUE
+        stop_value = BUTTON_VALUE
+        switch_value = BUTTON_VALUE
+
         if len(st.session_state["flash_sequence"]) > 0:
             match st.session_state["flash_sequence"][0]:
                 case "up":
-                    left_value = BUTTON_VALUE
-                    right_value = BUTTON_VALUE
                     up_value = FLASH_VALUE
-                    stop_value = BUTTON_VALUE
-                    switch_value = BUTTON_VALUE
                     send_marker(5, 2)
                 case "left":
                     left_value = FLASH_VALUE
-                    right_value = BUTTON_VALUE
-                    up_value = BUTTON_VALUE
-                    stop_value = BUTTON_VALUE
-                    switch_value = BUTTON_VALUE
                     send_marker(5, 0)
                 case "right":
-                    left_value = BUTTON_VALUE
                     right_value = FLASH_VALUE
-                    up_value = BUTTON_VALUE
-                    stop_value = BUTTON_VALUE
-                    switch_value = BUTTON_VALUE
                     send_marker(5, 1)
                 case "stop":
-                    left_value = BUTTON_VALUE
-                    right_value = BUTTON_VALUE
-                    up_value = BUTTON_VALUE
                     stop_value = FLASH_VALUE
-                    switch_value = BUTTON_VALUE
                     send_marker(5, 3)
                 case "switch":
-                    left_value = BUTTON_VALUE
-                    right_value = BUTTON_VALUE
-                    up_value = BUTTON_VALUE
-                    stop_value = BUTTON_VALUE
                     switch_value = FLASH_VALUE
                     send_marker(5, 4)
-                case _:
-                    left_value = BUTTON_VALUE
-                    right_value = BUTTON_VALUE
-                    up_value = BUTTON_VALUE
-                    stop_value = BUTTON_VALUE
-                    switch_value = BUTTON_VALUE
-        else:
-            left_value = BUTTON_VALUE
-            right_value = BUTTON_VALUE
-            up_value = BUTTON_VALUE
-            stop_value = BUTTON_VALUE
-            switch_value = BUTTON_VALUE
 
         col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
