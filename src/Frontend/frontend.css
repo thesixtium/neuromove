@@ -1,0 +1,21 @@
+
+
+div {
+    display: flex;
+    justify-content: center;
+}
+
+div[data-testid="stColumn"] {
+    width: fit-content !important;
+    flex: unset;
+}
+
+div[data-testid="stColumn"] * {
+    width: 100px !important;
+}
+
+button {
+    height: 100px;
+    width: 100px !important;
+}
+

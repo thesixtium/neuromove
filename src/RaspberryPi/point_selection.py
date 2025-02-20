@@ -1,12 +1,49 @@
+import time
+
+current_time = time.time()
+print("\tImporting matplotlib.colors... ", end="")
 from matplotlib.colors import ListedColormap
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("\tImporting numpy... ", end="")
 import numpy as np
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("\tImporting ast... ", end="")
 from ast import literal_eval    # only used to read in sample data
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("\tImporting typing... ", end="")
 from typing import Tuple
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("\tImporting matplotlib.pyplot... ", end="")
 import matplotlib.pyplot as plt
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("\tImporting logging... ", end="")
 import logging
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("\tImporting queue... ", end="")
 from queue import Queue
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("\tImporting kmedoids... ", end="")
 from kmedoids import fasterpam
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("\tImporting scipy.spatial.distance... ", end="")
 from scipy.spatial.distance import pdist, squareform, cdist
+print(f"done ({time.time() - current_time}s)")
 
 from src.RaspberryPi.InternalException import InvalidValueToPointSelection, NotEnoughSpaceInRoom, PamFailedPointSelection
 
