@@ -1,5 +1,9 @@
+joblib==1.4.2
 kmedoids==0.5.3.1
+lib==4.0.0
 matplotlib==3.10.0
 numpy==2.2.2
+pyduinocli==0.35.0
 pyserial==3.5
+scikit_learn==1.6.1
 scipy==1.15.1

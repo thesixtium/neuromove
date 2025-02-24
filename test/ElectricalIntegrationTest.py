@@ -2,8 +2,8 @@
 # - Test Arduino Control
 # - Test ultrasonics and FSRs
 
-from src.RaspberryPi.ArduinoUno import ArduinoUno
-from src.RaspberryPi.ArduinoUno import MotorDirections
+from src.Arduino.ArduinoUno import ArduinoUno
+from src.Arduino.ArduinoUno import MotorDirections
 
 def main():
     arduino_uno = ArduinoUno(port='COM3')

@@ -1,0 +1,6 @@
+[client]
+toolbarMode = "viewer"
+showSidebarNavigation = false
+
+[theme]
+backgroundColor = "#8757b3"

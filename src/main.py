@@ -1,16 +1,55 @@
 # pipreqs src --ignore src/LiDAR
 
 #!/usr/bin/env python3
-import numpy as np
-import subprocess
 
-from src.RaspberryPi.ArduinoUno import ArduinoUno
+import time
+import numpy as np
+
+current_time = time.time()
+print("Importing src.Arduino.ArduinoUno... ", end="")
+from src.Arduino.ArduinoUno import ArduinoUno
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.InternalException... ", end="")
 from src.RaspberryPi.InternalException import *
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.Socket... ", end="")
 from src.RaspberryPi.Socket import Socket
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.SharedMemory... ", end="")
 from src.RaspberryPi.SharedMemory import SharedMemory
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.point_selection... ", end="")
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
-from src.LiDAR.build.RunLiDAR import RunLiDAR
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing RaspberryPi.States... ", end="")
 from src.RaspberryPi.States import States, DestinationDrivingStates
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing LiDAR.build.RunLiDAR... ", end="")
+from src.LiDAR.build.RunLiDAR import RunLiDAR
+print(f"done ({time.time() - current_time}s)")
+current_time = time.time()
+
+print("Importing Frontend.run... ", end="")
+from src.Frontend.run import RunUI
+print(f"done ({time.time() - current_time}s)")
+
+# Todo
+# - Wait until screen launched
+# - Loading screen
+# - Setup screen
+# - Local flashing
 
 
 def main():
@@ -27,43 +66,61 @@ def main():
     imu_memory = None
     requested_next_state_memory = None
     destination_driving_state_memory = None
+    frontend_origin_memory = None
     p300_socket = None
     initialized = False
 
     while state != States.OFF:
         try:
-            # Requested next state from the UI
-            requested_next_state = requested_next_state_memory.read_requested_next_state()
-            if requested_next_state:
-                next_state = requested_next_state
-
             # Advance state
             if current_exception is not None:
                 state = States.RECOVERY
             else:
                 state = next_state
 
+                if initialized:
+                    requested_next_state = requested_next_state_memory.read_requested_next_state()
+                    if requested_next_state:
+                        next_state = requested_next_state
+
             # Use state
             match state:
                 case States.START:
                     print("Start")
                     if not initialized:
-                        arduino_uno = ArduinoUno()
-                        lidar = RunLiDAR()
 
-                        next_state = States.SETUP
-
-                        eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=1, create=True)
-                        local_driving_memory = SharedMemory(shem_name="local_driving", size=1, create=True)
-                        requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=1, create=True)
+                        print("Setting up shared memory... ", end="")
+                        eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=True)
+                        local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
+                        requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=10, create=True)
                         occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
                         imu_memory = SharedMemory(shem_name="imu", size=284622, create=True)
                         point_selection_memory = SharedMemory(shem_name="point_selection", size=1000, create=True)
-                        destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=1, create=True)
+                        destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=10, create=True)
+                        frontend_origin_memory = SharedMemory(shem_name="frontend_origin_memory", size=100, create=True)
+                        print("Done")
 
+                        print("Setting up socket... ", end="")
                         p300_socket = Socket(12347, 12348)
+                        print("Done")
 
+                        print("Setting up UI... ", end="")
+                        frontend = RunUI()
+                        print("Done")
+
+                        print("Setting up Arduino Uno... ", end="")
+                        arduino_uno = ArduinoUno()
+                        print("Done")
+
+                        print("Setting up LiDAR... ", end="")
+                        # lidar = RunLiDAR()
+                        print("Done")
+
+                        print("Setting up initialized... ", end="")
                         initialized = True
+                        print("Done")
+
+                        requested_next_state_memory.write_string("2")
 
 
                 case States.SETUP:
@@ -72,7 +129,9 @@ def main():
 
                 case States.LOCAL:
                     print("Local")
+                    print(local_driving_memory.read_local_driving())
                     arduino_uno.send_direction(local_driving_memory.read_local_driving())
+                    time.sleep(0.25)
 
 
                 case States.DESTINATION:
@@ -86,6 +145,7 @@ def main():
                             # Get point selections
                             occupancy_grid = np.array(occupancy_grid_memory.read_grid())
                             origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
+                            frontend_origin_memory.write_string(f"{origin}")
                             selected_points = occupancy_grid_to_points(occupancy_grid, origin, plot_result=True)
                             point_selection_memory.write_np_array(selected_points)
 
@@ -107,15 +167,19 @@ def main():
 
                     # If is an error that we threw
                     if isinstance(current_exception, InternalException):
-                        print(current_exception.print())
+                        print(f"Internal Error: {current_exception.print()}")
                         if current_exception.is_permanent():
                             next_state = States.OFF
+                            print("P")
                         else:
                             next_state = States.LOCAL
+                            print("T")
 
                     # If is an error that we didn't throw
                     elif isinstance(current_exception, Exception):
-                        print(current_exception.args)
+                        print(f"External Error: {current_exception.args}")
+                        print(current_exception)
+                        print(f"\t{current_exception.with_traceback(None)}")
                         next_state = States.OFF
 
                     # If not an error
@@ -148,6 +212,7 @@ def main():
         local_driving_memory.close()
         requested_next_state_memory.close()
         destination_driving_state_memory.close()
+        frontend_origin_memory.close()
         imu_memory.close()
 
     if isinstance(current_exception, InternalException):
