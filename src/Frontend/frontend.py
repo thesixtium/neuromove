@@ -32,6 +32,8 @@ if "map_sequence" not in st.session_state:
 if "training_target" not in st.session_state:
     st.session_state["training_target"] = -1
 
+NUMBER_OF_TRAINING_CYCLES = 20
+
 print(st.session_state["state"])
 
 match st.session_state["state"]:
@@ -45,12 +47,11 @@ match st.session_state["state"]:
         targets = ["↑", "←", "-", "→", "S"]
 
         with col1:
-            # print(f"current target: f{st.session_state["training_target"]}")
             current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
             st.header(f"Target: {targets[current_target]}")
         with col2:
             button_label = "Start"
-            st.button(label=button_label, on_click=give_local_sequence_list, args=(1,))
+            st.button(label=button_label, on_click=give_local_sequence_list, args=(NUMBER_OF_TRAINING_CYCLES,))
 
         left_value = BUTTON_VALUE
         right_value = BUTTON_VALUE
@@ -101,6 +102,7 @@ match st.session_state["state"]:
 
             with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
                 st.button("3.3")
+
         col1, col2 = st.columns([1, 1])
         with col1:
             with stylable_container(BUTTON_KEY, css_styles=BUTTON_VALUE):
@@ -115,7 +117,6 @@ match st.session_state["state"]:
             st.rerun()
         else:
             st.session_state["training_target"] += 1
-            give_local_sequence_list(1)
 
     case States.LOCAL:
         left_value = BUTTON_VALUE
