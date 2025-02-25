@@ -6,8 +6,8 @@ from pylsl import local_clock
 
 from src.RaspberryPi.States import States
 
-def send_marker(number_of_options: int, flashed_as_num: int):
-    st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{-1},{flashed_as_num}"], local_clock())
+def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
+    st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{current_target},{flashed_as_num}"], local_clock())
 
 def give_local_sequence_list(total_list_appends: int = 5):
     all_buttons = ["up", "left", "right", "stop", "switch"]

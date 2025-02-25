@@ -43,15 +43,21 @@ match st.session_state["state"]:
             st.session_state["state"] = States.LOCAL
 
         # training sequence
-        col1, col2 = st.columns([3,1])
+        col1, col2, col3= st.columns([5,1,1])
         targets = ["↑", "←", "-", "→", "S"]
 
         with col1:
-            current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
-            st.header(f"Target: {targets[current_target]}")
+            st.header("Target")
         with col2:
-            button_label = "Start"
-            st.button(label=button_label, on_click=give_local_sequence_list, args=(NUMBER_OF_TRAINING_CYCLES,))
+            current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
+            st.header(f"{targets[current_target]}")
+        with col3:
+            button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
+
+            if st.session_state["training_target"] < len(targets) - 1:
+                st.button(label=button_label, on_click=give_local_sequence_list, args=(NUMBER_OF_TRAINING_CYCLES,))
+            else:
+                st.button("Got to Local", on_click=start)
 
         left_value = BUTTON_VALUE
         right_value = BUTTON_VALUE
@@ -63,19 +69,19 @@ match st.session_state["state"]:
             match st.session_state["flash_sequence"][0]:
                 case "up":
                     up_value = FLASH_VALUE
-                    send_marker(5, 2)
+                    send_marker(5, 2, current_target=st.session_state["training_target"])
                 case "left":
                     left_value = FLASH_VALUE
-                    send_marker(5, 0)
+                    send_marker(5, 0, current_target=st.session_state["training_target"])
                 case "right":
                     right_value = FLASH_VALUE
-                    send_marker(5, 1)
+                    send_marker(5, 1, current_target=st.session_state["training_target"])
                 case "stop":
                     stop_value = FLASH_VALUE
-                    send_marker(5, 3)
+                    send_marker(5, 3, current_target=st.session_state["training_target"])
                 case "switch":
                     switch_value = FLASH_VALUE
-                    send_marker(5, 4)            
+                    send_marker(5, 4, current_target=st.session_state["training_target"])            
 
         col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
