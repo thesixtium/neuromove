@@ -9,12 +9,12 @@ from src.RaspberryPi.States import States
 def send_marker(number_of_options: int, flashed_as_num: int):
     st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{-1},{flashed_as_num}"], local_clock())
 
-def give_local_sequence_list():
+def give_local_sequence_list(total_list_appends: int = 5):
     all_buttons = ["up", "left", "right", "stop", "switch"]
     return_list = []
     list_appends = 0
 
-    while list_appends < 5:
+    while list_appends < total_list_appends:
         shuffle(all_buttons)
         if len(return_list) == 0 or return_list[-1] != all_buttons[0]:
             return_list += all_buttons
