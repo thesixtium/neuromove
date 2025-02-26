@@ -1,9 +1,11 @@
 from random import shuffle
 
 import streamlit as st
+from streamlit_extras.stylable_container import stylable_container
 
 from pylsl import local_clock
 
+from src.Frontend.style import *
 from src.RaspberryPi.States import States
 
 def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
@@ -47,3 +49,61 @@ def switch():
     else:
         st.session_state["state"] = States.LOCAL
         st.session_state["requested_next_state_memory"].write_string("3")
+
+def local_driving_grid(training: bool = False):
+    left_value = BUTTON_VALUE
+    right_value = BUTTON_VALUE
+    up_value = BUTTON_VALUE
+    stop_value = BUTTON_VALUE
+    switch_value = BUTTON_VALUE
+
+    current_target = st.session_state["training_target"] if training is True else -1
+
+    if len(st.session_state["flash_sequence"]) > 0:
+        match st.session_state["flash_sequence"][0]:
+            case "up":
+                up_value = FLASH_VALUE
+                send_marker(5, 2, current_target)
+            case "left":
+                left_value = FLASH_VALUE
+                send_marker(5, 0, current_target)
+            case "right":
+                right_value = FLASH_VALUE
+                send_marker(5, 1, current_target)
+            case "stop":
+                stop_value = FLASH_VALUE
+                send_marker(5, 3, current_target)
+            case "switch":
+                switch_value = FLASH_VALUE
+                send_marker(5, 4, current_target)            
+
+    col1, col2, col3 = st.columns([1, 1, 1], vertical_alignment="bottom")
+    with col1:
+        with stylable_container("left", css_styles=left_value):
+            st.button("←", on_click=direction_update, args=("l",))
+    with col2:
+        with stylable_container("up", css_styles=up_value):
+            st.button("↑", on_click=direction_update, args=("f",))
+
+        with stylable_container("stop", css_styles=stop_value):
+            st.button("-", on_click=direction_update, args=("s",))
+    with col3:
+        with stylable_container("right", css_styles=right_value):
+            st.button("→", on_click=direction_update, args=("r",))
+
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if training is True:
+            with stylable_container(BUTTON_KEY, css_styles=BUTTON_VALUE):
+                st.button("# Skip Training", on_click=start)
+        else:
+            st.button("Run", on_click=give_local_sequence_list)
+
+    with col2:
+        with stylable_container("switch_mode", css_styles=switch_value):
+            st.button("Switch", on_click=switch)
+
+
+def start():
+    st.session_state["requested_next_state_memory"].write_string("3")
+    st.session_state["state"] = States.LOCAL

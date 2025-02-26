@@ -38,10 +38,6 @@ print(st.session_state["state"])
 
 match st.session_state["state"]:
     case States.SETUP:
-        def start():
-            st.session_state["requested_next_state_memory"].write_string("3")
-            st.session_state["state"] = States.LOCAL
-
         # training sequence
         col1, col2, col3= st.columns([5,1,1])
         targets = ["↑", "←", "-", "→", "S"]
@@ -59,64 +55,8 @@ match st.session_state["state"]:
             else:
                 st.button("Got to Local", on_click=start)
 
-        left_value = BUTTON_VALUE
-        right_value = BUTTON_VALUE
-        up_value = BUTTON_VALUE
-        stop_value = BUTTON_VALUE
-        switch_value = BUTTON_VALUE
-
-        if len(st.session_state["flash_sequence"]) > 0:
-            match st.session_state["flash_sequence"][0]:
-                case "up":
-                    up_value = FLASH_VALUE
-                    send_marker(5, 2, current_target=st.session_state["training_target"])
-                case "left":
-                    left_value = FLASH_VALUE
-                    send_marker(5, 0, current_target=st.session_state["training_target"])
-                case "right":
-                    right_value = FLASH_VALUE
-                    send_marker(5, 1, current_target=st.session_state["training_target"])
-                case "stop":
-                    stop_value = FLASH_VALUE
-                    send_marker(5, 3, current_target=st.session_state["training_target"])
-                case "switch":
-                    switch_value = FLASH_VALUE
-                    send_marker(5, 4, current_target=st.session_state["training_target"])            
-
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col1:
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("1.1")
-
-            with stylable_container("left", css_styles=left_value):
-                st.button("←", on_click=direction_update, args=("l",))
-
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("1.3")
-        with col2:
-            with stylable_container("up", css_styles=up_value):
-                st.button("↑", on_click=direction_update, args=("f",))
-
-            with stylable_container("stop", css_styles=stop_value):
-                st.button("-", on_click=direction_update, args=("s",))
-        with col3:
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("3.1")
-
-            with stylable_container("right", css_styles=right_value):
-                st.button("→", on_click=direction_update, args=("r",))
-
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("3.3")
-
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            with stylable_container(BUTTON_KEY, css_styles=BUTTON_VALUE):
-                st.button("# Done", on_click=start)
-        with col2:
-            with stylable_container("switch", css_styles=switch_value):
-                st.button("S", on_click=switch)
-
+        local_driving_grid(training=True)
+        
         if len(st.session_state["flash_sequence"]) > 0:
             st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
             time.sleep(0.1)
@@ -125,62 +65,7 @@ match st.session_state["state"]:
             st.session_state["training_target"] += 1
 
     case States.LOCAL:
-        left_value = BUTTON_VALUE
-        right_value = BUTTON_VALUE
-        up_value = BUTTON_VALUE
-        stop_value = BUTTON_VALUE
-        switch_value = BUTTON_VALUE
-
-        if len(st.session_state["flash_sequence"]) > 0:
-            match st.session_state["flash_sequence"][0]:
-                case "up":
-                    up_value = FLASH_VALUE
-                    send_marker(5, 2)
-                case "left":
-                    left_value = FLASH_VALUE
-                    send_marker(5, 0)
-                case "right":
-                    right_value = FLASH_VALUE
-                    send_marker(5, 1)
-                case "stop":
-                    stop_value = FLASH_VALUE
-                    send_marker(5, 3)
-                case "switch":
-                    switch_value = FLASH_VALUE
-                    send_marker(5, 4)
-
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col1:
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("1.1")
-
-            with stylable_container("left", css_styles=left_value):
-                st.button("←", on_click=direction_update, args=("l",))
-
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("1.3")
-        with col2:
-            with stylable_container("up", css_styles=up_value):
-                st.button("↑", on_click=direction_update, args=("f",))
-
-            with stylable_container("stop", css_styles=stop_value):
-                st.button("-", on_click=direction_update, args=("s",))
-        with col3:
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("3.1")
-
-            with stylable_container("right", css_styles=right_value):
-                st.button("→", on_click=direction_update, args=("r",))
-
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("3.3")
-
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            st.button("Run", on_click=give_local_sequence_list)
-        with col2:
-            with stylable_container("switch", css_styles=switch_value):
-                st.button("S", on_click=switch)
+        local_driving_grid()
 
         if len(st.session_state["flash_sequence"]) > 0:
             st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
