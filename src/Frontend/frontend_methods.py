@@ -8,9 +8,23 @@ from pylsl import local_clock
 from src.Frontend.style import *
 from src.RaspberryPi.States import States
 
+NUMBER_OF_TRAINING_CYCLES = 20
+
 def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
     st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{current_target},{flashed_as_num}"], local_clock())
 
+def send_special_marker(string: str):
+    st.session_state["marker_outlet"].push_sample([string], local_clock())
+
+
+def start_training_next_target():
+    if st.session_state["training_target"] > 0:
+        send_special_marker("Trial Ends")
+
+    send_special_marker("Trial Started")
+
+    give_local_sequence_list(NUMBER_OF_TRAINING_CYCLES)
+    
 def give_local_sequence_list(total_list_appends: int = 5):
     all_buttons = ["up", "left", "right", "stop", "switch"]
     return_list = []
@@ -78,18 +92,19 @@ def local_driving_grid(training: bool = False):
                 send_marker(5, 4, current_target)            
 
     col1, col2, col3 = st.columns([1, 1, 1], vertical_alignment="bottom")
+    function_to_call = direction_update if training is False else None
     with col1:
         with stylable_container("left", css_styles=left_value):
-            st.button("←", on_click=direction_update, args=("l",))
+            st.button("←", on_click=function_to_call, args=("l",))
     with col2:
         with stylable_container("up", css_styles=up_value):
-            st.button("↑", on_click=direction_update, args=("f",))
+            st.button("↑", on_click=function_to_call, args=("f",))
 
         with stylable_container("stop", css_styles=stop_value):
-            st.button("-", on_click=direction_update, args=("s",))
+            st.button("-", on_click=function_to_call, args=("s",))
     with col3:
         with stylable_container("right", css_styles=right_value):
-            st.button("→", on_click=direction_update, args=("r",))
+            st.button("→", on_click=function_to_call, args=("r",))
 
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -105,5 +120,7 @@ def local_driving_grid(training: bool = False):
 
 
 def start():
+    send_special_marker("Training Complete")
+
     st.session_state["requested_next_state_memory"].write_string("3")
     st.session_state["state"] = States.LOCAL

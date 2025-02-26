@@ -22,17 +22,15 @@ if "local_driving_memory" not in st.session_state:
 if "requested_next_state_memory" not in st.session_state:
     st.session_state["requested_next_state_memory"] = SharedMemory(shem_name="requested_next_state", size=10, create=False)
 if "marker_outlet" not in st.session_state:
-    marker_info = StreamInfo(name='MarkerStream', type='Markers', channel_count=1, nominal_srate=250,
+    marker_info = StreamInfo(name='MarkerStream', type='LSL_Marker_Strings', channel_count=1, nominal_srate=250,
                              channel_format='string', source_id='Marker_Outlet')
-    st.session_state["marker_outlet"] =  StreamOutlet(marker_info, 20, 360)
+    st.session_state["marker_outlet"] = StreamOutlet(marker_info, 20, 360)
 if "flash_sequence" not in st.session_state:
     st.session_state["flash_sequence"] = []
 if "map_sequence" not in st.session_state:
     st.session_state["map_sequence"] = ["0"]
 if "training_target" not in st.session_state:
     st.session_state["training_target"] = -1
-
-NUMBER_OF_TRAINING_CYCLES = 20
 
 print(st.session_state["state"])
 
@@ -51,7 +49,7 @@ match st.session_state["state"]:
             button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
 
             if st.session_state["training_target"] < len(targets) - 1:
-                st.button(label=button_label, on_click=give_local_sequence_list, args=(NUMBER_OF_TRAINING_CYCLES,))
+                st.button(label=button_label, on_click=start_training_next_target)
             else:
                 st.button("Got to Local", on_click=start)
 
