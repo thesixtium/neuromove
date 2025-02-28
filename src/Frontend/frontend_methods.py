@@ -18,11 +18,6 @@ def send_special_marker(string: str):
 
 
 def start_training_next_target():
-    if st.session_state["training_target"] > 0:
-        send_special_marker("Trial Ends")
-
-    send_special_marker("Trial Started")
-
     give_local_sequence_list(NUMBER_OF_TRAINING_CYCLES)
     
 def give_local_sequence_list(total_list_appends: int = 5):
@@ -37,6 +32,7 @@ def give_local_sequence_list(total_list_appends: int = 5):
             list_appends += 1
 
     return_list = [item for pair in zip(return_list, ["break"] * len(return_list)) for item in pair][:-1]
+    return_list = ["Trial Started"] + return_list + ["Trial Ends"]
     st.session_state["flash_sequence"] = return_list
 
 def give_map_sequence_list():
@@ -51,6 +47,7 @@ def give_map_sequence_list():
             list_appends += 1
 
     return_list = [item for pair in zip(return_list, ["0"] * len(return_list)) for item in pair]
+    return_list = ["Trial Started"] + return_list + ["Trial Ends"]
     st.session_state["map_sequence"] = return_list
 
 def direction_update(direction):
@@ -89,7 +86,11 @@ def local_driving_grid(training: bool = False):
                 send_marker(5, 3, current_target)
             case "switch":
                 switch_value = FLASH_VALUE
-                send_marker(5, 4, current_target)            
+                send_marker(5, 4, current_target) 
+            case "Trial Started":      
+                send_special_marker("Trial Started")
+            case "Trial Ends":
+                send_special_marker("Trial Ends")     
 
     col1, col2, col3 = st.columns([1, 1, 1], vertical_alignment="bottom")
     function_to_call = direction_update if training is False else None

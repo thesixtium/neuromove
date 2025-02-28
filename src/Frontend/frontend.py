@@ -78,6 +78,9 @@ match st.session_state["state"]:
         origin = np.loadtxt('Frontend/origin.txt')
         number_of_neighbourhoods = neighbourhood_points.shape[0]
 
+        colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
+        switch_value = BUTTON_VALUE
+
         match st.session_state["map_sequence"][0]:
             case "1":
                 colours = [BLACK, WHITE, GREEN, GREEN, GREEN]
@@ -99,9 +102,10 @@ match st.session_state["state"]:
                 colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
                 switch_value = FLASH_VALUE
                 send_marker(5, 0)
-            case _:
-                colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
-                switch_value = BUTTON_VALUE
+            case "Trial Started":      
+                send_special_marker("Trial Started")
+            case "Trial Ends":
+                send_special_marker("Trial Ends")  
 
         fig = plt.figure(figsize=(7, 5))
         fig.patch.set_visible(False)
