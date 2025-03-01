@@ -67,9 +67,27 @@ match st.session_state["state"]:
     case States.LOCAL:
         local_driving_grid()
 
+        # TODO: Dani find a better way to check that a new result has been passed
         read_string = st.session_state['bci_selection_memory'].read_string()
-        if len(read_string) > 0:
+        if len(read_string) > 0 and "[" in read_string:
             print(f"RECEIVED {read_string} FROM SHARED MEM")
+            st.session_state['bci_selection_memory'].write_string("   ")
+            st.session_state["previous_read_from_bci_selection"] = read_string
+
+            match read_string:
+                case "[0]":
+                    direction_update("l")
+                case "[1]":
+                    direction_update("r")
+                case "[2]":
+                    direction_update("f")
+                case "[3]":
+                    direction_update("s")
+                case "[4]":
+                    switch()
+            
+            st.session_state["previous_read_from_bci_selection"] = None
+
 
         if len(st.session_state["flash_sequence"]) > 0:
             st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
