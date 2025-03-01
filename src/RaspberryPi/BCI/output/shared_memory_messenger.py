@@ -7,7 +7,7 @@ class SharedMemoryMessenger(Messenger):
         super().__init__()
 
         self.__write_to_text = debug
-        self.__shared_memory = SharedMemory("bci_selection", size=10, create=True)
+        self.__shared_memory = SharedMemory("bci_selection", size=10, create=False)
 
         if self.__write_to_text:
             self.__filepath = "BCI_OUTPUT_DEBUG.txt"
@@ -34,4 +34,5 @@ class SharedMemoryMessenger(Messenger):
             file.write(f"Predicted {prediction.labels} with confidence {prediction.probabilities}\n")
 
         # write to shared memory
-        self.__shared_memory.write_string(f"Prediction: {prediction.labels} w/ {prediction.probabilities}")
+        self.__shared_memory.write_string(f"{prediction.labels}")
+        # self.__shared_memory.write_string(f"Prediction: {prediction.labels} w/ {prediction.probabilities}")

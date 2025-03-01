@@ -25,6 +25,8 @@ if "marker_outlet" not in st.session_state:
     marker_info = StreamInfo(name='MarkerStream', type='LSL_Marker_Strings', channel_count=1, nominal_srate=250,
                              channel_format='string', source_id='Marker_Outlet')
     st.session_state["marker_outlet"] = StreamOutlet(marker_info, 20, 360)
+if "bci_selection_memory" not in st.session_state:
+    st.session_state["bci_selection_memory"] = SharedMemory(shem_name="bci_selection", size=10, create=False)
 if "flash_sequence" not in st.session_state:
     st.session_state["flash_sequence"] = []
 if "map_sequence" not in st.session_state:
@@ -64,6 +66,10 @@ match st.session_state["state"]:
 
     case States.LOCAL:
         local_driving_grid()
+
+        read_string = st.session_state['bci_selection_memory'].read_string()
+        if len(read_string) > 0:
+            print(f"RECEIVED {read_string} FROM SHARED MEM")
 
         if len(st.session_state["flash_sequence"]) > 0:
             st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
