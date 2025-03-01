@@ -18,6 +18,7 @@ def send_special_marker(string: str):
 
 
 def start_training_next_target():
+    st.session_state["training_target"] += 1
     give_local_sequence_list(NUMBER_OF_TRAINING_CYCLES)
     
 def give_local_sequence_list(total_list_appends: int = 5):

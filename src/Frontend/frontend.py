@@ -61,8 +61,6 @@ match st.session_state["state"]:
             st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
             time.sleep(0.1)
             st.rerun()
-        else:
-            st.session_state["training_target"] += 1
 
     case States.LOCAL:
         local_driving_grid()
