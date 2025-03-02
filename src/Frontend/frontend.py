@@ -53,7 +53,7 @@ match st.session_state["state"]:
             if st.session_state["training_target"] < len(targets) - 1:
                 st.button(label=f"# {button_label}", on_click=start_training_next_target)
             else:
-                st.button("Got to Local", on_click=start)
+                st.button("# Go to Local", on_click=start)
 
         local_driving_grid(training=True)
         
