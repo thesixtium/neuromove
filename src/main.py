@@ -45,6 +45,8 @@ print("Importing Frontend.run... ", end="")
 from src.Frontend.run import RunUI
 print(f"done ({time.time() - current_time}s)")
 
+from src.RaspberryPi.EyeTracking import EyeTracking
+
 # Todo
 # - Wait until screen launched
 # - Loading screen
@@ -69,6 +71,7 @@ def main():
     frontend_origin_memory = None
     p300_socket = None
     initialized = False
+    eye_tracking = None
 
     while state != States.OFF:
         try:
@@ -79,6 +82,8 @@ def main():
                 state = next_state
 
                 if initialized:
+                    print(f"Eye Tracking: {eye_tracking_memory.read_string()}")
+
                     requested_next_state = requested_next_state_memory.read_requested_next_state()
                     if requested_next_state:
                         next_state = requested_next_state
@@ -114,6 +119,10 @@ def main():
 
                         print("Setting up LiDAR... ", end="")
                         # lidar = RunLiDAR()
+                        print("Done")
+
+                        print("Setting up Eye Tracking... ", end="")
+                        eye_tracking = EyeTracking()
                         print("Done")
 
                         print("Setting up initialized... ", end="")
@@ -214,6 +223,7 @@ def main():
         destination_driving_state_memory.close()
         frontend_origin_memory.close()
         imu_memory.close()
+        eye_tracking.close()
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())

@@ -93,4 +93,8 @@ class BciSetupException(InternalException):
 
 class ArduinoNotConnected(InternalException):
     def __init__(self):
-        super().__init__(17, ExceptionTypes.PERMANENT, "Arduino not connected")
+        super().__init__(18, ExceptionTypes.PERMANENT, "Arduino not connected")
+
+class EyeTrackingNoRet(InternalException):
+    def __init__(self):
+        super().__init__(19, ExceptionTypes.PERMANENT, "Eye Tracking did not receive a Ret Object")
