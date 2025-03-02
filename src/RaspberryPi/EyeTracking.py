@@ -1,19 +1,13 @@
-#%%
-# Run 1st: Import the necessary modules.
-import threading
-
+import cv2
 import joblib
+import threading
+import numpy as np
+from collections import deque
+
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-from mediapipe import solutions
-from mediapipe.framework.formats import landmark_pb2
-import numpy as np
-import cv2
-from collections import deque
-from sklearn.ensemble import RandomForestClassifier
-import pandas as pd
-import pickle
+
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.InternalException import EyeTrackingNoRet
 
