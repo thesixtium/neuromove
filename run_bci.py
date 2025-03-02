@@ -1,7 +1,10 @@
 import asyncio
+from signal import SIGINT, SIGTERM
 
 import joblib
+import keyboard
 
+from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
 from src.RaspberryPi.BCI.output.text_file_messenger import TextFileMessenger
 from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
 from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
@@ -13,36 +16,56 @@ async def main():
     # model = joblib.load("test_save.pk1")
     # model = None
 
-    messenger = TextFileMessenger("BCI_Processing/data/output.txt")
-    xdf_filepath ="C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-DEBUG/ses-S001/eeg/sub-DEBUG_ses-S001_task-Default_run-003_eeg.xdf"
-    # xdf_filepath = "C:/Users/danij/OneDrive/Documents/CurrentStudy/sub-DANI/ses-S001/eeg/sub-DANI_ses-S001_task-Default_run-001_eeg.xdf"
+    messenger = SharedMemoryMessenger(True)
+    xdf_filepath ="c:/Users/danij/OneDrive/Documents/CurrentStudy/sub-LIAM/ses-S001/eeg/sub-LIAM_ses-S001_task-Default_run-001_eeg.xdf"
 
-    bessy = Bessy(online=False, xdf_filepath=xdf_filepath, messenger=messenger)
+    bessy = Bessy(online=True, xdf_filepath=xdf_filepath, messenger=messenger)
+    print("DONE CONSTRUCTOR")
         
+    await bessy.run()
+
+
+
+async def run_main():
+    stop_event = asyncio.Event()
+
+    async def wait_for_exit():
+        try:
+            while not stop_event.is_set():
+                await asyncio.sleep(0.5)
+        except asyncio.CancelledError:
+            pass
+
+    task = asyncio.create_task(main())
+    stop_task = asyncio.create_task(wait_for_exit())
+
     try:
-        await bessy.run()
-    except KeyboardInterrupt:
-        bessy.set_stop()
-    except Exception as e:
-        raise e
+        await stop_task  # Wait for Ctrl+C
+    except asyncio.CancelledError:
+        pass
 
-    # input("press enter to continue")
+    print("Stopping main task...")
+    task.cancel()
 
-    # bessy.setup_offline_processing(marker_source, eeg_source)
-
-async def online_main():
-
-    bessy = Bessy()
-    input("constructor done. press enter to continue")
-    
     try:
-        bessy.run()
-    except KeyboardInterrupt:
-        bessy.set_stop()
+        await task
+    except asyncio.CancelledError:
+        pass  # Cleanup already handled
 
 if __name__ == "__main__":
+    try:
+        asyncio.run(run_main())
+    except KeyboardInterrupt:
+        print("Received Ctrl+C, shutting down gracefully.")
+
     # asyncio.run(online_main())
-    asyncio.run(main())
+    # task = None
+    # try:
+    #     task = asyncio.create_task(main())
+    # except KeyboardInterrupt:
+    #     print("WHEEEEE")
+    #     task.cancel()
+    #     exit()
     # test_bessy()
 
     # markersource = BessyInput("data/sub-DANI_ses-s001_task-Default_run-001_eeg.xdf")

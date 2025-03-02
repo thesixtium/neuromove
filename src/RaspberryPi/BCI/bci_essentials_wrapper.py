@@ -137,22 +137,25 @@ class Bessy:
         '''
 
         if self.__online:
-            asyncio.create_task(self.__bessy_step_loop())
+            self.__task = asyncio.create_task(self.__bessy_step_loop())
 
         else:
             # just run step once for offline data
             self.__bci_controller.step()
 
     async def __bessy_step_loop(self):
-        while not self.__stop_event.is_set() and self.__bci_controller is not None:
+        while not self.__stop_event.is_set():
             await self.__bessy_step()
+
+            await asyncio.sleep(0.1)
 
     def set_stop(self):
         '''
         Tell the processing loop to stop execution
         '''
-
-        self.__stop_event.set()
+        if self.__task:
+            self.__stop_event.set()
+            self.__bci_controller = None
 
     async def __bessy_step(self):
         self.__bci_controller.step()
