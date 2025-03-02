@@ -96,16 +96,16 @@ def local_driving_grid(training: bool = False):
     col1, col2, col3 = st.columns([1, 1, 1], vertical_alignment="bottom")
     function_to_call = direction_update if training is False else None
     with col1:
-        with stylable_container("left", css_styles=left_value):
+        with stylable_container("left", css_styles=add_padding(left_value, 13)):
             st.button("←", on_click=function_to_call, args=("l",))
     with col2:
-        with stylable_container("up", css_styles=up_value):
+        with stylable_container("up", css_styles=add_padding(up_value, 13)):
             st.button("↑", on_click=function_to_call, args=("f",))
 
         with stylable_container("stop", css_styles=stop_value):
-            st.button("-", on_click=function_to_call, args=("s",))
+            st.button("⯃", on_click=function_to_call, args=("s",))
     with col3:
-        with stylable_container("right", css_styles=right_value):
+        with stylable_container("right", css_styles=add_padding(right_value, 13)):
             st.button("→", on_click=function_to_call, args=("r",))
 
     col1, col2 = st.columns([1, 1])
@@ -117,8 +117,8 @@ def local_driving_grid(training: bool = False):
             st.button("Run", on_click=give_local_sequence_list)
 
     with col2:
-        with stylable_container("switch_mode", css_styles=switch_value):
-            st.button("Switch", on_click=switch)
+        with stylable_container("switch_mode", css_styles=add_padding(switch_value, 11)):
+            st.button("⇄", on_click=switch)
 
 
 def start():

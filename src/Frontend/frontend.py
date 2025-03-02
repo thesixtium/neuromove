@@ -40,7 +40,7 @@ match st.session_state["state"]:
     case States.SETUP:
         # training sequence
         col1, col2, col3= st.columns([5,1,1])
-        targets = ["↑", "←", "-", "→", "S"]
+        targets = ["↑", "←", "⯃", "→", "⇄"]
 
         with col1:
             st.header("Target")
@@ -51,7 +51,7 @@ match st.session_state["state"]:
             button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
 
             if st.session_state["training_target"] < len(targets) - 1:
-                st.button(label=button_label, on_click=start_training_next_target)
+                st.button(label=f"# {button_label}", on_click=start_training_next_target)
             else:
                 st.button("Got to Local", on_click=start)
 
