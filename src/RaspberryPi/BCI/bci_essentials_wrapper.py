@@ -161,15 +161,13 @@ class Bessy:
         self.__stop_event.set()
         self.save_model("save_on_exit.pk1")
 
-    # Aleks do your funky model compression stuff here please
     def save_model(self, save_name: str):
         '''
         Save the model to disk as a `pk1` file. Automatically called when the class is destroyed.
         '''
         # save the model
-        joblib.dump(self.__bci_controller._classifier.clf, save_name)
+        joblib.dump(self.__bci_controller._classifier.clf, save_name, compress=9)
 
-# Aleks do your funky model decompression stuff here please
 def load_and_return_model(filepath: str) -> Pipeline:
     '''
     Load a model from disk.
