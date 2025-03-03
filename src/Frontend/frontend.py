@@ -33,6 +33,8 @@ if "map_sequence" not in st.session_state:
     st.session_state["map_sequence"] = ["0"]
 if "training_target" not in st.session_state:
     st.session_state["training_target"] = -1
+if "currently_training" not in st.session_state:
+    st.session_state["currently_training"] = False
 
 print(st.session_state["state"])
 
@@ -43,10 +45,20 @@ match st.session_state["state"]:
         targets = ["↑", "←", "⯃", "→", "⇄"]
 
         with col1:
-            st.header("Target")
+            with stylable_container("training_header", get_training_header_style()):
+                current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
+                st.text(f"Target: {targets[current_target]}")
+                if current_target < len(targets) - 1:
+                    st.text(f"Next target: {targets[current_target + 1]}")
+                else:
+                    # placeholder to get rid of undesired text when it's not needed
+                    st.text("")
         with col2:
-            current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
-            st.header(f"{targets[current_target]}")
+            if st.session_state["currently_training"] is False and st.session_state['training_target'] != -1:
+                st.text("Done!")
+            else:
+                # placeholder to get rid of undesired text when it's not needed
+                st.text("")
         with col3:
             button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
 
@@ -60,6 +72,9 @@ match st.session_state["state"]:
         if len(st.session_state["flash_sequence"]) > 0:
             st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
             time.sleep(0.1)
+            st.rerun()
+        elif st.session_state["currently_training"] is True:
+            st.session_state["currently_training"] = False
             st.rerun()
 
     case States.LOCAL:

@@ -19,7 +19,9 @@ def send_special_marker(string: str):
 
 def start_training_next_target():
     st.session_state["training_target"] += 1
+    st.session_state["currently_training"] = True
     give_local_sequence_list(NUMBER_OF_TRAINING_CYCLES)
+
     
 def give_local_sequence_list(total_list_appends: int = 5):
     all_buttons = ["up", "left", "right", "stop", "switch"]
@@ -114,7 +116,7 @@ def local_driving_grid(training: bool = False):
             with stylable_container(BUTTON_KEY, css_styles=BUTTON_VALUE):
                 st.button("# Skip Training", on_click=start)
         else:
-            st.button("Run", on_click=give_local_sequence_list)
+            st.button("# Run", on_click=give_local_sequence_list)
 
     with col2:
         with stylable_container("switch_mode", css_styles=add_padding(switch_value, 11)):
