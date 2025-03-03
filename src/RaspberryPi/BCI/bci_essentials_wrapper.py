@@ -2,8 +2,8 @@ import asyncio
 import enum
 import joblib
 from sklearn.pipeline import Pipeline
+from os.path import join
 
-from src.RaspberryPi.BCI.input.xdf_input import OldXdfFormatInput
 from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
 from src.RaspberryPi.InternalException import BciSetupException
 
@@ -169,8 +169,11 @@ class Bessy:
         '''
         Save the model to disk as a `pk1` file. Automatically called when the class is destroyed.
         '''
+        
+        save_path = join("models", save_name)
+
         # save the model
-        joblib.dump(self.__bci_controller._classifier.clf, save_name)
+        joblib.dump(self.__bci_controller._classifier.clf, save_path)
 
 # Aleks do your funky model decompression stuff here please
 def load_and_return_model(filepath: str) -> Pipeline:

@@ -1,30 +1,20 @@
 import asyncio
-from signal import SIGINT, SIGTERM
-
-import joblib
-import keyboard
-
 from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
-from src.RaspberryPi.BCI.output.text_file_messenger import TextFileMessenger
-from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
-from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
 
 from src.RaspberryPi.BCI.bci_essentials_wrapper import Bessy
-from src.RaspberryPi.BCI.input.xdf_input import OldXdfFormatInput
+
     
 async def main():
     # model = joblib.load("test_save.pk1")
     # model = None
 
-    messenger = SharedMemoryMessenger(True)
+    messenger = SharedMemoryMessenger(False)
     xdf_filepath ="c:/Users/danij/OneDrive/Documents/CurrentStudy/sub-LIAM/ses-S001/eeg/sub-LIAM_ses-S001_task-Default_run-001_eeg.xdf"
 
     bessy = Bessy(online=True, xdf_filepath=xdf_filepath, messenger=messenger)
     print("DONE CONSTRUCTOR")
         
     await bessy.run()
-
-
 
 async def run_main():
     stop_event = asyncio.Event()
