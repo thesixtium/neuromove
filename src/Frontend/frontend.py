@@ -89,13 +89,13 @@ match st.session_state["state"]:
 
             match read_string:
                 case "[0]":
-                    direction_update("l")
-                case "[1]":
-                    direction_update("r")
-                case "[2]":
                     direction_update("f")
-                case "[3]":
+                case "[1]":
+                    direction_update("l")
+                case "[2]":
                     direction_update("s")
+                case "[3]":
+                    direction_update("r")
                 case "[4]":
                     switch()
             
@@ -164,7 +164,7 @@ match st.session_state["state"]:
 
         col1, col2 = st.columns([1, 1])
         with col1:
-            st.button("Run", on_click=give_map_sequence_list)
+            st.button("# Run", on_click=give_map_sequence_list)
         with col2:
             with stylable_container("switch", css_styles=switch_value):
-                st.button("S", on_click=switch)
+                st.button("⇄", on_click=switch)

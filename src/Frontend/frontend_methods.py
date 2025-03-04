@@ -77,16 +77,16 @@ def local_driving_grid(training: bool = False):
         match st.session_state["flash_sequence"][0]:
             case "up":
                 up_value = FLASH_VALUE
-                send_marker(5, 2, current_target)
+                send_marker(5, 0, current_target)
             case "left":
                 left_value = FLASH_VALUE
-                send_marker(5, 0, current_target)
+                send_marker(5, 1, current_target)
             case "right":
                 right_value = FLASH_VALUE
-                send_marker(5, 1, current_target)
+                send_marker(5, 3, current_target)
             case "stop":
                 stop_value = FLASH_VALUE
-                send_marker(5, 3, current_target)
+                send_marker(5, 2, current_target)
             case "switch":
                 switch_value = FLASH_VALUE
                 send_marker(5, 4, current_target) 
