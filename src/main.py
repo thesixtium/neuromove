@@ -5,46 +5,15 @@
 import time
 import numpy as np
 
-current_time = time.time()
-print("Importing src.Arduino.ArduinoUno... ", end="")
 from src.Arduino.ArduinoUno import ArduinoUno
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing RaspberryPi.InternalException... ", end="")
 from src.RaspberryPi.InternalException import *
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing RaspberryPi.Socket... ", end="")
 from src.RaspberryPi.Socket import Socket
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
 
-print("Importing RaspberryPi.SharedMemory... ", end="")
 from src.RaspberryPi.SharedMemory import SharedMemory
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing RaspberryPi.point_selection... ", end="")
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing RaspberryPi.States... ", end="")
 from src.RaspberryPi.States import States, DestinationDrivingStates
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing LiDAR.build.RunLiDAR... ", end="")
 from src.LiDAR.build.RunLiDAR import RunLiDAR
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing Frontend.run... ", end="")
 from src.Frontend.run import RunUI
-print(f"done ({time.time() - current_time}s)")
-
 from src.RaspberryPi.EyeTracking import EyeTracking
 
 # Todo
