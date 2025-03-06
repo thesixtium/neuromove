@@ -22,88 +22,96 @@ if "local_driving_memory" not in st.session_state:
 if "requested_next_state_memory" not in st.session_state:
     st.session_state["requested_next_state_memory"] = SharedMemory(shem_name="requested_next_state", size=10, create=False)
 if "marker_outlet" not in st.session_state:
-    marker_info = StreamInfo(name='MarkerStream', type='Markers', channel_count=1, nominal_srate=250,
+    marker_info = StreamInfo(name='MarkerStream', type='LSL_Marker_Strings', channel_count=1, nominal_srate=250,
                              channel_format='string', source_id='Marker_Outlet')
-    st.session_state["marker_outlet"] =  StreamOutlet(marker_info, 20, 360)
+    st.session_state["marker_outlet"] = StreamOutlet(marker_info, 20, 360)
+if "bci_selection_memory" not in st.session_state:
+    st.session_state["bci_selection_memory"] = SharedMemory(shem_name="bci_selection", size=10, create=False)
 if "flash_sequence" not in st.session_state:
     st.session_state["flash_sequence"] = []
 if "map_sequence" not in st.session_state:
     st.session_state["map_sequence"] = ["0"]
+if "training_target" not in st.session_state:
+    st.session_state["training_target"] = -1
+if "currently_training" not in st.session_state:
+    st.session_state["currently_training"] = False
+if "waiting_for_bci_response" not in st.session_state:
+    st.session_state["waiting_for_bci_response"] = False
 
 print(st.session_state["state"])
 
 match st.session_state["state"]:
     case States.SETUP:
-        def start():
-            st.session_state["requested_next_state_memory"].write_string("3")
-            st.session_state["state"] = States.LOCAL
+        # training sequence
+        col1, col2, col3= st.columns([5,1,1])
+        targets = ["↑", "←", "⯃", "→", "⇄"]
 
-        with stylable_container(BUTTON_KEY, css_styles=BUTTON_VALUE):
-            st.button("# Done", on_click=start)
+        with col1:
+            with stylable_container("training_header", get_training_header_style()):
+                current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
+                st.text(f"Target: {targets[current_target]}")
+                if current_target < len(targets) - 1:
+                    st.text(f"Next target: {targets[current_target + 1]}")
+                else:
+                    # placeholder to get rid of undesired text when it's not needed
+                    st.text("")
+        with col2:
+            if st.session_state["currently_training"] is False and st.session_state['training_target'] != -1:
+                st.text("Done!")
+            else:
+                # placeholder to get rid of undesired text when it's not needed
+                st.text("")
+        with col3:
+            button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
 
+            if st.session_state["training_target"] < len(targets) - 1:
+                st.button(label=f"# {button_label}", on_click=start_training_next_target)
+            else:
+                st.button("# Go to Local", on_click=start)
+
+        local_driving_grid(training=True)
+        
+        if len(st.session_state["flash_sequence"]) > 0:
+            st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
+            time.sleep(0.1)
+            st.rerun()
+        elif st.session_state["currently_training"] is True:
+            st.session_state["currently_training"] = False
+            st.rerun()
 
     case States.LOCAL:
-        left_value = BUTTON_VALUE
-        right_value = BUTTON_VALUE
-        up_value = BUTTON_VALUE
-        stop_value = BUTTON_VALUE
-        switch_value = BUTTON_VALUE
+        local_driving_grid()
 
-        if len(st.session_state["flash_sequence"]) > 0:
-            match st.session_state["flash_sequence"][0]:
-                case "up":
-                    up_value = FLASH_VALUE
-                    send_marker(5, 2)
-                case "left":
-                    left_value = FLASH_VALUE
-                    send_marker(5, 0)
-                case "right":
-                    right_value = FLASH_VALUE
-                    send_marker(5, 1)
-                case "stop":
-                    stop_value = FLASH_VALUE
-                    send_marker(5, 3)
-                case "switch":
-                    switch_value = FLASH_VALUE
-                    send_marker(5, 4)
+        # TODO: Dani find a better way to check that a new result has been passed
+        read_string = st.session_state['bci_selection_memory'].read_string()
+        if len(read_string) > 0 and "[" in read_string:
+            st.session_state["waiting_for_bci_response"] = False
+            print(f"RECEIVED {read_string} FROM SHARED MEM")
+            st.session_state['bci_selection_memory'].write_string("   ")
 
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col1:
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("1.1")
-
-            with stylable_container("left", css_styles=left_value):
-                st.button("←", on_click=direction_update, args=("l",))
-
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("1.3")
-        with col2:
-            with stylable_container("up", css_styles=up_value):
-                st.button("↑", on_click=direction_update, args=("f",))
-
-            with stylable_container("stop", css_styles=stop_value):
-                st.button("-", on_click=direction_update, args=("s",))
-        with col3:
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("3.1")
-
-            with stylable_container("right", css_styles=right_value):
-                st.button("→", on_click=direction_update, args=("r",))
-
-            with stylable_container(BACKGROUND_KEY, css_styles=BACKGROUND_VALUE):
-                st.button("3.3")
-
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            st.button("Run", on_click=give_local_sequence_list)
-        with col2:
-            with stylable_container("switch", css_styles=switch_value):
-                st.button("S", on_click=switch)
+            match read_string:
+                case "[0]":
+                    direction_update("f")
+                case "[1]":
+                    direction_update("l")
+                case "[2]":
+                    direction_update("s")
+                case "[3]":
+                    direction_update("r")
+                case "[4]":
+                    switch()
+            
 
         if len(st.session_state["flash_sequence"]) > 0:
             st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
             time.sleep(0.1)
             st.rerun()
+        elif st.session_state["waiting_for_bci_response"] == True:
+            with st.spinner("Waiting for BCI..."):
+                print("here....")
+                time.sleep(0.5)
+                st.rerun()
+
 
 
     case States.DESTINATION:
@@ -112,6 +120,9 @@ match st.session_state["state"]:
         neighbourhood_points = np.loadtxt('Frontend/neighbourhood_points.txt').reshape((4, 4, 2))
         origin = np.loadtxt('Frontend/origin.txt')
         number_of_neighbourhoods = neighbourhood_points.shape[0]
+
+        colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
+        switch_value = BUTTON_VALUE
 
         match st.session_state["map_sequence"][0]:
             case "1":
@@ -134,9 +145,10 @@ match st.session_state["state"]:
                 colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
                 switch_value = FLASH_VALUE
                 send_marker(5, 0)
-            case _:
-                colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
-                switch_value = BUTTON_VALUE
+            case "Trial Started":      
+                send_special_marker("Trial Started")
+            case "Trial Ends":
+                send_special_marker("Trial Ends")  
 
         fig = plt.figure(figsize=(7, 5))
         fig.patch.set_visible(False)
@@ -158,7 +170,7 @@ match st.session_state["state"]:
 
         col1, col2 = st.columns([1, 1])
         with col1:
-            st.button("Run", on_click=give_map_sequence_list)
+            st.button("# Run", on_click=give_map_sequence_list)
         with col2:
             with stylable_container("switch", css_styles=switch_value):
-                st.button("S", on_click=switch)
+                st.button("⇄", on_click=switch)
