@@ -2,8 +2,8 @@ import asyncio
 import enum
 import joblib
 from sklearn.pipeline import Pipeline
+from os.path import join
 
-from src.RaspberryPi.BCI.input.xdf_input import OldXdfFormatInput
 from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
 from src.RaspberryPi.InternalException import BciSetupException
 
@@ -137,22 +137,25 @@ class Bessy:
         '''
 
         if self.__online:
-            asyncio.create_task(self.__bessy_step_loop())
+            self.__task = asyncio.create_task(self.__bessy_step_loop())
 
         else:
             # just run step once for offline data
             self.__bci_controller.step()
 
     async def __bessy_step_loop(self):
-        while not self.__stop_event.is_set() and self.__bci_controller is not None:
+        while not self.__stop_event.is_set():
             await self.__bessy_step()
+
+            await asyncio.sleep(0.1)
 
     def set_stop(self):
         '''
         Tell the processing loop to stop execution
         '''
-
-        self.__stop_event.set()
+        if self.__task:
+            self.__stop_event.set()
+            self.__bci_controller = None
 
     async def __bessy_step(self):
         self.__bci_controller.step()
@@ -166,8 +169,11 @@ class Bessy:
         '''
         Save the model to disk as a `pk1` file. Automatically called when the class is destroyed.
         '''
+        
+        save_path = join("models", save_name)
+
         # save the model
-        joblib.dump(self.__bci_controller._classifier.clf, save_name)
+        joblib.dump(self.__bci_controller._classifier.clf, save_path)
 
 # Aleks do your funky model decompression stuff here please
 def load_and_return_model(filepath: str) -> Pipeline:
