@@ -1,17 +1,18 @@
 import asyncio
 from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
 
-from src.RaspberryPi.BCI.bci_essentials_wrapper import Bessy
+from src.RaspberryPi.BCI.bci_essentials_wrapper import Bessy, load_and_return_model
 
     
 async def main():
     # model = joblib.load("test_save.pk1")
     # model = None
+    model = load_and_return_model("models/save_on_exit_DANI4.pk1")
 
     messenger = SharedMemoryMessenger(False)
     xdf_filepath ="c:/Users/danij/OneDrive/Documents/CurrentStudy/sub-LIAM/ses-S001/eeg/sub-LIAM_ses-S001_task-Default_run-001_eeg.xdf"
 
-    bessy = Bessy(online=True, xdf_filepath=xdf_filepath, messenger=messenger)
+    bessy = Bessy(online=True, xdf_filepath=xdf_filepath, messenger=messenger, model=model)
     print("DONE CONSTRUCTOR")
         
     await bessy.run()

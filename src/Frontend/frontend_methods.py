@@ -40,6 +40,11 @@ def give_local_sequence_list(total_list_appends: int = 5):
     if st.session_state["currently_training"] == False:
         st.session_state["waiting_for_bci_response"] = True
 
+    if st.session_state["training_target"] == 4:
+        return_list = return_list + ["Training Complete"]
+
+    print(f"RETURNED LIST {return_list} ")
+
     st.session_state["flash_sequence"] = return_list
 
 def give_map_sequence_list():
@@ -97,7 +102,9 @@ def local_driving_grid(training: bool = False):
             case "Trial Started":      
                 send_special_marker("Trial Started")
             case "Trial Ends":
-                send_special_marker("Trial Ends")     
+                send_special_marker("Trial Ends")  
+            case "Training Complete":
+                send_special_marker("Training Complete")   
 
     col1, col2, col3 = st.columns([1, 1, 1], vertical_alignment="bottom")
     function_to_call = direction_update if training is False else None
@@ -127,8 +134,5 @@ def local_driving_grid(training: bool = False):
             st.button("⇄", on_click=switch)
 
 def start():
-    send_special_marker("Training Complete")
-    st.session_state["currently_training"] = False
-
     st.session_state["requested_next_state_memory"].write_string("3")
     st.session_state["state"] = States.LOCAL
