@@ -35,6 +35,8 @@ if "training_target" not in st.session_state:
     st.session_state["training_target"] = -1
 if "currently_training" not in st.session_state:
     st.session_state["currently_training"] = False
+if "waiting_for_bci_response" not in st.session_state:
+    st.session_state["waiting_for_bci_response"] = False
 
 print(st.session_state["state"])
 
@@ -83,9 +85,9 @@ match st.session_state["state"]:
         # TODO: Dani find a better way to check that a new result has been passed
         read_string = st.session_state['bci_selection_memory'].read_string()
         if len(read_string) > 0 and "[" in read_string:
+            st.session_state["waiting_for_bci_response"] = False
             print(f"RECEIVED {read_string} FROM SHARED MEM")
             st.session_state['bci_selection_memory'].write_string("   ")
-            st.session_state["previous_read_from_bci_selection"] = read_string
 
             match read_string:
                 case "[0]":
@@ -99,13 +101,17 @@ match st.session_state["state"]:
                 case "[4]":
                     switch()
             
-            st.session_state["previous_read_from_bci_selection"] = None
-
 
         if len(st.session_state["flash_sequence"]) > 0:
             st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
             time.sleep(0.1)
             st.rerun()
+        elif st.session_state["waiting_for_bci_response"] == True:
+            with st.spinner("Waiting for BCI..."):
+                print("here....")
+                time.sleep(0.5)
+                st.rerun()
+
 
 
     case States.DESTINATION:

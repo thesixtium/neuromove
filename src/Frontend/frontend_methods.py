@@ -36,6 +36,10 @@ def give_local_sequence_list(total_list_appends: int = 5):
 
     return_list = [item for pair in zip(return_list, ["break"] * len(return_list)) for item in pair][:-1]
     return_list = ["Trial Started"] + return_list + ["Trial Ends"]
+    
+    if st.session_state["currently_training"] == False:
+        st.session_state["waiting_for_bci_response"] = True
+
     st.session_state["flash_sequence"] = return_list
 
 def give_map_sequence_list():
@@ -122,9 +126,9 @@ def local_driving_grid(training: bool = False):
         with stylable_container("switch_mode", css_styles=add_padding(switch_value, 11)):
             st.button("⇄", on_click=switch)
 
-
 def start():
     send_special_marker("Training Complete")
+    st.session_state["currently_training"] = False
 
     st.session_state["requested_next_state_memory"].write_string("3")
     st.session_state["state"] = States.LOCAL
