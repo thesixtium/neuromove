@@ -178,12 +178,18 @@ def training():
 
 def check_name(name: str):
     fmt_name = name.upper().replace(" ", "_")
+    if len(fmt_name) >= 20:
+        fmt_name = fmt_name[:19]
 
     model_file_name = "save_on_exit_" + fmt_name + ".pk1"
 
     model_path = join(dirname(__file__), "..", "..", "models", model_file_name)
 
     if exists(model_path):
-        print("FILE FOUND")
+        st.session_state["bci_selection_memory"].write_string(fmt_name)
+
+        print(f"File found. Wrote {fmt_name} to shared mem")
     else:
-        print("FILE NOT FOUND")
+        st.session_state["bci_selection_memory"].write_string("N/A")
+
+        print("File not found. Wrote N/A to shared mem")

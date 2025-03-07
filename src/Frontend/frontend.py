@@ -85,7 +85,6 @@ match st.session_state["state"]:
             st.rerun()
         elif st.session_state["waiting_for_bci_response"] == True:
             with st.spinner("Waiting for BCI..."):
-                print("here....")
                 time.sleep(0.5)
                 st.rerun()
 
