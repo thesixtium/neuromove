@@ -37,47 +37,24 @@ if "currently_training" not in st.session_state:
     st.session_state["currently_training"] = False
 if "waiting_for_bci_response" not in st.session_state:
     st.session_state["waiting_for_bci_response"] = False
+if "setup_substate" not in st.session_state:
+    st.session_state["setup_substate"] = SetupStates.SELECT_USER
 
 print(st.session_state["state"])
 
 match st.session_state["state"]:
     case States.SETUP:
-        # training sequence
-        col1, col2, col3= st.columns([5,1,1])
-        targets = ["↑", "←", "⯃", "→", "⇄"]
+        match st.session_state["setup_substate"]:
+            case SetupStates.SELECT_USER:
+                with stylable_container("text_input", ""):
+                    name = st.text_input("Full Name", "")
 
-        with col1:
-            with stylable_container("training_header", get_training_header_style()):
-                current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
-                st.text(f"Target: {targets[current_target]}")
-                if current_target < len(targets) - 1:
-                    st.text(f"Next target: {targets[current_target + 1]}")
-                else:
-                    # placeholder to get rid of undesired text when it's not needed
-                    st.text("")
-        with col2:
-            if st.session_state["currently_training"] is False and st.session_state['training_target'] != -1:
-                st.text("Done!")
-            else:
-                # placeholder to get rid of undesired text when it's not needed
-                st.text("")
-        with col3:
-            button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
-
-            if st.session_state["training_target"] < len(targets) - 1:
-                st.button(label=f"# {button_label}", on_click=start_training_next_target)
-            else:
-                st.button("# Go to Local", on_click=start)
-
-        local_driving_grid(training=True)
-        
-        if len(st.session_state["flash_sequence"]) > 0:
-            st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
-            time.sleep(0.1)
-            st.rerun()
-        elif st.session_state["currently_training"] is True:
-            st.session_state["currently_training"] = False
-            st.rerun()
+                st.button("# Submit", on_click=check_name, args=(name, ))  
+            case SetupStates.SELECT_POSITION:
+                pass
+            case SetupStates.TRAIN:
+                # training sequence
+                training()
 
     case States.LOCAL:
         local_driving_grid()

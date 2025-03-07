@@ -15,3 +15,8 @@ class DestinationDrivingStates(Enum):
     SELECT_DESTINATION = 3
     TRANSLATE_TO_MOVEMENT = 4
     DRIVE = 5
+
+class SetupStates(Enum):
+    SELECT_USER = 1
+    SELECT_POSITION = 2
+    TRAIN = 3

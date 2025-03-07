@@ -1,4 +1,6 @@
 from random import shuffle
+from time import sleep
+from os.path import join, exists, dirname
 
 import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
@@ -136,3 +138,52 @@ def local_driving_grid(training: bool = False):
 def start():
     st.session_state["requested_next_state_memory"].write_string("3")
     st.session_state["state"] = States.LOCAL
+
+def training():
+    col1, col2, col3= st.columns([5,1,1])
+    targets = ["↑", "←", "⯃", "→", "⇄"]
+
+    with col1:
+        with stylable_container("training_header", get_training_header_style()):
+            current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
+            st.text(f"Target: {targets[current_target]}")
+            if current_target < len(targets) - 1:
+                st.text(f"Next target: {targets[current_target + 1]}")
+            else:
+                # placeholder to get rid of undesired text when it's not needed
+                st.text("")
+    with col2:
+        if st.session_state["currently_training"] is False and st.session_state['training_target'] != -1:
+            st.text("Done!")
+        else:
+            # placeholder to get rid of undesired text when it's not needed
+            st.text("")
+    with col3:
+        button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
+
+        if st.session_state["training_target"] < len(targets) - 1:
+            st.button(label=f"# {button_label}", on_click=start_training_next_target)
+        else:
+            st.button("# Go to Local", on_click=start)
+
+    local_driving_grid(training=True)
+    
+    if len(st.session_state["flash_sequence"]) > 0:
+        st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
+        sleep(0.1)
+        st.rerun()
+    elif st.session_state["currently_training"] is True:
+        st.session_state["currently_training"] = False
+        st.rerun()
+
+def check_name(name: str):
+    fmt_name = name.upper().replace(" ", "_")
+
+    model_file_name = "save_on_exit_" + fmt_name + ".pk1"
+
+    model_path = join(dirname(__file__), "..", "..", "models", model_file_name)
+
+    if exists(model_path):
+        print("FILE FOUND")
+    else:
+        print("FILE NOT FOUND")

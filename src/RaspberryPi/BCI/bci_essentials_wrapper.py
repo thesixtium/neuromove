@@ -28,8 +28,6 @@ class Bessy:
         What BCI paradigm to use. Set to p300 for NeuroMove.
     pre_trained: bool
         Whether the model has been trained or not.
-    online: bool
-        True if training from headset data live. False if training from recorded data.
     messenger: Messenger
         Output interface for the data from BCI_Controller
 
@@ -45,18 +43,12 @@ class Bessy:
         Save the model to disk as a `pk1` file
     '''
     
-    def __init__(self, online: bool = True, xdf_filepath: str = None, messenger: Messenger = None, model: Pipeline = None):
+    def __init__(self, messenger: Messenger = None, model: Pipeline = None):
         '''
         Constructor for Bessy object. Initializes `BciController` and all associated classes.
 
         Parameters
         ------------
-        online: bool
-            True if training from headset data live. False if training from recorded data.
-        xdf_filepath: str
-            The path (relative or absolute) to the XDF file to use for offline processing. 
-
-            Should only be set as a value other than `None` if `online` is `False`.
         messenger: Messenger
             How to recieve output of the class. Defaults to SharedMemory with text file debug option
         model: Pipeline
@@ -66,30 +58,25 @@ class Bessy:
         -------
         none
 
-        Raises
-        -------
-        BCISetupException
-            If `online` is False and `xdf_filepath` is None. Offline processing requires a valid filepath
-
         '''
 
         # constant for NeuroMove but set for easy editing later
-        self.__paradigm = Paradigm.P300
+        self.__paradigm_type = Paradigm.P300
 
         self.__stop_event = asyncio.Event()
         self.__pre_trained = False
 
-        match self.__paradigm:
+        match self.__paradigm_type:
             case Paradigm.P300:
-                paradigm = P300Paradigm()
-                classifier = ErpRgClassifier()
-                classifier.set_p300_clf_settings()
+                self.__paradigm = P300Paradigm()
+                self.__classifier = ErpRgClassifier()
+                self.__classifier.set_p300_clf_settings()
 
                 if model is not None:
                     self.__pre_trained = True
-                    classifier.clf = model
+                    self.__classifier.clf = model
             case _:
-                raise BciSetupException(f"Paradigm  \"{self.__paradigm}\" not recognized")
+                raise BciSetupException(f"Paradigm  \"{self.__paradigm_type}\" not recognized")
 
         # default to shared memory without debug text file 
         if messenger is None:
@@ -97,51 +84,48 @@ class Bessy:
         else:
             self.__messenger = messenger
     
-        data_tank = DataTank()
+        self.__data_tank = DataTank()
 
-        self.__online = online
-        if online == False and xdf_filepath is None:
-            raise BciSetupException(f"Offline processing selected but no XDF filepath provided")
+        self.__eeg_source = LslEegSource()
+        self.__marker_source = LslMarkerSource()
 
-        # if both onine = true and xdf filepath given, assume online processing
-        eeg_source = None
-        marker_source = None
-        if online == True:
-            eeg_source = LslEegSource()
-            marker_source = LslMarkerSource()
-        else:
-            eeg_source = XdfEegSource(xdf_filepath)
-            # TODO: Update this to XdfMarkerSource when using more recent data
-            # marker_source = OldXdfFormatInput(xdf_filepath)
-            marker_source = XdfMarkerSource(xdf_filepath)
+        self.__bci_controller = self.__init_bessy()
 
-        self.__bci_controller = BciController(
-            eeg_source=eeg_source,
-            marker_source=marker_source,
-            paradigm=paradigm,
-            classifier=classifier,
-            data_tank=data_tank,
+    def __init_bessy(self):
+        bci_controller = BciController(
+            eeg_source=self.__eeg_source,
+            marker_source=self.__marker_source,
+            paradigm=self.__paradigm,
+            classifier=self.__classifier,
+            data_tank=self.__data_tank,
             messenger=self.__messenger
         )
 
-        self.__bci_controller.setup(online=online, train_complete=self.__pre_trained)
+        bci_controller.setup(online=True, train_complete=self.__pre_trained)
         
-        self.__bci_controller.event_timestamp_buffer = []
-        self.__bci_controller.event_marker_buffer = []
+        bci_controller.event_timestamp_buffer = []
+        bci_controller.event_marker_buffer = []
+
+        return bci_controller
+
+    def set_model(self, model: Pipeline):
+        # TODO: make sure this can't be called once processing starts somehow??
+
+        # re-init bessy object
+        self.__pre_trained = True
+        self.__classifier.clf = model
+
+        self.__bci_controller = self.__init_bessy()
 
     async def run(self):
         '''
         Start processing EEG and marker events.
 
-        If running offline, this happens once. Otherwise it runs continuously until told to stop
+        Runs continuously until told to stop
         '''
 
-        if self.__online:
-            self.__task = asyncio.create_task(self.__bessy_step_loop())
+        self.__task = asyncio.create_task(self.__bessy_step_loop())
 
-        else:
-            # just run step once for offline data
-            self.__bci_controller.step()
 
     async def __bessy_step_loop(self):
         while not self.__stop_event.is_set():

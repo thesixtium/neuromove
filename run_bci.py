@@ -12,8 +12,11 @@ async def main():
     messenger = SharedMemoryMessenger(False)
     xdf_filepath ="c:/Users/danij/OneDrive/Documents/CurrentStudy/sub-LIAM/ses-S001/eeg/sub-LIAM_ses-S001_task-Default_run-001_eeg.xdf"
 
-    bessy = Bessy(online=True, xdf_filepath=xdf_filepath, messenger=messenger, model=model)
     print("DONE CONSTRUCTOR")
+    bessy = Bessy(messenger=messenger)
+    print("DONE SETTING MODEL")
+
+    bessy.set_model(model)
         
     await bessy.run()
 
