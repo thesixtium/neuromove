@@ -50,11 +50,23 @@ match st.session_state["state"]:
     case States.SETUP:
         match st.session_state["setup_substate"]:
             case SetupStates.SELECT_USER:
-                # TODO: make this pretty
-                with stylable_container("text_input", ""):
-                    name = st.text_input("Full Name", "")
+                with stylable_container("input-header", css_styles="""
+                    .stText {
+                        font-size: 24px;
+                        font-weight: bold;  
+                        justify-content: start;                  
+                    }
+                """):
+                    st.text("Please enter the user's first and last name")
+               
+                name = st.text_input("", "", placeholder="First Name Last Name")
 
-                st.button("# Submit", on_click=check_name, args=(name, ))  
+                with stylable_container("name_button_container", css_styles="""
+                    .stButton {
+                        justify-content: start;                    
+                    }
+                """):
+                    st.button("# Submit", on_click=check_name, args=(name, ))  
             case SetupStates.SELECT_POSITION:
                 with stylable_container("position_text", css_styles="""
                     div {font-size: 30px;
