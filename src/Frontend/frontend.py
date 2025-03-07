@@ -46,12 +46,29 @@ match st.session_state["state"]:
     case States.SETUP:
         match st.session_state["setup_substate"]:
             case SetupStates.SELECT_USER:
+                # TODO: make this pretty
                 with stylable_container("text_input", ""):
                     name = st.text_input("Full Name", "")
 
                 st.button("# Submit", on_click=check_name, args=(name, ))  
             case SetupStates.SELECT_POSITION:
-                pass
+                with stylable_container("position_text", css_styles="""
+                    div {font-size: 30px;
+                    font-weight: bold;}
+                """):
+                    st.text("Select the area that is most visible")
+
+                st.markdown(
+                    """
+                    <div class="screen-area-container">
+                        <div class="screen-area", id="area1">Area 1</div>
+                        <div class="screen-area", id="area2">Area 2</div>
+                        <div class="screen-area", id="area3">Area 3</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
             case SetupStates.TRAIN:
                 # training sequence
                 training()

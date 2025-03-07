@@ -7,7 +7,7 @@ class SharedMemoryMessenger(Messenger):
         super().__init__()
 
         self.__write_to_text = debug
-        self.__shared_memory = SharedMemory("bci_selection", size=10, create=False)
+        self.__shared_memory = SharedMemory("bci_selection", size=20, create=False)
 
         if self.__write_to_text:
             self.__filepath = "BCI_OUTPUT_DEBUG.txt"
