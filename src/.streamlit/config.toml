@@ -3,4 +3,5 @@ toolbarMode = "viewer"
 showSidebarNavigation = false
 
 [theme]
-backgroundColor = "#8d66ad"
+backgroundColor = "#667FAD"
+textColor = "#0e142a"

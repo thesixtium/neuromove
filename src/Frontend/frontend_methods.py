@@ -1,14 +1,18 @@
 from random import shuffle
+from time import sleep
+from os.path import join, exists, dirname
 
 import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
 
 from pylsl import local_clock
 
+from src.Frontend.enums import ScreenPosition
 from src.Frontend.style import *
-from src.RaspberryPi.States import States
+from src.RaspberryPi.States import SetupStates, States
 
 NUMBER_OF_TRAINING_CYCLES = 20
+NUMBER_OF_DECISION_CYCLES = 5
 
 def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
     st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{current_target},{flashed_as_num}"], local_clock())
@@ -18,12 +22,16 @@ def send_special_marker(string: str):
 
 
 def start_training_next_target():
+    # don't do anything if currently flashing
+    if len(st.session_state["flash_sequence"]):
+        return
+
     st.session_state["training_target"] += 1
     st.session_state["currently_training"] = True
     give_local_sequence_list(NUMBER_OF_TRAINING_CYCLES)
 
     
-def give_local_sequence_list(total_list_appends: int = 5):
+def give_local_sequence_list(total_list_appends: int = NUMBER_OF_DECISION_CYCLES):
     all_buttons = ["up", "left", "right", "stop", "switch"]
     return_list = []
     list_appends = 0
@@ -40,19 +48,17 @@ def give_local_sequence_list(total_list_appends: int = 5):
     if st.session_state["currently_training"] == False:
         st.session_state["waiting_for_bci_response"] = True
 
-    if st.session_state["training_target"] == 4:
+    if st.session_state["training_target"] == 4 and st.session_state["state"] == States.SETUP:
         return_list = return_list + ["Training Complete"]
-
-    print(f"RETURNED LIST {return_list} ")
 
     st.session_state["flash_sequence"] = return_list
 
-def give_map_sequence_list():
+def give_map_sequence_list(total_list_appends: int = NUMBER_OF_DECISION_CYCLES):
     all_buttons = ["1", "2", "3", "4", "switch"]
     return_list = []
     list_appends = 0
 
-    while list_appends < 5:
+    while list_appends < total_list_appends:
         shuffle(all_buttons)
         if len(return_list) == 0 or return_list[-1] != all_buttons[0]:
             return_list += all_buttons
@@ -60,10 +66,18 @@ def give_map_sequence_list():
 
     return_list = [item for pair in zip(return_list, ["0"] * len(return_list)) for item in pair]
     return_list = ["Trial Started"] + return_list + ["Trial Ends"]
+
+    if st.session_state["currently_training"] == False: 
+        st.session_state["waiting_for_bci_response"] = True
+
     st.session_state["map_sequence"] = return_list
 
 def direction_update(direction):
     st.session_state["local_driving_memory"].write_string(direction)
+
+def destination_driving_update(target_region):
+    # TODO: Implement
+    print(f"Destination selected {target_region}, doing nothing right now")
 
 def switch():
     if st.session_state["state"] == States.LOCAL:
@@ -122,17 +136,95 @@ def local_driving_grid(training: bool = False):
             st.button("→", on_click=function_to_call, args=("r",))
 
     col1, col2 = st.columns([1, 1])
+    function_to_call = switch if training is False else None
     with col1:
         if training is True:
-            with stylable_container(BUTTON_KEY, css_styles=BUTTON_VALUE):
-                st.button("# Skip Training", on_click=start)
+            st.button("# Placeholder", on_click=None)
         else:
             st.button("# Run", on_click=give_local_sequence_list)
 
     with col2:
         with stylable_container("switch_mode", css_styles=add_padding(switch_value, 11)):
-            st.button("⇄", on_click=switch)
+            st.button("⇄", on_click=function_to_call)
 
 def start():
     st.session_state["requested_next_state_memory"].write_string("3")
     st.session_state["state"] = States.LOCAL
+
+def training():
+    col1, col2, col3= st.columns([5,1,1])
+    targets = ["↑", "←", "⯃", "→", "⇄"]
+
+    with col1:
+        with stylable_container("training_header", get_training_header_style()):
+            current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
+            st.text(f"Target: {targets[current_target]}")
+            if current_target < len(targets) - 1:
+                st.text(f"Next target: {targets[current_target + 1]}")
+            else:
+                # placeholder to get rid of undesired text when it's not needed
+                st.text("")
+    with col2:
+        if st.session_state["currently_training"] is False and st.session_state['training_target'] != -1:
+            st.text("Done!")
+        else:
+            # placeholder to get rid of undesired text when it's not needed
+            st.text("")
+    with col3:
+        button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
+
+        if st.session_state["training_target"] < len(targets) - 1:
+            st.button(label=f"# {button_label}", on_click=start_training_next_target)
+        else:
+            st.button("# Go to Local", on_click=start)
+
+    local_driving_grid(training=True)
+    
+    if len(st.session_state["flash_sequence"]) > 0:
+        st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
+        sleep(0.1)
+        st.rerun()
+    elif st.session_state["currently_training"] is True:
+        st.session_state["currently_training"] = False
+        st.rerun()
+
+def check_name(name: str):
+    fmt_name = name.upper().replace(" ", "_")
+    if len(fmt_name) >= 20:
+        fmt_name = fmt_name[:19]
+
+    model_file_name = "save_on_exit_" + fmt_name + ".pk1"
+
+    model_path = join(dirname(__file__), "..", "..", "models", model_file_name)
+
+    if exists(model_path):
+        st.session_state["bci_selection_memory"].write_string(fmt_name)
+
+        print(f"File found. Wrote {fmt_name} to shared mem")
+    else:
+        st.session_state["bci_selection_memory"].write_string("N/A")
+
+        print("File not found. Wrote N/A to shared mem")
+
+    st.session_state["setup_substate"] = SetupStates.SELECT_POSITION
+
+def move_content():
+    '''
+    Move content to the selected region of the screen.
+    Left, right or centre.
+    '''
+
+    match st.session_state["screen_position"]:
+        case ScreenPosition.LEFT:
+            css_pos = "start"
+        case ScreenPosition.CENTRE:
+            css_pos = "center"
+        case ScreenPosition.RIGHT:
+            css_pos = "right"
+    st.markdown("""<style>
+    .stMain {
+        display: flex;
+        flex-direction: row;
+        justify-content:""" + css_pos + """;
+    } </style>
+    """, unsafe_allow_html=True)

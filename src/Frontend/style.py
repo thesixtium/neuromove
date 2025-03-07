@@ -1,12 +1,12 @@
 BUTTON_WIDTH = 100
 BUTTON_HEIGHT = 100
 
-PURPLE = "#8D66AD"
+PURPLE = "#667FAD"
 BLACK = "#000000"
 WHITE = "#FFFFFF"
 GREEN = "#206A00"
 OTHER = "#0F24FF"
-DARK_TEXT = "#0F001A"
+DARK_TEXT = "#00061A"
 
 def make_value(background, color, border):
     return "button { background-color: " + background + "; color: " + color + "; border-color: " + border + "; }"
