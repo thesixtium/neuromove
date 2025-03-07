@@ -11,6 +11,7 @@ from pylsl import StreamInfo, StreamOutlet
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.Frontend.style import *
 from src.Frontend.frontend_methods import *
+from src.Frontend.enums import *
 from src.RaspberryPi.States import SetupStates
 
 with open("Frontend/frontend.css") as f:
@@ -98,10 +99,13 @@ match st.session_state["state"]:
                 )
 
             case SetupStates.TRAIN:
+                move_content()
+
                 # training sequence
                 training()
 
     case States.LOCAL:
+        move_content()
         local_driving_grid()
 
         # TODO: Dani find a better way to check that a new result has been passed
@@ -141,6 +145,8 @@ match st.session_state["state"]:
         neighbourhood_points = np.loadtxt('Frontend/neighbourhood_points.txt').reshape((4, 4, 2))
         origin = np.loadtxt('Frontend/origin.txt')
         number_of_neighbourhoods = neighbourhood_points.shape[0]
+
+        move_content()
 
         colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
         switch_value = BUTTON_VALUE

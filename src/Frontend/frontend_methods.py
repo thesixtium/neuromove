@@ -1,4 +1,3 @@
-from enum import Enum
 from random import shuffle
 from time import sleep
 from os.path import join, exists, dirname
@@ -11,12 +10,7 @@ from pylsl import local_clock
 from src.Frontend.style import *
 from src.RaspberryPi.States import SetupStates, States
 
-NUMBER_OF_TRAINING_CYCLES = 1
-
-class ScreenPosition(Enum):
-    LEFT = 1
-    CENTRE = 2
-    RIGHT = 3
+NUMBER_OF_TRAINING_CYCLES = 20
 
 def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
     st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{current_target},{flashed_as_num}"], local_clock())
@@ -199,3 +193,24 @@ def check_name(name: str):
         print("File not found. Wrote N/A to shared mem")
 
     st.session_state["setup_substate"] = SetupStates.SELECT_POSITION
+
+def move_content():
+    '''
+    Move content to the selected region of the screen.
+    Left, right or centre.
+    '''
+
+    match st.session_state["screen_position"]:
+        case ScreenPosition.LEFT:
+            css_pos = "start"
+        case ScreenPosition.CENTRE:
+            css_pos = "center"
+        case ScreenPosition.RIGHT:
+            css_pos = "right"
+    st.markdown("""<style>
+    .stMain {
+        display: flex;
+        flex-direction: row;
+        justify-content:""" + css_pos + """;
+    } </style>
+    """, unsafe_allow_html=True)
