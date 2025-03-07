@@ -1,3 +1,4 @@
+from enum import Enum
 from random import shuffle
 from time import sleep
 from os.path import join, exists, dirname
@@ -10,7 +11,12 @@ from pylsl import local_clock
 from src.Frontend.style import *
 from src.RaspberryPi.States import SetupStates, States
 
-NUMBER_OF_TRAINING_CYCLES = 20
+NUMBER_OF_TRAINING_CYCLES = 1
+
+class ScreenPosition(Enum):
+    LEFT = 1
+    CENTRE = 2
+    RIGHT = 3
 
 def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
     st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{current_target},{flashed_as_num}"], local_clock())

@@ -11,6 +11,7 @@ from pylsl import StreamInfo, StreamOutlet
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.Frontend.style import *
 from src.Frontend.frontend_methods import *
+from src.RaspberryPi.States import SetupStates
 
 with open("Frontend/frontend.css") as f:
     st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
@@ -39,6 +40,8 @@ if "waiting_for_bci_response" not in st.session_state:
     st.session_state["waiting_for_bci_response"] = False
 if "setup_substate" not in st.session_state:
     st.session_state["setup_substate"] = SetupStates.SELECT_USER
+if "screen_position" not in st.session_state:
+    st.session_state["screen_position"] = ScreenPosition.CENTRE
 
 print(st.session_state["state"])
 
@@ -56,14 +59,39 @@ match st.session_state["state"]:
                     div {font-size: 30px;
                     font-weight: bold;}
                 """):
-                    st.text("Select the area that is most visible")
+                    st.text("Which the area is most visible?")
+
+                def set_screen_position(position: ScreenPosition):
+                    st.session_state["screen_position"] = position
+                    st.session_state["setup_substate"] = SetupStates.TRAIN
+
+                with stylable_container("button-container", css_styles="""
+                .stHorizontalBlock {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                }
+                                        
+                .stVerticalBlock {
+                    width: 100vw;
+                }
+                """):
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.button("# Left", on_click=set_screen_position, args=(ScreenPosition.LEFT,))
+                    with col2:
+                        st.button("# Centre",  on_click=set_screen_position, args=(ScreenPosition.CENTRE,))
+                    with col3:
+                        st.button("# Right",  on_click=set_screen_position, args=(ScreenPosition.RIGHT,))
 
                 st.markdown(
                     """
                     <div class="screen-area-container">
-                        <div class="screen-area", id="area1">Area 1</div>
-                        <div class="screen-area", id="area2">Area 2</div>
-                        <div class="screen-area", id="area3">Area 3</div>
+                        <div class="screen-area", id="left">Left</div>
+                        <div class="spacer"></div>
+                        <div class="screen-area", id="centre">Centre</div>
+                        <div class="spacer"></div>
+                        <div class="screen-area", id="right">Right</div>
                     </div>
                     """,
                     unsafe_allow_html=True

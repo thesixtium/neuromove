@@ -4,3 +4,4 @@ showSidebarNavigation = false
 
 [theme]
 backgroundColor = "#667FAD"
+textColor = "#0e142a"

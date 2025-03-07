@@ -24,13 +24,12 @@ button p {
 
 .screen-area-container {
     width: 100vw;
-    height: calc(100vh - 320px);
+    height: calc(100vh - 450px);
 
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
-
 
 .screen-area {
     flex: 1;
@@ -38,14 +37,12 @@ button p {
 
     font-size: 36px;
     font-weight: bold;
-    cursor: pointer;
-}
 
-.screen-area:hover {
     background-color: #334364;
-    color: white
+    color: white;
+    border-radius: 5px;
 }
 
-.border {
-    background-color: black;
+.spacer {
+    width: 5px;
 }
