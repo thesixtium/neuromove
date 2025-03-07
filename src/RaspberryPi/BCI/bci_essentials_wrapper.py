@@ -43,7 +43,7 @@ class Bessy:
         Save the model to disk as a `pk1` file
     '''
     
-    def __init__(self, messenger: Messenger = None, model: Pipeline = None):
+    def __init__(self, messenger: Messenger = None, model: Pipeline = None, confidence: float = 0.7):
         '''
         Constructor for Bessy object. Initializes `BciController` and all associated classes.
 
@@ -80,7 +80,7 @@ class Bessy:
 
         # default to shared memory without debug text file 
         if messenger is None:
-            self.__messenger = SharedMemoryMessenger(debug=False)
+            self.__messenger = SharedMemoryMessenger(debug=False, confidence=confidence)
         else:
             self.__messenger = messenger
     
@@ -107,6 +107,9 @@ class Bessy:
         bci_controller.event_marker_buffer = []
 
         return bci_controller
+
+    def set_confidence(self, confidence: float):
+        self.__messenger.set_confidence(new_confidence=confidence)
 
     def set_model(self, model: Pipeline):
         # TODO: make sure this can't be called once processing starts somehow??

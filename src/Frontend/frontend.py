@@ -126,6 +126,8 @@ match st.session_state["state"]:
                     direction_update("r")
                 case "[4]":
                     switch()
+                case _:
+                    print("Not confident enough to make a decision")
             
 
         if len(st.session_state["flash_sequence"]) > 0:
@@ -133,9 +135,8 @@ match st.session_state["state"]:
             time.sleep(0.1)
             st.rerun()
         elif st.session_state["waiting_for_bci_response"] == True:
-            with st.spinner("Waiting for BCI..."):
-                time.sleep(0.5)
-                st.rerun()
+            time.sleep(0.5)
+            st.rerun()
 
 
 

@@ -47,7 +47,7 @@ def give_local_sequence_list(total_list_appends: int = 5):
     if st.session_state["currently_training"] == False:
         st.session_state["waiting_for_bci_response"] = True
 
-    if st.session_state["training_target"] == 4:
+    if st.session_state["training_target"] == 4 and st.session_state["state"] == States.SETUP:
         return_list = return_list + ["Training Complete"]
 
     st.session_state["flash_sequence"] = return_list
