@@ -122,16 +122,16 @@ def local_driving_grid(training: bool = False):
             st.button("→", on_click=function_to_call, args=("r",))
 
     col1, col2 = st.columns([1, 1])
+    function_to_call = switch if training is False else None
     with col1:
         if training is True:
-            with stylable_container(BUTTON_KEY, css_styles=BUTTON_VALUE):
-                st.button("# Skip Training", on_click=start)
+            st.button("# Placeholder", on_click=None)
         else:
             st.button("# Run", on_click=give_local_sequence_list)
 
     with col2:
         with stylable_container("switch_mode", css_styles=add_padding(switch_value, 11)):
-            st.button("⇄", on_click=switch)
+            st.button("⇄", on_click=function_to_call)
 
 def start():
     st.session_state["requested_next_state_memory"].write_string("3")
