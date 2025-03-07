@@ -7,6 +7,7 @@ from streamlit_extras.stylable_container import stylable_container
 
 from pylsl import local_clock
 
+from src.Frontend.enums import ScreenPosition
 from src.Frontend.style import *
 from src.RaspberryPi.States import SetupStates, States
 
@@ -20,6 +21,10 @@ def send_special_marker(string: str):
 
 
 def start_training_next_target():
+    # don't do anything if currently flashing
+    if len(st.session_state["flash_sequence"]):
+        return
+
     st.session_state["training_target"] += 1
     st.session_state["currently_training"] = True
     give_local_sequence_list(NUMBER_OF_TRAINING_CYCLES)
