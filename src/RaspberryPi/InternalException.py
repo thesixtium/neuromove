@@ -87,10 +87,17 @@ class PamFailedPointSelection(InternalException):
     def __init__(self, expected: int, actual: int):
         super().__init__(16, ExceptionTypes.TEMPORARY, f"PAM failed to find the correct number of medoids. Expected {expected} but got {actual}")
 
-class BciSetupException(InternalException):
-    def __init__(self, message: str):
-        super().__init__(17, ExceptionTypes.PERMANENT, message)
-
 class ArduinoNotConnected(InternalException):
     def __init__(self):
         super().__init__(17, ExceptionTypes.PERMANENT, "Arduino not connected")
+
+class BciSetupException(InternalException):
+    def __init__(self, message: str):
+        super().__init__(18, ExceptionTypes.PERMANENT, message)
+class LattePandaNotResponding(InternalException):
+    def __init__(self):
+        super().__init__(19, ExceptionTypes.PERMANENT, "LattePanda not responding")
+
+class LattePandaError(InternalException):
+    def __init__(self, message: str):
+        super().__init__(20, ExceptionTypes.PERMANENT, "Received error from LattePanda: " + message)
