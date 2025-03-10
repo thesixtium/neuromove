@@ -1,19 +1,40 @@
 import asyncio
+from time import sleep
+from os.path import join, dirname
+
+from src.RaspberryPi.InternalException import BciSetupException
+from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
 
 from src.RaspberryPi.BCI.bci_essentials_wrapper import Bessy, load_and_return_model
 
     
 async def main():
-    # model = joblib.load("test_save.pk1")
-    # model = None
-    model = load_and_return_model("models/save_on_exit_DANI4.pk1")
-
     messenger = SharedMemoryMessenger(False)
-    xdf_filepath ="c:/Users/danij/OneDrive/Documents/CurrentStudy/sub-LIAM/ses-S001/eeg/sub-LIAM_ses-S001_task-Default_run-001_eeg.xdf"
 
-    bessy = Bessy(online=True, xdf_filepath=xdf_filepath, messenger=messenger, model=model)
     print("DONE CONSTRUCTOR")
+    bessy = Bessy(messenger=messenger)
+
+    # wait for result from shared memory
+    bci_mem = SharedMemory(shem_name="bci_selection", size=20, create=False)
+    name = bci_mem.read_string()
+    while len(name) == 0:
+        print("waiting for name....")
+        sleep(0.5)
+        name = bci_mem.read_string()
+
+    model = None
+    if name != "N/A":
+        model_file_name = "save_on_exit_" + name + ".pk1"
+        model_path = join(dirname(__file__), "models", model_file_name)
+
+        try:
+            model = load_and_return_model(model_path)
+        except FileNotFoundError:
+            raise BciSetupException("Model does not exist")
+
+    bessy.set_model(model)
+    print("DONE SETTING MODEL")
         
     await bessy.run()
 

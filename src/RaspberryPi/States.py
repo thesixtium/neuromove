@@ -22,3 +22,8 @@ class MotorDirections(Enum):
     LEFT = b"a"
     RIGHT = b"d"
     STOP = b"x"
+
+class SetupStates(Enum):
+    SELECT_USER = 1
+    SELECT_POSITION = 2
+    TRAIN = 3
