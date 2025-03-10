@@ -51,8 +51,6 @@ def main():
                 state = next_state
 
                 if initialized:
-                    print(f"Eye Tracking: {eye_tracking_memory.read_string()}")
-
                     requested_next_state = requested_next_state_memory.read_requested_next_state()
                     if requested_next_state:
                         next_state = requested_next_state
@@ -84,7 +82,7 @@ def main():
                         print("Done")
 
                         print("Setting up Arduino Uno... ", end="")
-                        arduino_uno = ArduinoUno()
+                        # arduino_uno = ArduinoUno()
                         print("Done")
 
                         print("Setting up LiDAR... ", end="")
@@ -103,18 +101,16 @@ def main():
 
 
                 case States.SETUP:
-                    print("Setup")
-
+                    pass
 
                 case States.LOCAL:
-                    print("Local")
+                    print(f"Eye Tracking: {eye_tracking_memory.read_string()}")
                     print(local_driving_memory.read_local_driving())
                     arduino_uno.send_direction(local_driving_memory.read_local_driving())
                     time.sleep(0.25)
 
 
                 case States.DESTINATION:
-                    print("Destination")
 
                     destination_driving_state = destination_driving_state_memory.read_destination_driving_state()
                     match destination_driving_state:
@@ -142,7 +138,6 @@ def main():
 
 
                 case States.RECOVERY:
-                    print(f"Recovery")
 
                     # If is an error that we threw
                     if isinstance(current_exception, InternalException):

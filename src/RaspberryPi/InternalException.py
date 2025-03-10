@@ -98,3 +98,7 @@ class ArduinoNotConnected(InternalException):
 class EyeTrackingNoRet(InternalException):
     def __init__(self):
         super().__init__(19, ExceptionTypes.PERMANENT, "Eye Tracking did not receive a Ret Object")
+
+class InvalidDirection(InternalException):
+    def __init__(self):
+        super().__init__(20, ExceptionTypes.TEMPORARY, "Invalid direction")

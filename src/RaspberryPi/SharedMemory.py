@@ -28,6 +28,11 @@ class SharedMemory:
         self._check_size(encoded)
         self.memory.buf[:len(encoded)] = encoded
 
+    def write_enum(self, enum):
+        encoded = enum.value.encode()
+        self._check_size(encoded)
+        self.memory.buf[:len(encoded)] = encoded
+
     def write_np_array(self, array):
         encoded = str(array).encode()
         self._check_size(encoded)
