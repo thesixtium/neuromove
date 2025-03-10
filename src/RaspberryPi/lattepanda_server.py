@@ -42,6 +42,8 @@ def main():
                         sleep(1)
                     except socket.timeout:
                         raise LattePandaNotResponding()
+                    except ConnectionResetError:
+                        raise LattePandaError("LattePanda closed connection")
 
                 # print("Sending stop signal to client")
                 # client_socket.send('STOP'.encode("ascii"))
