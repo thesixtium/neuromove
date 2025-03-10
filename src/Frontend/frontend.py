@@ -11,6 +11,8 @@ from pylsl import StreamInfo, StreamOutlet
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.Frontend.style import *
 from src.Frontend.frontend_methods import *
+from src.Frontend.enums import *
+from src.RaspberryPi.States import SetupStates
 
 with open("Frontend/frontend.css") as f:
     st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
@@ -37,52 +39,87 @@ if "currently_training" not in st.session_state:
     st.session_state["currently_training"] = False
 if "waiting_for_bci_response" not in st.session_state:
     st.session_state["waiting_for_bci_response"] = False
+if "setup_substate" not in st.session_state:
+    st.session_state["setup_substate"] = SetupStates.SELECT_USER
+if "screen_position" not in st.session_state:
+    st.session_state["screen_position"] = ScreenPosition.CENTRE
 
 print(st.session_state["state"])
 
 match st.session_state["state"]:
     case States.SETUP:
-        # training sequence
-        col1, col2, col3= st.columns([5,1,1])
-        targets = ["↑", "←", "⯃", "→", "⇄"]
+        match st.session_state["setup_substate"]:
+            case SetupStates.SELECT_USER:
+                with stylable_container("input-header", css_styles="""
+                    .stText {
+                        font-size: 24px;
+                        font-weight: bold;  
+                        justify-content: start;                  
+                    }
+                """):
+                    st.text("Please enter the user's first and last name")
+               
+                name = st.text_input("", "", placeholder="First Name Last Name")
 
-        with col1:
-            with stylable_container("training_header", get_training_header_style()):
-                current_target = 0 if st.session_state["training_target"] < 0 else st.session_state["training_target"]
-                st.text(f"Target: {targets[current_target]}")
-                if current_target < len(targets) - 1:
-                    st.text(f"Next target: {targets[current_target + 1]}")
-                else:
-                    # placeholder to get rid of undesired text when it's not needed
-                    st.text("")
-        with col2:
-            if st.session_state["currently_training"] is False and st.session_state['training_target'] != -1:
-                st.text("Done!")
-            else:
-                # placeholder to get rid of undesired text when it's not needed
-                st.text("")
-        with col3:
-            button_label = "Start" if st.session_state["training_target"] < 0 else "Continue"
+                with stylable_container("name_button_container", css_styles="""
+                    .stButton {
+                        justify-content: start;                    
+                    }
+                """):
+                    st.button("# Submit", on_click=check_name, args=(name, ))  
+            case SetupStates.SELECT_POSITION:
+                with stylable_container("position_text", css_styles="""
+                    div {font-size: 30px;
+                    font-weight: bold;}
+                """):
+                    st.text("Which the area is most visible?")
 
-            if st.session_state["training_target"] < len(targets) - 1:
-                st.button(label=f"# {button_label}", on_click=start_training_next_target)
-            else:
-                st.button("# Go to Local", on_click=start)
+                def set_screen_position(position: ScreenPosition):
+                    st.session_state["screen_position"] = position
+                    st.session_state["setup_substate"] = SetupStates.TRAIN
 
-        local_driving_grid(training=True)
-        
-        if len(st.session_state["flash_sequence"]) > 0:
-            st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
-            time.sleep(0.1)
-            st.rerun()
-        elif st.session_state["currently_training"] is True:
-            st.session_state["currently_training"] = False
-            st.rerun()
+                with stylable_container("button-container", css_styles="""
+                .stHorizontalBlock {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                }
+                                        
+                .stVerticalBlock {
+                    width: 100vw;
+                }
+                """):
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.button("# Left", on_click=set_screen_position, args=(ScreenPosition.LEFT,))
+                    with col2:
+                        st.button("# Centre",  on_click=set_screen_position, args=(ScreenPosition.CENTRE,))
+                    with col3:
+                        st.button("# Right",  on_click=set_screen_position, args=(ScreenPosition.RIGHT,))
+
+                st.markdown(
+                    """
+                    <div class="screen-area-container">
+                        <div class="screen-area", id="left">Left</div>
+                        <div class="spacer"></div>
+                        <div class="screen-area", id="centre">Centre</div>
+                        <div class="spacer"></div>
+                        <div class="screen-area", id="right">Right</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            case SetupStates.TRAIN:
+                move_content()
+
+                # training sequence
+                training()
 
     case States.LOCAL:
+        move_content()
         local_driving_grid()
 
-        # TODO: Dani find a better way to check that a new result has been passed
         read_string = st.session_state['bci_selection_memory'].read_string()
         if len(read_string) > 0 and "[" in read_string:
             st.session_state["waiting_for_bci_response"] = False
@@ -100,6 +137,8 @@ match st.session_state["state"]:
                     direction_update("r")
                 case "[4]":
                     switch()
+                case _:
+                    print("Not confident enough to make a decision")
             
 
         if len(st.session_state["flash_sequence"]) > 0:
@@ -107,10 +146,8 @@ match st.session_state["state"]:
             time.sleep(0.1)
             st.rerun()
         elif st.session_state["waiting_for_bci_response"] == True:
-            with st.spinner("Waiting for BCI..."):
-                print("here....")
-                time.sleep(0.5)
-                st.rerun()
+            time.sleep(0.5)
+            st.rerun()
 
 
 
@@ -121,34 +158,37 @@ match st.session_state["state"]:
         origin = np.loadtxt('Frontend/origin.txt')
         number_of_neighbourhoods = neighbourhood_points.shape[0]
 
+        move_content()
+
         colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
         switch_value = BUTTON_VALUE
 
-        match st.session_state["map_sequence"][0]:
-            case "1":
-                colours = [BLACK, WHITE, GREEN, GREEN, GREEN]
-                switch_value = BUTTON_VALUE
-                send_marker(5, 1)
-            case "2":
-                colours = [BLACK, GREEN, WHITE, GREEN, GREEN]
-                switch_value = BUTTON_VALUE
-                send_marker(5, 2)
-            case "3":
-                colours = [BLACK, GREEN, GREEN, WHITE, GREEN]
-                switch_value = BUTTON_VALUE
-                send_marker(5, 3)
-            case "4":
-                colours = [BLACK, GREEN, GREEN, GREEN, WHITE]
-                switch_value = BUTTON_VALUE
-                send_marker(5, 4)
-            case "switch":
-                colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
-                switch_value = FLASH_VALUE
-                send_marker(5, 0)
-            case "Trial Started":      
-                send_special_marker("Trial Started")
-            case "Trial Ends":
-                send_special_marker("Trial Ends")  
+        if len(st.session_state["map_sequence"]) > 0:
+            match st.session_state["map_sequence"][0]:
+                case "1":
+                    colours = [BLACK, WHITE, GREEN, GREEN, GREEN]
+                    switch_value = BUTTON_VALUE
+                    send_marker(5, 1)
+                case "2":
+                    colours = [BLACK, GREEN, WHITE, GREEN, GREEN]
+                    switch_value = BUTTON_VALUE
+                    send_marker(5, 2)
+                case "3":
+                    colours = [BLACK, GREEN, GREEN, WHITE, GREEN]
+                    switch_value = BUTTON_VALUE
+                    send_marker(5, 3)
+                case "4":
+                    colours = [BLACK, GREEN, GREEN, GREEN, WHITE]
+                    switch_value = BUTTON_VALUE
+                    send_marker(5, 4)
+                case "switch":
+                    colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
+                    switch_value = FLASH_VALUE
+                    send_marker(5, 0)
+                case "Trial Started":      
+                    send_special_marker("Trial Started")
+                case "Trial Ends":
+                    send_special_marker("Trial Ends")  
 
         fig = plt.figure(figsize=(7, 5))
         fig.patch.set_visible(False)
@@ -157,16 +197,11 @@ match st.session_state["state"]:
         plt.gca().invert_yaxis()
         plt.axis('off')
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-        plt.scatter(origin[0], origin[1], color='red', marker='*')
+        plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
         buf = BytesIO()
         fig.savefig(buf, format="png")
         st.image(buf)
-
-        if len(st.session_state["map_sequence"]) > 1:
-            st.session_state["map_sequence"] = st.session_state["map_sequence"][1:]
-            time.sleep(0.1)
-            st.rerun()
 
         col1, col2 = st.columns([1, 1])
         with col1:
@@ -174,3 +209,33 @@ match st.session_state["state"]:
         with col2:
             with stylable_container("switch", css_styles=switch_value):
                 st.button("⇄", on_click=switch)
+    
+        read_string = st.session_state['bci_selection_memory'].read_string()
+        if len(read_string) > 0 and "[" in read_string:
+            st.session_state["waiting_for_bci_response"] = False
+            print(f"RECEIVED {read_string} FROM SHARED MEM")
+            st.session_state['bci_selection_memory'].write_string("   ")
+
+            match read_string:
+                case "[0]":
+                    destination_driving_update(target_region="0")
+                case "[1]":
+                    destination_driving_update(target_region="1")
+                case "[2]":
+                    destination_driving_update(target_region="2")
+                case "[3]":
+                    destination_driving_update(target_region="3")
+                case "[4]":
+                    switch()
+                case _:
+                    print("Not confident enough to make a decision")
+
+        if len(st.session_state["map_sequence"]) > 0:
+            st.session_state["map_sequence"] = st.session_state["map_sequence"][1:]
+            time.sleep(0.1)
+            st.rerun()
+        
+        elif st.session_state["waiting_for_bci_response"] == True:
+            time.sleep(0.5)
+            st.rerun()
+
