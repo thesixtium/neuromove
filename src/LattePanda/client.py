@@ -2,12 +2,12 @@ import socket
 import subprocess
 import threading
 import time
+from os.path import join
 
-RASPBERRY_PI_PORT = 12345
-DSI_PORT = "COM3"
-SERVER_IP_ADDR = "10.0.0.56"
-
-# TODO: figure out how to get not-real-error error from dsi2lsl
+RASPBERRY_PI_PORT = 12345   # port to connect to on the Raspberry Pi
+DSI_PORT = "COM3"   # COM port of the DSI7
+SERVER_IP_ADDR = "10.0.0.56"    # local IP address of the Raspberry Pi # TODO: figure out static addressing
+DOCUMENT_DIRECTORY = "c:/Users/danij/Documents/Capstone" # where the DSI Streamer and DSI2LSL folders are located
 
 def init_socket():
     # Create socket
@@ -19,7 +19,8 @@ def init_socket():
 def run_dsi_streamer():
     # DSI Streamer (for headset impedance checking)
     try:
-        subprocess.run(["c:/Users/danij/Documents/Capstone/DSI Streamer 1.08.119/DSI-Streamer-v.1.08.119.exe"], check = True)
+        dsi_streamer_path = join(DOCUMENT_DIRECTORY, "DSI Streamer 1.08.119", "DSI-Streamer-v.1.08.119.exe")
+        subprocess.run([dsi_streamer_path], check = True)
     except subprocess.CalledProcessError as e:
         print(f"DSI Streamer failed with error code {e.returncode}")
         raise Exception(f"Error running DSI Streamer: {e}")
@@ -28,7 +29,8 @@ def run_dsi_streamer():
 def run_dsi2lsl():
     # DSI2LSL
     try:
-        subprocess.run(["c:/Users/danij/Documents/Capstone/dsi2lsl-win/dsi2lsl.exe", f'port={DSI_PORT}', 'lsl-stream-name=DSI7', 'montage=F4,C4,S1,S3,C3,F3'], check=True)
+        dsi2lsl_path = join(DOCUMENT_DIRECTORY, "dsi2lsl", "dsi2lsl.exe")
+        subprocess.run([dsi2lsl_path, f'port={DSI_PORT}', 'lsl-stream-name=DSI7', 'montage=F4,C4,S1,S3,C3,F3'], check=True)
     except subprocess.CalledProcessError as e:
         print(f"DSI2LSL failed with error code {e.returncode}")
         raise Exception(f"Error running DSI2LSL: {e}")
