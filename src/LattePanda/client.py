@@ -4,8 +4,13 @@ import threading
 import time
 from os.path import join
 
-# NOTE: DSI Streamer and DSI2LSL must be present in the LattePanda folder
-# Ignored as the software is not open source, so each new machine must install to this directory
+'''
+NOTE: DSI Streamer and DSI2LSL must be present in the LattePanda folder
+Ignored as the software is not open source, so each new machine must install to this directory
+
+DSI Streamer must be v1.08.119 in a folder called DSI_Streamer
+DSI2LSL must be in a folder called dsi2lsl
+'''
 
 RASPBERRY_PI_PORT = 12345   # port to connect to on the Raspberry Pi
 DSI_PORT = "COM3"   # COM port of the DSI7
