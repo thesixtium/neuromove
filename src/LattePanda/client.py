@@ -1,4 +1,3 @@
-from re import sub
 import socket
 import subprocess
 import threading
