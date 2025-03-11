@@ -1,4 +1,4 @@
-from src.Frontend.setup import run_setup
+from src.Frontend.frontend_setup import run_setup
 from src.Frontend.frontend_methods import *
 
 from src.Frontend.state_local import state_local

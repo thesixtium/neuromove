@@ -8,10 +8,7 @@ from src.Frontend.frontend_methods import *
 
 def state_destination():
     data = np.loadtxt('Frontend/data.txt')
-    medoid_coordinates = np.loadtxt('Frontend/middles.txt')
-    neighbourhood_points = np.loadtxt('Frontend/neighbourhood_points.txt').reshape((4, 4, 2))
     origin = np.loadtxt('Frontend/origin.txt')
-    number_of_neighbourhoods = neighbourhood_points.shape[0]
 
     move_content()
 
