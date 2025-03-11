@@ -11,6 +11,7 @@ from sounddevice import default
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.States import MotorDirections
 from src.RaspberryPi.InternalException import InvalidDirection
+from src.Arduino.ArduinoUno import ArduinoUno
 
 # assumptions to begin with -> all neigborhood points do not directly touch walls
 
@@ -22,6 +23,10 @@ class Driving:
         self.t_rotaccel = 0.28  # in seconds, calculated w/ 1 estimated value
         self.t_rotconst = 0.77  # in seconds, calculated w/ 1 estimated value
         self.driving_direction_memory = SharedMemory("driving_direction", 10, create=False)
+        self.arduino_uno = ArduinoUno()
+
+    def close(self):
+        self.arduino_uno.close()
 
     def __quanternion_to_euler(self, gyroscope_data):
         rotation_quan = Rot.from_quat(gyroscope_data,
@@ -44,11 +49,11 @@ class Driving:
 
     def __drive_one_unit(self, time_to_drive, direction):
         while time.time() < time_to_drive:
-            self.driving_direction_memory.write_enum(direction)
+            self.arduino_uno.send_direction(direction)
 
         t_backward = time.time() + self.t_accel
         while time.time() < t_backward:
-            self.driving_direction_memory.write_enum(MotorDirections.STOP)
+            self.arduino_uno.send_direction(MotorDirections.STOP)
 
     def drive_one_unit(self, direction):
         match direction:

@@ -5,7 +5,7 @@
 import time
 import numpy as np
 
-from src.Arduino.ArduinoUno import ArduinoUno
+from src.RaspberryPi.Driving import Driving
 from src.RaspberryPi.InternalException import *
 from src.RaspberryPi.Socket import Socket
 
@@ -28,7 +28,6 @@ def main():
     state = States.START
     next_state = States.START
     current_exception = None
-    arduino_uno = None
     lidar = None
     eye_tracking_memory = None
     occupancy_grid_memory = None
@@ -41,6 +40,7 @@ def main():
     p300_socket = None
     initialized = False
     eye_tracking = None
+    driving = None
 
     while state != States.OFF:
         try:
@@ -81,10 +81,6 @@ def main():
                         frontend = RunUI()
                         print("Done")
 
-                        print("Setting up Arduino Uno... ", end="")
-                        # arduino_uno = ArduinoUno()
-                        print("Done")
-
                         print("Setting up LiDAR... ", end="")
                         # lidar = RunLiDAR()
                         print("Done")
@@ -92,6 +88,8 @@ def main():
                         print("Setting up Eye Tracking... ", end="")
                         eye_tracking = EyeTracking()
                         print("Done")
+
+                        driving = Driving()
 
                         print("Setting up initialized... ", end="")
                         initialized = True
@@ -104,11 +102,7 @@ def main():
                     pass
 
                 case States.LOCAL:
-                    print(f"Eye Tracking: {eye_tracking_memory.read_string()}")
-                    print(local_driving_memory.read_local_driving())
-                    arduino_uno.send_direction(local_driving_memory.read_local_driving())
-                    time.sleep(0.25)
-
+                    pass
 
                 case States.DESTINATION:
 
@@ -178,7 +172,7 @@ def main():
 
 
     if initialized:
-        arduino_uno.close()
+        driving.close()
         eye_tracking_memory.close()
         p300_socket.close()
         occupancy_grid_memory.close()
