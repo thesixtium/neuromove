@@ -1,3 +1,4 @@
+from re import sub
 import socket
 import subprocess
 import threading
@@ -6,6 +7,8 @@ import time
 RASPBERRY_PI_PORT = 12345
 DSI_PORT = "COM3"
 SERVER_IP_ADDR = "10.0.0.56"
+
+# TODO: figure out how to get not-real-error error from dsi2lsl
 
 def init_socket():
     # Create socket
@@ -16,13 +19,21 @@ def init_socket():
 
 def run_dsi_streamer():
     # DSI Streamer (for headset impedance checking)
-    subprocess.run(["c:/Users/danij/Documents/Capstone/DSI Streamer 1.08.119/DSI-Streamer-v.1.08.119.exe"])
+    try:
+        subprocess.run(["c:/Users/danij/Documents/Capstone/DSI Streamer 1.08.119/DSI-Streamer-v.1.08.119.exe"], check = True)
+    except subprocess.CalledProcessError as e:
+        print(f"DSI Streamer failed with error code {e.returncode}")
+        raise Exception(f"Error running DSI Streamer: {e}")
     print("DSI Streamer closed")
 
 def run_dsi2lsl():
     # DSI2LSL
-    subprocess.run(["c:/Users/danij/Documents/Capstone/dsi2lsl-win/dsi2lsl.exe", f'port={DSI_PORT}', 'lsl-stream-name=DSI7', 'montage=F4,C4,S1,S3,C3,F3'])
-
+    try:
+        subprocess.run(["c:/Users/danij/Documents/Capstone/dsi2lsl-win/dsi2lsl.exe", f'port={DSI_PORT}', 'lsl-stream-name=DSI7', 'montage=F4,C4,S1,S3,C3,F3'], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"DSI2LSL failed with error code {e.returncode}")
+        raise Exception(f"Error running DSI2LSL: {e}")
+    
 def send_ping(socket: socket.socket, stop_event: threading.Event):
     while not stop_event.set():
         try:
@@ -78,8 +89,6 @@ def main():
     print("shutting down...")
 
     socket.close()
-
-    
 
 if __name__ == "__main__":
     main()
