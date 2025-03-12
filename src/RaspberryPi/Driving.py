@@ -22,7 +22,7 @@ class Driving:
         self.t_const = 1.15  # in seconds, calculated
         self.t_rotaccel = 0.28  # in seconds, calculated w/ 1 estimated value
         self.t_rotconst = 0.77  # in seconds, calculated w/ 1 estimated value
-        self.driving_direction_memory = SharedMemory("driving_direction", 10, create=False)
+        self.driving_direction_memory = SharedMemory("driving_direction", 10, create=True)
         self.arduino_uno = ArduinoUno()
 
     def close(self):

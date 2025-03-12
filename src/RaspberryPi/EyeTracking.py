@@ -87,6 +87,7 @@ class EyeTracking:
                     averaged_features = np.mean(self.feature_window, axis=0).reshape(1, -1)
 
                     #predict threshold then predic using modified threshold
-                    y_pred_test = self.model.predict_proba(averaged_features)
-                    prediction = (y_pred_test[:, 1] >= self.prediction_threshold).astype(int)
+                    #y_pred_test = self.model.predict_proba(averaged_features)
+                    #prediction = (y_pred_test[:, 1] >= self.prediction_threshold).astype(int)
+                    prediction = 1
                     self.eye_tracking_memory.write_string(str(prediction))

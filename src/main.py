@@ -73,30 +73,14 @@ def main():
                         bci_selection_memory = SharedMemory(shem_name="bci_selection", size=20, create=True)
                         print("Done")
 
-                        print("Setting up socket... ", end="")
                         p300_socket = Socket(12347, 12348)
-                        print("Done")
-
-                        print("Setting up UI... ", end="")
                         frontend = RunUI()
-                        print("Done")
-
-                        print("Setting up LiDAR... ", end="")
-                        # lidar = RunLiDAR()
-                        print("Done")
-
-                        print("Setting up Eye Tracking... ", end="")
+                        lidar = RunLiDAR()
                         eye_tracking = EyeTracking()
-                        print("Done")
-
                         driving = Driving()
 
-                        print("Setting up initialized... ", end="")
                         initialized = True
-                        print("Done")
-
                         requested_next_state_memory.write_string("2")
-
 
                 case States.SETUP:
                     pass
