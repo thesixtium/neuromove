@@ -3,7 +3,7 @@ from lib.bci_essentials.bci_essentials.io.messenger import Messenger
 from src.RaspberryPi.SharedMemory import SharedMemory
 
 class SharedMemoryMessenger(Messenger):
-    def __init__(self, confidence: float, debug: bool=False):
+    def __init__(self, confidence: float =  0.7, debug: bool=False):
         super().__init__()
 
         self.__write_to_text = debug

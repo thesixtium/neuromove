@@ -94,3 +94,7 @@ class BciSetupException(InternalException):
 class ArduinoNotConnected(InternalException):
     def __init__(self):
         super().__init__(17, ExceptionTypes.PERMANENT, "Arduino not connected")
+
+class BessyFailedException(InternalException):
+    def __init__(self, message: str):
+        super().__init__(22, ExceptionTypes.PERMANENT, message)
