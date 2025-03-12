@@ -102,3 +102,15 @@ class EyeTrackingNoRet(InternalException):
 class InvalidDirection(InternalException):
     def __init__(self):
         super().__init__(20, ExceptionTypes.TEMPORARY, "Invalid direction")
+
+class BciSetupException(InternalException):
+    def __init__(self, message: str):
+        super().__init__(21, ExceptionTypes.PERMANENT, message)
+
+class LattePandaNotResponding(InternalException):
+    def __init__(self):
+        super().__init__(22, ExceptionTypes.PERMANENT, "LattePanda not responding")
+
+class LattePandaError(InternalException):
+    def __init__(self, message: str):
+        super().__init__(22, ExceptionTypes.PERMANENT, "Received error from LattePanda: " + message)
