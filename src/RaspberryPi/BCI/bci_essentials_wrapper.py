@@ -1,12 +1,13 @@
-import asyncio
 import enum
+import threading
+from time import sleep
 import joblib
 from sklearn.pipeline import Pipeline
-from os.path import join
+from os.path import join, dirname
 
 from src.RaspberryPi.BCI.input.xdf_input import OldXdfFormatInput
 from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
-from src.RaspberryPi.InternalException import BciSetupException
+from src.RaspberryPi.InternalException import BciSetupException, BessyFailedException
 
 from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
 from lib.bci_essentials.bci_essentials.io.messenger import Messenger
@@ -64,8 +65,10 @@ class Bessy:
         # constant for NeuroMove but set for easy editing later
         self.__paradigm_type = Paradigm.P300
 
-        self.__stop_event = asyncio.Event()
+        self.__stop_event = threading.Event()
         self.__pre_trained = False
+        self.__exception = None
+        self.__user_name = None
 
         match self.__paradigm_type:
             case Paradigm.P300:
@@ -112,8 +115,17 @@ class Bessy:
     def set_confidence(self, confidence: float):
         self.__messenger.set_confidence(new_confidence=confidence)
 
-    def set_model(self, model: Pipeline):
+    def set_model(self, model_name: str = None):
         # TODO: make sure this can't be called once processing starts somehow??
+
+        if model_name is not None:
+            self.__user_name = model_name
+        model_path = join("models", f"save_on_exit_{self.__user_name}.pk1")
+        
+        try:
+            model = load_and_return_model(model_path)
+        except FileNotFoundError:
+            raise BciSetupException("Model does not exist")
 
         # re-init bessy object
         self.__pre_trained = True
@@ -121,36 +133,51 @@ class Bessy:
 
         self.__bci_controller = self.__init_bessy()
 
-    async def run(self):
+    def set_username(self, user_name: str):
+        self.__user_name = user_name
+
+    def run(self):
         '''
         Start processing EEG and marker events.
 
         Runs continuously until told to stop
         '''
 
-        self.__task = asyncio.create_task(self.__bessy_step_loop())
+        self.__thread = threading.Thread(target=self.__bessy_step_loop)
+        self.__thread.start()
+
+        while self.__thread.is_alive():
+            if self.__exception:
+                print("RAISING EXCEPTION")
+                raise self.__exception
+            
+            sleep(0.1)
+            
 
 
-    async def __bessy_step_loop(self):
+    def __bessy_step_loop(self):
         while not self.__stop_event.is_set():
-            await self.__bessy_step()
+            try:
+                self.__bci_controller.step()
+            except Exception as e:
+                self.__shutdown()
+                self.__exception = BessyFailedException(f"Error in Bessy processing loop: {e}")
 
-            await asyncio.sleep(0.1)
+            sleep(0.1)
+
 
     def set_stop(self):
         '''
         Tell the processing loop to stop execution
         '''
-        if self.__task:
+        if self.__thread:
             self.__stop_event.set()
             self.__bci_controller = None
+            self.__thread.join()
 
-    async def __bessy_step(self):
-        self.__bci_controller.step()
-
-    def __del__(self):
+    def __shutdown(self):
         self.__stop_event.set()
-        self.save_model("save_on_exit.pk1")
+        self.save_model("save_on_exit_" + self.__user_name + ".pk1")
 
     # Aleks do your funky model compression stuff here please
     def save_model(self, save_name: str):

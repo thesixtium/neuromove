@@ -114,3 +114,7 @@ class LattePandaNotResponding(InternalException):
 class LattePandaError(InternalException):
     def __init__(self, message: str):
         super().__init__(22, ExceptionTypes.PERMANENT, "Received error from LattePanda: " + message)
+
+class BessyFailedException(InternalException):
+    def __init__(self, message: str):
+        super().__init__(23, ExceptionTypes.PERMANENT, message)
