@@ -173,8 +173,26 @@ def main():
                             next_state = States.OFF
                             print("P")
                         else:
-                            next_state = States.LOCAL
+                            # temporary error
+
+                            # errors that are not specifically handled here, since they all just go to local:
+                            # UnknownFSMState, UserError (not used anywhere), NotEnoughSpaceInRoom, PamFailedPointSelection, InvalidDirection
+
+                            next_state = States.LOCAL   # TODO: does this need to be written somewhere? shared memory?
                             print("T")
+
+                            if isinstance(current_exception, SensorDistanceAlert):
+                                print("Sensor distance alert")
+                                # TODO: stop moving, idk what function to call
+
+                            if isinstance(current_exception, CantLoadSocketJSON) or isinstance(current_exception, CantConvertSocketData):
+                                print(f"Socket error")
+                                # TODO: figure out if these even need to exist
+
+                            # destination driving exception that can stay in destination driving state
+                            if isinstance(current_exception, UnknownDestinationDrivingState) or isinstance(current_exception, InvalidValueToPointSelection):
+                                print("Unknown destination driving state")
+                                next_state = States.DESTINATION
 
                     # If is an error that we didn't throw
                     elif isinstance(current_exception, Exception):
