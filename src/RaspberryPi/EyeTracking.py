@@ -16,7 +16,7 @@ from src.RaspberryPi.InternalException import EyeTrackingNoRet
 class EyeTracking:
     def __init__(self):
         self.eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=False)
-        self.model = joblib.load(os.path.join("RaspberryPi", "EyeTrackingModel"))
+        self.model = joblib.load(os.path.join("RaspberryPi", "GeneralizedModel3Compress9"))
 
         # Create a FaceLandmarker object.
         base_options = python.BaseOptions(model_asset_path=os.path.join("RaspberryPi", "face_landmarker2.task"))
@@ -87,7 +87,8 @@ class EyeTracking:
                     averaged_features = np.mean(self.feature_window, axis=0).reshape(1, -1)
 
                     #predict threshold then predic using modified threshold
-                    #y_pred_test = self.model.predict_proba(averaged_features)
-                    #prediction = (y_pred_test[:, 1] >= self.prediction_threshold).astype(int)
-                    prediction = 1
+                    y_pred_test = self.model.predict_proba(averaged_features)
+                    prediction = (y_pred_test[:, 1] >= self.prediction_threshold).astype(int)
+                    #prediction = 1
                     self.eye_tracking_memory.write_string(str(prediction))
+                    print(f"Eye Tracking: {prediction}")
