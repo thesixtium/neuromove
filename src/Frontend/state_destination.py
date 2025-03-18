@@ -7,8 +7,10 @@ from src.Frontend.frontend_methods import *
 
 
 def state_destination():
-    data = np.loadtxt('Frontend/data.txt')
-    origin = np.loadtxt('Frontend/origin.txt')
+    # read from shared memory
+    point_selection_data = st.session_state['point_selection_memory'].read_np_array()
+    data = point_selection_data[0]
+    origin = point_selection_data[3]
 
     move_content()
 
