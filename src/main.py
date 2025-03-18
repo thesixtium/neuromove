@@ -5,45 +5,16 @@
 import time
 import numpy as np
 
-current_time = time.time()
-print("Importing src.Arduino.ArduinoUno... ", end="")
-from src.Arduino.ArduinoUno import ArduinoUno
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing RaspberryPi.InternalException... ", end="")
+from src.RaspberryPi.Driving import Driving
 from src.RaspberryPi.InternalException import *
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing RaspberryPi.Socket... ", end="")
 from src.RaspberryPi.Socket import Socket
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
 
-print("Importing RaspberryPi.SharedMemory... ", end="")
 from src.RaspberryPi.SharedMemory import SharedMemory
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing RaspberryPi.point_selection... ", end="")
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing RaspberryPi.States... ", end="")
 from src.RaspberryPi.States import States, DestinationDrivingStates
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing LiDAR.build.RunLiDAR... ", end="")
 from src.LiDAR.build.RunLiDAR import RunLiDAR
-print(f"done ({time.time() - current_time}s)")
-current_time = time.time()
-
-print("Importing Frontend.run... ", end="")
 from src.Frontend.run import RunUI
-print(f"done ({time.time() - current_time}s)")
+from src.RaspberryPi.EyeTracking import EyeTracking
 
 # Todo
 # - Wait until screen launched
@@ -57,7 +28,6 @@ def main():
     state = States.START
     next_state = States.START
     current_exception = None
-    arduino_uno = None
     lidar = None
     eye_tracking_memory = None
     occupancy_grid_memory = None
@@ -69,6 +39,8 @@ def main():
     frontend_origin_memory = None
     p300_socket = None
     initialized = False
+    eye_tracking = None
+    driving = None
 
     while state != States.OFF:
         try:
@@ -101,42 +73,22 @@ def main():
                         bci_selection_memory = SharedMemory(shem_name="bci_selection", size=20, create=True)
                         print("Done")
 
-                        print("Setting up socket... ", end="")
                         p300_socket = Socket(12347, 12348)
-                        print("Done")
-
-                        print("Setting up UI... ", end="")
                         frontend = RunUI()
-                        print("Done")
+                        lidar = RunLiDAR()
+                        eye_tracking = EyeTracking()
+                        driving = Driving()
 
-                        print("Setting up Arduino Uno... ", end="")
-                        arduino_uno = ArduinoUno()
-                        print("Done")
-
-                        print("Setting up LiDAR... ", end="")
-                        # lidar = RunLiDAR()
-                        print("Done")
-
-                        print("Setting up initialized... ", end="")
                         initialized = True
-                        print("Done")
-
                         requested_next_state_memory.write_string("2")
 
-
                 case States.SETUP:
-                    print("Setup")
-
+                    pass
 
                 case States.LOCAL:
-                    print("Local")
-                    print(local_driving_memory.read_local_driving())
-                    arduino_uno.send_direction(local_driving_memory.read_local_driving())
-                    time.sleep(0.25)
-
+                    pass
 
                 case States.DESTINATION:
-                    print("Destination")
 
                     destination_driving_state = destination_driving_state_memory.read_destination_driving_state()
                     match destination_driving_state:
@@ -164,7 +116,6 @@ def main():
 
 
                 case States.RECOVERY:
-                    print(f"Recovery")
 
                     # If is an error that we threw
                     if isinstance(current_exception, InternalException):
@@ -223,7 +174,7 @@ def main():
 
 
     if initialized:
-        arduino_uno.close()
+        driving.close()
         eye_tracking_memory.close()
         p300_socket.close()
         occupancy_grid_memory.close()
@@ -233,6 +184,7 @@ def main():
         destination_driving_state_memory.close()
         frontend_origin_memory.close()
         imu_memory.close()
+        eye_tracking.close()
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())

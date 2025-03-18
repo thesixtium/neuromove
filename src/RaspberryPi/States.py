@@ -16,6 +16,13 @@ class DestinationDrivingStates(Enum):
     TRANSLATE_TO_MOVEMENT = 4
     DRIVE = 5
 
+class MotorDirections(Enum):
+    FORWARD = b"w"
+    BACKWARD = b"s"
+    LEFT = b"a"
+    RIGHT = b"d"
+    STOP = b"x"
+
 class SetupStates(Enum):
     SELECT_USER = 1
     SELECT_POSITION = 2

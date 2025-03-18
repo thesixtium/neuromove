@@ -3,13 +3,7 @@ from enum import Enum
 import threading
 from src.RaspberryPi.InternalException import SensorDistanceAlert, CouldNotOpenPort, ArduinoNotConnected
 import pyduinocli
-
-class MotorDirections(Enum):
-    FORWARD = b"w"
-    BACKWARD = b"s"
-    LEFT = b"a"
-    RIGHT = b"d"
-    STOP = b"x"
+from src.RaspberryPi.States import MotorDirections
 
 class Sensors(Enum):
     ULTRASONIC_1 = 1

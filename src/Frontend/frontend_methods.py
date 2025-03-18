@@ -197,15 +197,7 @@ def check_name(name: str):
 
     model_path = join(dirname(__file__), "..", "..", "models", model_file_name)
 
-    if exists(model_path):
-        st.session_state["bci_selection_memory"].write_string(fmt_name)
-
-        print(f"File found. Wrote {fmt_name} to shared mem")
-    else:
-        st.session_state["bci_selection_memory"].write_string("N/A")
-
-        print("File not found. Wrote N/A to shared mem")
-
+    st.session_state["bci_selection_memory"].write_string(fmt_name)
     st.session_state["setup_substate"] = SetupStates.SELECT_POSITION
 
 def move_content():

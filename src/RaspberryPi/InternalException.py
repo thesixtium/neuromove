@@ -93,4 +93,28 @@ class BciSetupException(InternalException):
 
 class ArduinoNotConnected(InternalException):
     def __init__(self):
-        super().__init__(17, ExceptionTypes.PERMANENT, "Arduino not connected")
+        super().__init__(18, ExceptionTypes.PERMANENT, "Arduino not connected")
+
+class EyeTrackingNoRet(InternalException):
+    def __init__(self):
+        super().__init__(19, ExceptionTypes.PERMANENT, "Eye Tracking did not receive a Ret Object")
+
+class InvalidDirection(InternalException):
+    def __init__(self):
+        super().__init__(20, ExceptionTypes.TEMPORARY, "Invalid direction")
+
+class BciSetupException(InternalException):
+    def __init__(self, message: str):
+        super().__init__(21, ExceptionTypes.PERMANENT, message)
+
+class LattePandaNotResponding(InternalException):
+    def __init__(self):
+        super().__init__(22, ExceptionTypes.PERMANENT, "LattePanda not responding")
+
+class LattePandaError(InternalException):
+    def __init__(self, message: str):
+        super().__init__(22, ExceptionTypes.PERMANENT, "Received error from LattePanda: " + message)
+
+class BessyFailedException(InternalException):
+    def __init__(self, message: str):
+        super().__init__(23, ExceptionTypes.PERMANENT, message)
