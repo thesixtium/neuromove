@@ -1,6 +1,6 @@
 from random import shuffle
 from time import sleep
-from os.path import join, exists, dirname
+from os.path import join, dirname
 
 import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
