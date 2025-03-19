@@ -7,7 +7,6 @@ import numpy as np
 
 from src.RaspberryPi.Driving import Driving
 from src.RaspberryPi.InternalException import *
-from src.RaspberryPi.Socket import Socket
 
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
@@ -73,7 +72,6 @@ def main():
                         bci_selection_memory = SharedMemory(shem_name="bci_selection", size=20, create=True)
                         print("Done")
 
-                        p300_socket = Socket(12347, 12348)
                         frontend = RunUI()
                         lidar = RunLiDAR()
                         eye_tracking = EyeTracking()
@@ -135,10 +133,6 @@ def main():
                             if isinstance(current_exception, SensorDistanceAlert):
                                 print("Sensor distance alert")
                                 # TODO: stop moving, idk what function to call
-
-                            if isinstance(current_exception, CantLoadSocketJSON) or isinstance(current_exception, CantConvertSocketData):
-                                print(f"Socket error")
-                                # TODO: figure out if these even need to exist
 
                             # destination driving exception that can stay in destination driving state
                             if isinstance(current_exception, UnknownDestinationDrivingState) or isinstance(current_exception, InvalidValueToPointSelection):

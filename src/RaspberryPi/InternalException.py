@@ -51,18 +51,6 @@ class InvalidSocketExpectedType(InternalException):
     def __init__(self, expected_type):
         super().__init__(7, ExceptionTypes.PERMANENT, f"Socket class can't handle type {str(expected_type)}")
 
-class CantLoadSocketJSON(InternalException):
-    def __init__(self, message):
-        super().__init__(8, ExceptionTypes.TEMPORARY, f"Socket class can't decode JSON input: {message}")
-
-class CantConvertSocketData(InternalException):
-    def __init__(self, message, expected_type):
-        super().__init__(9, ExceptionTypes.TEMPORARY, f"Socket class can't turn {message} into a {str(expected_type)}")
-
-class UserError(InternalException):
-    def __init__(self, message: str):
-        super().__init__(10, ExceptionTypes.TEMPORARY, message)
-
 class DidNotCreateSharedMemory(InternalException):
     def __init__(self, memory: str):
         super().__init__(11, ExceptionTypes.PERMANENT, f"Didn't create shared memory for {memory}")
@@ -102,10 +90,6 @@ class EyeTrackingNoRet(InternalException):
 class InvalidDirection(InternalException):
     def __init__(self):
         super().__init__(20, ExceptionTypes.TEMPORARY, "Invalid direction")
-
-class BciSetupException(InternalException):
-    def __init__(self, message: str):
-        super().__init__(21, ExceptionTypes.PERMANENT, message)
 
 class LattePandaNotResponding(InternalException):
     def __init__(self):
