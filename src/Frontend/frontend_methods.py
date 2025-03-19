@@ -141,11 +141,14 @@ def local_driving_grid(training: bool = False):
         if training is True:
             st.button("# Placeholder", on_click=None)
         else:
-            st.button("# Run", on_click=give_local_sequence_list)
+            st.button("# Run", on_click=start_running)
 
     with col2:
         with stylable_container("switch_mode", css_styles=add_padding(switch_value, 11)):
             st.button("⇄", on_click=function_to_call)
+
+def start_running():
+    st.session_state["running"] = True
 
 def start():
     st.session_state["requested_next_state_memory"].write_string("3")
