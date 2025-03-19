@@ -86,6 +86,8 @@ def switch():
     else:
         st.session_state["state"] = States.LOCAL
         st.session_state["requested_next_state_memory"].write_string("3")
+    st.rerun()
+
 
 def local_driving_grid(training: bool = False):
     left_value = BUTTON_VALUE
