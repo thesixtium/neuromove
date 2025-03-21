@@ -8,5 +8,4 @@ class RunLiDAR:
         self.serial_read_thread.start()
 
     def start(self):
-        subprocess.run(["dir"])
-        subprocess.run(["dir && cmake .. && make -j2 && ../bin/aleks_lidar"])
+        subprocess.run(["cd src/LiDAR/build && cmake .. && make -j2 && ../bin/aleks_lidar"])
