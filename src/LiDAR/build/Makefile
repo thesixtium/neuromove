@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/Documents/neuromove/LiDAR/build/CMakeFiles /home/pi/Documents/neuromove/LiDAR/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/Documents/neuromove/src/LiDAR/build/CMakeFiles /home/pi/Documents/neuromove/src/LiDAR/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/Documents/neuromove/LiDAR/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/Documents/neuromove/src/LiDAR/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
