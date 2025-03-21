@@ -74,7 +74,7 @@ def main():
 
                         frontend = RunUI()
                         lidar = RunLiDAR()
-                        eye_tracking = EyeTracking()
+                        #eye_tracking = EyeTracking()
                         driving = Driving()
 
                         initialized = True
@@ -170,7 +170,7 @@ def main():
     if initialized:
         driving.close()
         eye_tracking_memory.close()
-        p300_socket.close()
+        #p300_socket.close()
         occupancy_grid_memory.close()
         point_selection_memory.close()
         local_driving_memory.close()
@@ -178,7 +178,7 @@ def main():
         destination_driving_state_memory.close()
         frontend_origin_memory.close()
         imu_memory.close()
-        eye_tracking.close()
+        #eye_tracking.close()
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())
