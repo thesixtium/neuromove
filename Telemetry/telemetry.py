@@ -12,6 +12,7 @@ if "df" not in st.session_state:
 
 read = st.session_state["ser"].read().decode()
 values = read.split(',')
+print(values)
 st.session_state["df"].loc[len(st.session_state["df"])] = values
 
 st.line_chart(st.session_state["df"], x=st.session_state["df"].index, y=st.session_state["df"]['Raspberry Pi Current'])
