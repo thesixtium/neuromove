@@ -118,3 +118,7 @@ class LattePandaError(InternalException):
 class BessyFailedException(InternalException):
     def __init__(self, message: str):
         super().__init__(23, ExceptionTypes.PERMANENT, message)
+
+class CannotReadSharedMemory(InternalException):
+    def __init__(self, message: str):
+        super().__init__(24, ExceptionTypes.TEMPORARY, message)

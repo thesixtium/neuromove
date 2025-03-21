@@ -17,6 +17,8 @@ def state_destination():
         data = np.loadtxt('Frontend/data.txt')
         origin = np.loadtxt('Frontend/origin.txt')
 
+        raise CannotReadSharedMemory("Cannot read map from memory")
+
     move_content()
 
     colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
