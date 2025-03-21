@@ -16,10 +16,10 @@ from src.RaspberryPi.InternalException import EyeTrackingNoRet
 class EyeTracking:
     def __init__(self):
         self.eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=False)
-        self.model = joblib.load(os.path.join("RaspberryPi", "GeneralizedModel3Compress9"))
+        self.model = joblib.load(os.path.join("src", "RaspberryPi", "GeneralizedModel3Compress9"))
 
         # Create a FaceLandmarker object.
-        base_options = python.BaseOptions(model_asset_path=os.path.join("RaspberryPi", "face_landmarker2.task"))
+        base_options = python.BaseOptions(model_asset_path=os.path.join("src", "RaspberryPi", "face_landmarker2.task"))
         options = vision.FaceLandmarkerOptions(base_options=base_options,
                                                output_face_blendshapes=True,
                                                output_facial_transformation_matrixes=True,
