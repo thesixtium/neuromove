@@ -66,7 +66,7 @@ def main():
                         requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=10, create=True)
                         occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
                         imu_memory = SharedMemory(shem_name="imu", size=284622, create=True)
-                        point_selection_memory = SharedMemory(shem_name="point_selection", size=1000, create=True)
+                        point_selection_memory = SharedMemory(shem_name="point_selection", size=100000, create=True)
                         destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=10, create=True)
                         frontend_origin_memory = SharedMemory(shem_name="frontend_origin_memory", size=100, create=True)
                         bci_selection_memory = SharedMemory(shem_name="bci_selection", size=20, create=True)

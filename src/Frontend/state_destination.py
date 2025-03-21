@@ -4,6 +4,7 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from src.Frontend.frontend_methods import *
+from src.RaspberryPi.InternalException import CannotReadSharedMemory
 
 
 def state_destination():
