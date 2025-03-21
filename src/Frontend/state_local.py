@@ -1,5 +1,9 @@
+from datetime import datetime, timedelta
+from math import e
+import threading
 import time
 from src.Frontend.frontend_methods import *
+from src.RaspberryPi.SharedMemory import SharedMemory
 
 def state_local():
     move_content()
@@ -10,6 +14,7 @@ def state_local():
         st.session_state["waiting_for_bci_response"] = False
         print(f"RECEIVED {read_string} FROM SHARED MEM")
         st.session_state['bci_selection_memory'].write_string("   ")
+        read_string = read_string.strip()
 
         match read_string:
             case "[0]":
@@ -32,3 +37,10 @@ def state_local():
     elif st.session_state["waiting_for_bci_response"] == True:
         time.sleep(0.5)
         st.rerun()
+    elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "0":
+        time.sleep(0.1)
+        st.rerun()
+    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "1" and st.session_state["running"] == True and st.session_state["state"] == States.LOCAL:
+        give_local_sequence_list()
+        st.rerun()
+    
