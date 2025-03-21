@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/pi/Documents/neuromove/LiDAR
+CMAKE_SOURCE_DIR = /home/pi/Documents/neuromove/src/LiDAR
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/pi/Documents/neuromove/LiDAR/build
+CMAKE_BINARY_DIR = /home/pi/Documents/neuromove/src/LiDAR/build
 
 #=============================================================================
 # Targets provided globally by CMake.
