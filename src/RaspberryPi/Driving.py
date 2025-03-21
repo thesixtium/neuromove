@@ -6,8 +6,6 @@ import time
 from scipy.spatial.transform import Rotation as Rot
 from collections import deque
 
-from sounddevice import default
-
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.States import MotorDirections
 from src.RaspberryPi.InternalException import InvalidDirection

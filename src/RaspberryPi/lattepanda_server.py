@@ -11,7 +11,7 @@ def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     # Use the actual IP address of the server device
-    host = "10.0.0.56"  # Replace with your server's IP address
+    host = "192.168.2.1"  # Replace with your server's IP address
     port = 12345
     
     # Bind to the port
