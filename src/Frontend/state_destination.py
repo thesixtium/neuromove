@@ -52,7 +52,7 @@ def state_destination():
             case "Trial Ends":
                 send_special_marker("Trial Ends")
 
-    fig = plt.figure(figsize=(7, 5))
+    fig = plt.figure(figsize=(6, 4))
     fig.patch.set_visible(False)
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
