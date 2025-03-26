@@ -1,3 +1,5 @@
+import time
+
 import serial
 from enum import Enum
 import threading
@@ -73,6 +75,7 @@ class ArduinoUno:
 
     def serial_write(self):
         while self.serial_writing_thread_running:
+            time.sleep(1)
             local_driving_direction = self.local_driving_memory.read_local_driving()
             self.send_direction(local_driving_direction)
 
