@@ -1,9 +1,14 @@
 from pylsl import StreamInfo, StreamOutlet
 
-from src.RaspberryPi.SharedMemory import SharedMemory
-from src.Frontend.frontend_methods import *
-from src.Frontend.enums import *
-from src.RaspberryPi.States import SetupStates
+#from src.RaspberryPi.SharedMemory import SharedMemory
+#from src.Frontend.frontend_methods import *
+#from src.Frontend.enums import *
+#from src.RaspberryPi.States import SetupStates
+
+from ..RaspberryPi.SharedMemory import SharedMemory
+from frontend_methods import *
+from enums import *
+from ..RaspberryPi.States import SetupStates
 
 def run_setup():
     with open("Frontend/frontend.css") as f:

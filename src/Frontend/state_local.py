@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from math import e
 import threading
 import time
-from src.Frontend.frontend_methods import *
-from src.RaspberryPi.SharedMemory import SharedMemory
+from ..Frontend.frontend_methods import *
+from ..RaspberryPi.SharedMemory import SharedMemory
 
 def state_local():
     move_content()

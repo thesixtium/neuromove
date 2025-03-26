@@ -1,6 +1,6 @@
-from src.Frontend.frontend_methods import *
-from src.Frontend.enums import *
-from src.RaspberryPi.States import SetupStates
+from frontend_methods import *
+from enums import *
+from ..RaspberryPi.States import SetupStates
 
 
 def state_setup():
