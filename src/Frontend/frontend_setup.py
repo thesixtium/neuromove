@@ -4,12 +4,12 @@ import sys
 import os
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
+sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 
 print(f"Script DIR: {SCRIPT_DIR}\nPath: {sys.path}")
 
-from RaspberryPi.SharedMemory import SharedMemory
-from RaspberryPi.States import SetupStates
+from src.RaspberryPi.SharedMemory import SharedMemory
+from src.RaspberryPi.States import SetupStates
 
 from frontend_methods import *
 from enums import *
