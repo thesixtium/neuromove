@@ -19,7 +19,7 @@ class Sensors(Enum):
 
 class ArduinoUno:
 
-    def __init__(self, port='/dev/ttyACM0', baudrate=9600, timeout=1, ultrasonic_minimum_distance=10):
+    def __init__(self, port='/dev/ttyACM0', baudrate=19200, timeout=1, ultrasonic_minimum_distance=10):
         try:
             arduino = pyduinocli.Arduino("./src/Arduino/arduino-cli")
             brds = arduino.board.list()
@@ -76,7 +76,7 @@ class ArduinoUno:
 
     def serial_write(self):
         while self.serial_writing_thread_running:
-            time.sleep(1)
+            time.sleep(0.5)
             local_driving_direction = self.local_driving_memory.read_local_driving()
             self.send_direction(local_driving_direction)
 

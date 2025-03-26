@@ -67,7 +67,7 @@ void readForceSensingResistor(){
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(19200);
 
   // Set FSR to read
   pinMode(fsrAnalogPin, INPUT);
