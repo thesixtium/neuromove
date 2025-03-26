@@ -54,11 +54,13 @@ class SharedMemory:
         if value:
             value = value.replace("[", "").replace("]", "")
             value_split = value.split("|")
+            data = []
             for values in value_split:
-                print(values)
-            
-            value_split = [[int(k) for k in list(filter(lambda j: j != '', i.split(" ")))] for i in value_split]
-            return np.array(value_split)
+                new_line = []
+                for number in values:
+                    new_line.append(int(number))
+                data.append(new_line)
+            return np.array(data)
         else:
             return []
 
