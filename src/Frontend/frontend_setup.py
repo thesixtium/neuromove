@@ -8,10 +8,11 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 print(f"Script DIR: {SCRIPT_DIR}\nPath: {sys.path}")
 
-from src.RaspberryPi.SharedMemory import SharedMemory
-from src.Frontend.frontend_methods import *
-from src.Frontend.enums import *
-from src.RaspberryPi.States import SetupStates
+from ..RaspberryPi.SharedMemory import SharedMemory
+from ..RaspberryPi.States import SetupStates
+
+from frontend_methods import *
+from enums import *
 
 def run_setup():
     with open("Frontend/frontend.css") as f:
