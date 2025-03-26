@@ -59,7 +59,8 @@ class SharedMemory:
                 new_line = []
                 for number in values:
                     new_line.append(int(number))
-                data.append(new_line)
+                if len(new_line) != 0:
+                    data.append(new_line)
             print(data)
             return np.array(data)
         else:
