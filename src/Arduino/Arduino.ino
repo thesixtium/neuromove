@@ -83,12 +83,12 @@ void setup() {
 
 void loop() {
   // Writing Sensor Data
-  readUltrasonics();
-  readForceSensingResistor();
+  //readUltrasonics();
+  //readForceSensingResistor();
 
   // Reading Motor Control
   driveMotors();
 
   // Loop Delay
-  delay(50);
+  //delay(50);
 }
