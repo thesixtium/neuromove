@@ -105,12 +105,15 @@ int main(){
     // Read Data
     std::cout << "\n\n\n\nTIME TO READ DATA!!!!!\n\n\n\n" << std::endl;
     while (true) {
+        std::cout << "While true ";
         result = lreader->runParse(); // You need to call this function at least 1500Hz
+        std::cout << "result ";
+
 
         switch (result) {
 
-
             case POINTCLOUD: {
+                std::cout << "Pointcloud" << std::endl;
                 cloud = lreader->getCloud();
                 pointCloudSize = cloud.points.size();
 
@@ -149,6 +152,7 @@ int main(){
 
 
             case IMU: {
+                std::cout << "IMU" << std::endl;
                 std::string values;
 
                 values += std::to_string( lreader->getIMU().quaternion[0] );
