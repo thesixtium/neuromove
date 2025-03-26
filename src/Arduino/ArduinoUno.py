@@ -24,10 +24,6 @@ class ArduinoUno:
             arduino = pyduinocli.Arduino("./src/Arduino/arduino-cli")
             brds = arduino.board.list()
 
-            print("\n\nA R D U I N O   S T U F F: ", end="\t")
-            print(f"\nBoards: {brds}")
-
-
             arduino.compile(fqbn="arduino:avr:uno", sketch="./src/Arduino/Arduino.ino")
 
             print("\n\nA R D U I N O   S T U F F: ", end="\t")
@@ -62,7 +58,6 @@ class ArduinoUno:
         self.serial_writing_thread.start()
 
     def send_direction(self, motor_direction: MotorDirections):
-        print(f"Send Direction: {motor_direction.value}")
         self.ser.write(motor_direction.value)
 
     def close(self):
@@ -76,14 +71,13 @@ class ArduinoUno:
 
     def serial_write(self):
         while self.serial_writing_thread_running:
-            time.sleep(0.5)
+            time.sleep(1)
             local_driving_direction = self.local_driving_memory.read_local_driving()
             self.send_direction(local_driving_direction)
 
     def serial_read(self):
         while self.serial_read_thread_running:
             read = self.ser.read()
-            print(f"Arduino Read: {read}")
             #if read != b'':
             #    sensor_type = read[0]
             #    sensor_number = read[1]
