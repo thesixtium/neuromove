@@ -18,21 +18,30 @@ class ArduinoUno:
 
     def __init__(self, port='/dev/ttyACM0', baudrate=9600, timeout=1, ultrasonic_minimum_distance=10):
         try:
-            print("\n\nA R D U I N O   S T U F F\n")
-            print("\nFlashing board")
             arduino = pyduinocli.Arduino("./src/Arduino/arduino-cli")
-            print(f"\nArduino: {arduino}")
             brds = arduino.board.list()
+
+            print("\n\nA R D U I N O   S T U F F: ", end="\t")
             print(f"\nBoards: {brds}")
 
             port = brds['result'][0]['port']['address']
+
+            print("\n\nA R D U I N O   S T U F F: ", end="\t")
             print(f"\nPort: {port}")
+
             fqbn = brds['result'][0]['matching_boards'][0]['fqbn']
+
+            print("\n\nA R D U I N O   S T U F F: ", end="\t")
             print(f"\nFQBN: {fqbn}")
 
             arduino.compile(fqbn=fqbn, sketch="./src/Arduino/Arduino.ino")
+
+            print("\n\nA R D U I N O   S T U F F: ", end="\t")
             print("UPLOADING")
+
             arduino.upload(fqbn=fqbn, sketch="./src/Arduino/Arduino.inoArduino", port=port)
+
+            print("\n\nA R D U I N O   S T U F F: ", end="\t")
             print("DONE UPLOADING")
         except Exception as e:
             print(e)
