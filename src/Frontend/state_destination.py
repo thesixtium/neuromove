@@ -15,8 +15,11 @@ from src.RaspberryPi.InternalException import CannotReadSharedMemory
 
 
 def state_destination():
-    point_selection_data = st.session_state['point_selection_memory'].read_np_array()
-    print(f"P O I N T   S E L E C T I O N: {point_selection_data}")
+    while True:
+        point_selection_data = st.session_state['point_selection_memory'].read_np_array()
+        print(f"P O I N T   S E L E C T I O N: {point_selection_data}")
+        if len(point_selection_data) != 0:
+            break
 
     data = point_selection_data[0]
     origin = point_selection_data[3]
