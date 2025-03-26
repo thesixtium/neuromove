@@ -41,10 +41,10 @@ void driveMotors(){
 }
 
 void readUltrasonics(){
-  pinMode(Trigger, OUTPUT);
-  digitalWrite(Trigger, HIGH);
+  pinMode(trigger, OUTPUT);
+  digitalWrite(trigger, HIGH);
   for (int i = 0; i < (sizeof(ultrasonicPinArray)/sizeof(int)); i++){
-    read_sensor( ultrasonicPinArray[i] );
+    //read_sensor( ultrasonicPinArray[i] );
 
     duration = pulseIn( ultrasonicPinArray[i], HIGH );
     distance = ( scaling_m * duration ) + scaling_b;
@@ -56,7 +56,7 @@ void readUltrasonics(){
   }
 
   delay(5);
-  digitalWrite(Trigger, LOW);
+  digitalWrite(trigger, LOW);
 }
 
 void readForceSensingResistor(){
