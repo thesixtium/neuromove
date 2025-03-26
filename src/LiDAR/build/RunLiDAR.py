@@ -11,6 +11,6 @@ class RunLiDAR:
         print("cmake:")
         subprocess.run(["cmake src/LiDAR/build"], shell=True)
         print("make:")
-        subprocess.run(["make src/LiDAR/bin -j2"], shell=True)
+        subprocess.run(["cd src/LiDAR/bin & make -j2"], shell=True)
         print("run:")
-        subprocess.run(["src/LiDAR/bin/aleks_lidar"], shell=True)
+        subprocess.run(["./src/LiDAR/bin/aleks_lidar"], shell=True)
