@@ -1,3 +1,6 @@
+import os
+print(f"Frontend: {os.listdir()}")
+
 from src.Frontend.frontend_setup import run_setup
 from src.Frontend.frontend_methods import *
 
