@@ -111,7 +111,6 @@ int main(){
         switch (result) {
 
             case POINTCLOUD: {
-                std::cout << "Pointcloud" << std::endl;
                 cloud = lreader->getCloud();
                 pointCloudSize = cloud.points.size();
 
@@ -142,6 +141,7 @@ int main(){
                     }
 
                     strncpy( (char *)addr_oc, values.data(), shm_size_oc );
+                    std::cout << "Pointcloud" << std::endl;
                 } else {
                     pointcloud_reads++;
                 }
