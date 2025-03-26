@@ -72,8 +72,9 @@ class ArduinoUno:
             raise SensorDistanceAlert(sensor.name)
 
     def serial_write(self):
-        local_driving_direction = self.local_driving_memory.read_local_driving()
-        print(f"Local Driving Direction = {local_driving_direction}")
+        while self.serial_writing_thread_running:
+            local_driving_direction = self.local_driving_memory.read_local_driving()
+            print(f"Local Driving Direction = {local_driving_direction}")
 
     def serial_read(self):
         while self.serial_read_thread_running:
