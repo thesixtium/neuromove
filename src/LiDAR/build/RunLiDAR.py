@@ -8,6 +8,8 @@ class RunLiDAR:
         self.serial_read_thread.start()
 
     def start(self):
+        print("L I D A R   T H I N G:  where are we")
+        subprocess.run(["ls"], shell=True)
         print("L I D A R   T H I N G:  cmake:")
         subprocess.run(["cmake src/LiDAR/build"], shell=True)
         print("L I D A R   T H I N G:  make:")
