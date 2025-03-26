@@ -41,7 +41,6 @@ class ArduinoUno:
         #self.ultrasonic_minimum_distance = ultrasonic_minimum_distance
 
         # Open serial port
-        #port='COM3'
         try:
             self.ser = serial.Serial(port, baudrate, timeout=timeout)
             self.ser.reset_input_buffer()
