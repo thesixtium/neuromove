@@ -8,8 +8,6 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 
-print(f"Script DIR: {SCRIPT_DIR}\nPath: {sys.path}")
-
 import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
 
