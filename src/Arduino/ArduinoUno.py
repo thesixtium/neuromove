@@ -4,6 +4,7 @@ import threading
 from src.RaspberryPi.InternalException import SensorDistanceAlert, CouldNotOpenPort, ArduinoNotConnected
 import pyduinocli
 from src.RaspberryPi.States import MotorDirections
+from src.RaspberryPi.SharedMemory import SharedMemory
 
 class Sensors(Enum):
     ULTRASONIC_1 = 1
@@ -52,21 +53,32 @@ class ArduinoUno:
         self.serial_read_thread = threading.Thread(target=self.serial_read)
         self.serial_read_thread.start()
 
+        # Start serial writing thread
+        self.local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
+        self.serial_writing_thread_running = True
+        self.serial_writing_thread = threading.Thread(target=self.serial_write)
+        self.serial_writing_thread.start()
+
     def send_direction(self, motor_direction: MotorDirections):
         self.ser.write(motor_direction.value)
 
     def close(self):
         self.serial_read_thread_running = False
+        self.serial_writing_thread_running = False
 
     def update(self, sensor: Sensors, value: int):
         self.sensor_values[sensor.value] = value
         if (sensor.value == 7 and value == 1) or (sensor.value != 7 and value <= self.ultrasonic_minimum_distance):
             raise SensorDistanceAlert(sensor.name)
 
+    def serial_write(self):
+        local_driving_direction = self.local_driving_memory.read_local_driving()
+        print(f"Local Driving Direction = {local_driving_direction}")
+
     def serial_read(self):
         while self.serial_read_thread_running:
             read = self.ser.read()
-            print(f"Arduino Read: {read}")
+            # print(f"Arduino Read: {read}")
             #if read != b'':
             #    sensor_type = read[0]
             #    sensor_number = read[1]
