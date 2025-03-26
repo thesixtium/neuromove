@@ -2,6 +2,14 @@ from random import shuffle
 from time import sleep
 from os.path import join, dirname
 
+import sys
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
+
+print(f"Script DIR: {SCRIPT_DIR}\nPath: {sys.path}")
+
 import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
 
@@ -9,7 +17,7 @@ from pylsl import local_clock
 
 from enums import ScreenPosition
 from style import *
-from ..RaspberryPi.States import SetupStates, States
+from src.RaspberryPi.States import SetupStates, States
 
 NUMBER_OF_TRAINING_CYCLES = 20
 NUMBER_OF_DECISION_CYCLES = 5

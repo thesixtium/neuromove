@@ -2,8 +2,15 @@ from datetime import datetime, timedelta
 from math import e
 import threading
 import time
-from ..Frontend.frontend_methods import *
-from ..RaspberryPi.SharedMemory import SharedMemory
+from frontend_methods import *
+import sys
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
+
+print(f"Script DIR: {SCRIPT_DIR}\nPath: {sys.path}")
+from src.RaspberryPi.SharedMemory import SharedMemory
 
 def state_local():
     move_content()

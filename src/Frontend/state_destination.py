@@ -4,7 +4,15 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from frontend_methods import *
-from ..RaspberryPi.InternalException import CannotReadSharedMemory
+
+import sys
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
+
+print(f"Script DIR: {SCRIPT_DIR}\nPath: {sys.path}")
+from src.RaspberryPi.InternalException import CannotReadSharedMemory
 
 
 def state_destination():
