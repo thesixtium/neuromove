@@ -16,7 +16,7 @@ from enums import *
 
 def run_setup():
     print(os.listdir())
-    with open("Frontend/frontend.css") as f:
+    with open("src/Frontend/frontend.css") as f:
         st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
 
     if "state" not in st.session_state:
