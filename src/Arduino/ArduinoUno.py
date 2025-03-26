@@ -23,16 +23,13 @@ class ArduinoUno:
         brds = arduino.board.list()
         print(f"\tBoards: {brds}")
 
-        #try:
-        #    port = brds['result'][0]['port']['address']
-        #    print(f"\tPort: {port}")
-        #    fqbn = brds['result'][0]['matching_boards'][0]['fqbn']
-        #    print(f"\tFQBN: {fqbn}")
-        #except:
-        #    raise ArduinoNotConnected()
+        port = brds['result'][0]['port']['address']
+        print(f"\tPort: {port}")
+        fqbn = brds['result'][0]['matching_boards'][0]['fqbn']
+        print(f"\tFQBN: {fqbn}")
 
-        #arduino.compile(fqbn=fqbn, sketch="Arduino")
-        #arduino.upload(fqbn=fqbn, sketch="Arduino", port=port)
+        arduino.compile(fqbn=fqbn, sketch="./src/Arduino/Arduino.ino")
+        arduino.upload(fqbn=fqbn, sketch="./src/Arduino/Arduino.inoArduino", port=port)
 
         #self.sensor_values = dict()
         #self.ultrasonic_minimum_distance = ultrasonic_minimum_distance

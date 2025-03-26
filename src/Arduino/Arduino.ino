@@ -90,5 +90,6 @@ void loop() {
   driveMotors();
 
   // Loop Delay
+  Serial.println("Aaaaaaaaaaaaaaleks")
   delay(50);
 }
