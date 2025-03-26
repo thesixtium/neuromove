@@ -4,7 +4,7 @@ from multiprocessing import shared_memory
 import numpy as np
 
 from src.RaspberryPi.InternalException import DidNotCreateSharedMemory, NotEnoughSharedMemory
-from src.Arduino.ArduinoUno import MotorDirections
+from src.RaspberryPi.States import MotorDirections
 from src.RaspberryPi.States import States, DestinationDrivingStates
 
 class SharedMemory:
