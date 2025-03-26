@@ -85,9 +85,9 @@ int main(){
     const char * shmem_name_oc = "occupancy_grid";
     int shmem_fd_oc = shm_open( shmem_name_oc, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
     if ( shmem_fd_oc == -1 ) { perror("shm_open"); return 1; }
-    std::cout << "Shared Memory segment opened with fd " << shmem_fd_oc << std::endl;
+    std::cout << "OC Shared Memory segment opened with fd " << shmem_fd_oc << std::endl;
     if ( ftruncate( shmem_fd_oc, shm_size_oc ) == -1 ) { perror( "ftruncate" ); return 1; }
-    std::cout << "Shared Memory segment resized to " << shm_size_oc << std::endl;
+    std::cout << "OC Shared Memory segment resized to " << shm_size_oc << std::endl;
     void * addr_oc = mmap( 0, shm_size_oc, PROT_WRITE, MAP_SHARED, shmem_fd_oc, 0 );
     if ( addr_oc == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
@@ -96,9 +96,9 @@ int main(){
     const char * shmem_name_imu = "imu";
     int shmem_fd_imu = shm_open( shmem_name_imu, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
     if ( shmem_fd_imu == -1 ) { perror("shm_open"); return 1; }
-    std::cout << "Shared Memory segment opened with fd " << shmem_fd_imu << std::endl;
+    std::cout << "IMU Shared Memory segment opened with fd " << shmem_fd_imu << std::endl;
     if ( ftruncate( shmem_fd_imu, shm_size_imu ) == -1 ) { perror( "ftruncate" ); return 1; }
-    std::cout << "Shared Memory segment resized to " << shm_size_imu << std::endl;
+    std::cout << "IMU Shared Memory segment resized to " << shm_size_imu << std::endl;
     void * addr_imu = mmap( 0, shm_size_imu, PROT_WRITE, MAP_SHARED, shmem_fd_imu, 0 );
     if ( addr_imu == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
