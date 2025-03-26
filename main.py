@@ -3,6 +3,7 @@
 #!/usr/bin/env python3
 
 import time
+import logging
 import numpy as np
 
 from src.RaspberryPi.Driving import Driving
@@ -36,7 +37,6 @@ def main():
     requested_next_state_memory = None
     destination_driving_state_memory = None
     frontend_origin_memory = None
-    p300_socket = None
     initialized = False
     eye_tracking = None
     driving = None
@@ -75,7 +75,7 @@ def main():
                         frontend = RunUI()
                         lidar = RunLiDAR()
                         #eye_tracking = EyeTracking()
-                        driving = Driving()
+                        # driving = Driving()
 
                         initialized = True
                         requested_next_state_memory.write_string("2")
@@ -168,7 +168,7 @@ def main():
 
 
     if initialized:
-        driving.close()
+        #driving.close()
         eye_tracking_memory.close()
         #p300_socket.close()
         occupancy_grid_memory.close()
