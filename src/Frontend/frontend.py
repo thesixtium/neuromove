@@ -1,12 +1,20 @@
 import os
 print(f"Frontend: {os.listdir()}")
 
-from src.Frontend.frontend_setup import run_setup
-from src.Frontend.frontend_methods import *
+#from src.Frontend.frontend_setup import run_setup
+#from src.Frontend.frontend_methods import *
 
-from src.Frontend.state_local import state_local
-from src.Frontend.state_setup import state_setup
-from src.Frontend.state_destination import state_destination
+#from src.Frontend.state_local import state_local
+#from src.Frontend.state_setup import state_setup
+#from src.Frontend.state_destination import state_destination
+
+
+from frontend_setup import run_setup
+from frontend_methods import *
+
+from state_local import state_local
+from state_setup import state_setup
+from state_destination import state_destination
 
 run_setup()
 
