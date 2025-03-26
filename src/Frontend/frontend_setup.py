@@ -64,7 +64,7 @@ def run_setup():
         st.session_state["eye_tracking_memory"] = SharedMemory(shem_name="eye_tracking", size=10, create=True)
 
     if "point_selection_memory" not in st.session_state:
-        st.session_state["point_selection_memory"] = SharedMemory(shem_name="point_selection", size=100000, create=True)
+        st.session_state["point_selection_memory"] = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
 
     if "running" not in st.session_state:
         st.session_state["running"] = False

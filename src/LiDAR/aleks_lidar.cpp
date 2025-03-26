@@ -102,8 +102,6 @@ int main(){
     void * addr_imu = mmap( 0, shm_size_imu, PROT_WRITE, MAP_SHARED, shmem_fd_imu, 0 );
     if ( addr_imu == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
-    // Read Data
-    std::cout << "\n\n\n\nTIME TO READ DATA!!!!!\n\n\n\n" << std::endl;
     while (true) {
         result = lreader->runParse(); // You need to call this function at least 1500Hz
 
@@ -141,7 +139,6 @@ int main(){
                     }
 
                     strncpy( (char *)addr_oc, values.data(), shm_size_oc );
-                    std::cout << "Pointcloud" << std::endl;
                 } else {
                     pointcloud_reads++;
                 }
