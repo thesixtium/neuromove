@@ -79,7 +79,7 @@ class ArduinoUno:
     def serial_read(self):
         while self.serial_read_thread_running:
             read = self.ser.read()
-            # print(f"Arduino Read: {read}")
+            print(f"Arduino Read: {read}")
             #if read != b'':
             #    sensor_type = read[0]
             #    sensor_number = read[1]
