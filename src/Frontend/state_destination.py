@@ -16,16 +16,16 @@ from src.RaspberryPi.InternalException import CannotReadSharedMemory
 
 def state_destination():
     # read from shared memory
-    try:
-        point_selection_data = st.session_state['point_selection_memory'].read_np_array()
-        data = point_selection_data[0]
-        origin = point_selection_data[3]
-    except:
-        # use default data
-        data = np.loadtxt('Frontend/data.txt')
-        origin = np.loadtxt('Frontend/origin.txt')
-
-        raise CannotReadSharedMemory("Cannot read map from memory")
+    # try:
+    point_selection_data = st.session_state['point_selection_memory'].read_np_array()
+    data = point_selection_data[0]
+    origin = point_selection_data[3]
+    # except:
+    #     # use default data
+    #     data = np.loadtxt('Frontend/data.txt')
+    #     origin = np.loadtxt('Frontend/origin.txt')
+    #
+    #     raise CannotReadSharedMemory("Cannot read map from memory")
 
     move_content()
 
