@@ -24,22 +24,13 @@ class ArduinoUno:
             print("\n\nA R D U I N O   S T U F F: ", end="\t")
             print(f"\nBoards: {brds}")
 
-            port = brds['result'][0]['port']['address']
 
-            print("\n\nA R D U I N O   S T U F F: ", end="\t")
-            print(f"\nPort: {port}")
-
-            fqbn = brds['result'][0]['matching_boards'][0]['fqbn']
-
-            print("\n\nA R D U I N O   S T U F F: ", end="\t")
-            print(f"\nFQBN: {fqbn}")
-
-            arduino.compile(fqbn=fqbn, sketch="./src/Arduino/Arduino.ino")
+            arduino.compile(fqbn="arduino:avr:uno", sketch="./src/Arduino/Arduino.ino")
 
             print("\n\nA R D U I N O   S T U F F: ", end="\t")
             print("UPLOADING")
 
-            arduino.upload(fqbn=fqbn, sketch="./src/Arduino/Arduino.inoArduino", port=port)
+            arduino.upload(fqbn="arduino:avr:uno", sketch="./src/Arduino/Arduino.ino", port=port)
 
             print("\n\nA R D U I N O   S T U F F: ", end="\t")
             print("DONE UPLOADING")
