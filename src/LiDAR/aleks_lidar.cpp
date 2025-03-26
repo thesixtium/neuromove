@@ -103,6 +103,7 @@ int main(){
     if ( addr_imu == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
     // Read Data
+    std::cout << "\n\n\n\nTIME TO READ DATA!!!!!\n\n\n\n" << std::endl;
     while (true) {
         result = lreader->runParse(); // You need to call this function at least 1500Hz
 
