@@ -62,6 +62,7 @@ class ArduinoUno:
         self.serial_writing_thread.start()
 
     def send_direction(self, motor_direction: MotorDirections):
+        print(f"Send Direction: {motor_direction.value}")
         self.ser.write(motor_direction.value)
 
     def close(self):
