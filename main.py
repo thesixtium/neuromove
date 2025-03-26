@@ -45,6 +45,7 @@ def main():
 
     def signal_handler(sig, frame):
         if initialized:
+            driving.close()
             eye_tracking_memory.close()
             # p300_socket.close()
             occupancy_grid_memory.close()
@@ -93,7 +94,7 @@ def main():
                         frontend = RunUI()
                         lidar = RunLiDAR()
                         #eye_tracking = EyeTracking()
-                        # driving = Driving()
+                        driving = Driving()
 
                         initialized = True
                         requested_next_state_memory.write_string("2")
@@ -186,7 +187,7 @@ def main():
 
 
     if initialized:
-        #driving.close()
+        driving.close()
         eye_tracking_memory.close()
         #p300_socket.close()
         occupancy_grid_memory.close()
