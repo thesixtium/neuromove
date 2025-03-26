@@ -1,10 +1,5 @@
 from pylsl import StreamInfo, StreamOutlet
 
-#from src.RaspberryPi.SharedMemory import SharedMemory
-#from src.Frontend.frontend_methods import *
-#from src.Frontend.enums import *
-#from src.RaspberryPi.States import SetupStates
-
 import sys
 import os
 
@@ -13,10 +8,10 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 print(f"Script DIR: {SCRIPT_DIR}\nPath: {sys.path}")
 
-from ..RaspberryPi.SharedMemory import SharedMemory
-from frontend_methods import *
-from enums import *
-from ..RaspberryPi.States import SetupStates
+from src.RaspberryPi.SharedMemory import SharedMemory
+from src.Frontend.frontend_methods import *
+from src.Frontend.enums import *
+from src.RaspberryPi.States import SetupStates
 
 def run_setup():
     with open("Frontend/frontend.css") as f:
