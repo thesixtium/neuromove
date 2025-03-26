@@ -17,11 +17,11 @@ class Sensors(Enum):
 class ArduinoUno:
 
     def __init__(self, port='/dev/ttyACM0', baudrate=9600, timeout=1, ultrasonic_minimum_distance=10):
-        #print("\nFlashing board")
-        #arduino = pyduinocli.Arduino("./arduino-cli")
-        #print(f"\tArduino: {arduino}")
-        #brds = arduino.board.list()
-        #print(f"\tBoards: {brds}")
+        print("\nFlashing board")
+        arduino = pyduinocli.Arduino("./arduino-cli")
+        print(f"\tArduino: {arduino}")
+        brds = arduino.board.list()
+        print(f"\tBoards: {brds}")
 
         #try:
         #    port = brds['result'][0]['port']['address']
