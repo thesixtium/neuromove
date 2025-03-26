@@ -8,12 +8,6 @@ import numpy as np
 import signal
 import sys
 
-def signal_handler(sig, frame):
-    print('You pressed Ctrl+C!')
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, signal_handler)
-
 from src.RaspberryPi.Driving import Driving
 from src.RaspberryPi.InternalException import *
 
@@ -48,6 +42,21 @@ def main():
     initialized = False
     eye_tracking = None
     driving = None
+
+    def signal_handler(sig, frame):
+        if initialized:
+            eye_tracking_memory.close()
+            # p300_socket.close()
+            occupancy_grid_memory.close()
+            point_selection_memory.close()
+            local_driving_memory.close()
+            requested_next_state_memory.close()
+            destination_driving_state_memory.close()
+            frontend_origin_memory.close()
+            imu_memory.close()
+        sys.exit(3001)
+
+    signal.signal(signal.SIGINT, signal_handler)
 
     while state != States.OFF:
         try:
