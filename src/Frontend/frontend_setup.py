@@ -13,7 +13,6 @@ from frontend_methods import *
 from enums import *
 
 def run_setup():
-    print(os.listdir())
     with open("src/Frontend/frontend.css") as f:
         st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
 
