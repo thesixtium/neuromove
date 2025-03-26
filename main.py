@@ -54,6 +54,7 @@ def main():
             destination_driving_state_memory.close()
             frontend_origin_memory.close()
             imu_memory.close()
+        print("Exited safely")
         sys.exit(3001)
 
     signal.signal(signal.SIGINT, signal_handler)
