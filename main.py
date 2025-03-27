@@ -38,6 +38,7 @@ def main():
     imu_memory = None
     requested_next_state_memory = None
     destination_driving_state_memory = None
+    directions_memory = None
     frontend_origin_memory = None
     initialized = False
     eye_tracking = None
@@ -83,6 +84,7 @@ def main():
                         eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=True)
                         local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
                         requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=10, create=True)
+                        directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
                         occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
                         imu_memory = SharedMemory(shem_name="imu", size=284622, create=True)
                         point_selection_memory = SharedMemory(shem_name="point_selection", size=100000, create=True)
@@ -93,7 +95,7 @@ def main():
 
                         frontend = RunUI()
                         lidar = RunLiDAR()
-                        #eye_tracking = EyeTracking()
+                        eye_tracking = EyeTracking()
                         driving = Driving()
 
                         initialized = True
@@ -191,8 +193,9 @@ def main():
         requested_next_state_memory.close()
         destination_driving_state_memory.close()
         frontend_origin_memory.close()
+        directions_memory.close()
         imu_memory.close()
-        #eye_tracking.close()
+        eye_tracking.close()
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())
