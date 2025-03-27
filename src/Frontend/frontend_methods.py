@@ -84,7 +84,11 @@ def direction_update(direction):
 
 def destination_driving_update(target_region, cropped_data, origin, point):
     # TODO: Implement
-    cropped_data[origin[0]][origin[1]] = 0
+    print("\n\n\n")
+    print(f"Origin: {origin}")
+    print(f"Point: {point}")
+    print(f"Data Size: {len(cropped_data)} x {len(cropped_data[0])}")
+
     st.session_state["cropped_data"] = cropped_data
     st.session_state["start_location"] = origin
     st.session_state["target_location"] = point
