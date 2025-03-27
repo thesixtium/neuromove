@@ -7,7 +7,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 
 from src.RaspberryPi.SharedMemory import SharedMemory
-from src.RaspberryPi.States import SetupStates
+from src.RaspberryPi.States import DestinationDrivingStates, SetupStates
 
 from frontend_methods import *
 from enums import *
@@ -68,3 +68,15 @@ def run_setup():
 
     if "running" not in st.session_state:
         st.session_state["running"] = False
+
+    if "destination_driving_state" not in st.session_state:
+        st.session_state["destination_driving_state"] = DestinationDrivingStates.IDLE
+
+    if "occupancy_grid" not in st.session_state:
+        st.session_state["occupancy_grid"] = None
+
+    if "neighbourhood_grid" not in st.session_state:
+        st.session_state["neighbourhood_grid"] = None
+    
+    if "origin" not in st.session_state:
+        st.session_state["origin"] = None
