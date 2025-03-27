@@ -61,7 +61,7 @@ logger.debug("Logging initialized")
 def occupancy_grid_to_points(
         input_data: str = None, 
         number_of_neighbourhoods: int = 4, number_of_points_per_neighbourhood: int = 4,
-        plot_result: bool = False, save_result_to_disk: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, tuple]:
+        plot_result: bool = False, save_result_to_disk: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, tuple]:
     '''
     Takes an occupancy grid with 0s as open spaces and 1s as obstacles and returns a list of points sorted into neighbourhoods.
 
@@ -124,6 +124,7 @@ def occupancy_grid_to_points(
 
     #NOTE: is it ok if we overwrite data?
     data, origin = find_room_size(data, origin)
+    cropped_data = data.copy()
 
     logger.debug(f"Trimmed data shape: {data.shape}. New origin:  {origin}")
 
@@ -192,7 +193,7 @@ def occupancy_grid_to_points(
         # np.savetxt('neighbourhood_points.txt', neighbourhood_points.flatten())
         np.savetxt('origin.txt', origin)
 
-    return data, medoid_coordinates, neighbourhood_points, origin 
+    return data, cropped_data, medoid_coordinates, neighbourhood_points, origin
 
 def format_data(raw_data: np.ndarray = None) -> Tuple[np.ndarray, tuple]:
     data = raw_data.T
