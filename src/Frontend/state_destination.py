@@ -89,7 +89,7 @@ def select_destination():
             case "Trial Ends":
                 send_special_marker("Trial Ends")
 
-    display_map(data, origin, colours)
+    display_map(data, origin, medoid_coordinates, colours)
 
     # TODO: GET RID OF THIS WHEN DONE DEBUGGING
     c1, c2, c3, c4 = st.columns(4)
@@ -154,7 +154,7 @@ def select_destination():
         give_map_sequence_list()
         st.rerun()
 
-def display_map(data, origin, colours):
+def display_map(data, origin, medoid_coordinates, colours):
     start_time = time.time()
     fig = plt.figure(figsize=(6, 4))
     fig.patch.set_visible(False)
@@ -165,6 +165,10 @@ def display_map(data, origin, colours):
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+    for medoid in medoid_coordinates:
+        plt.scatter(medoid[0], medoid[1], color='#ff0000', marker='*', s=[200])
+
     buf = BytesIO()
     fig.savefig(buf, format="png")
     st.image(buf)
