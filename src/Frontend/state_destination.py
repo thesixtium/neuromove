@@ -12,17 +12,22 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 
 from src.RaspberryPi.InternalException import CannotReadSharedMemory
+from src.RaspberryPi.point_selection import occupancy_grid_to_points
 
 
 def state_destination():
+    occupancy_grid = []
     while True:
-        point_selection_data = st.session_state['point_selection_memory'].read_np_array()
-        print(f"P O I N T   S E L E C T I O N: {point_selection_data}")
-        if len(point_selection_data) != 0:
+        occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
+        print(f"P O I N T   S E L E C T I O N: {occupancy_grid}")
+        if len(occupancy_grid) != 0:
             break
 
-    data = point_selection_data[0]
-    origin = point_selection_data[3]
+    # data = np.loadtxt('Frontend/data.txt')
+    # origin = np.loadtxt('Frontend/origin.txt')
+
+    origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
+    data = occupancy_grid_to_points(occupancy_grid, origin, plot_result=True)
 
     move_content()
 
