@@ -36,8 +36,8 @@ class ArduinoUno:
         except Exception as e:
             print(e)
             print(e.args)
-        #self.sensor_values = dict()
-        #self.ultrasonic_minimum_distance = ultrasonic_minimum_distance
+        self.sensor_values = dict()
+        self.ultrasonic_minimum_distance = ultrasonic_minimum_distance
 
         # Open serial port
         try:
@@ -67,6 +67,7 @@ class ArduinoUno:
     def update(self, sensor: Sensors, value: int):
         self.sensor_values[sensor.value] = value
         if (sensor.value == 7 and value == 1) or (sensor.value != 7 and value <= self.ultrasonic_minimum_distance):
+            print("\n\n\n\n\nPANIC\n\n\n\n\n")
             raise SensorDistanceAlert(sensor.name)
 
     def serial_write(self):
@@ -78,9 +79,9 @@ class ArduinoUno:
     def serial_read(self):
         while self.serial_read_thread_running:
             read = self.ser.read()
-            print(read)
 
             if read == b'S':
+                sensor_type = read.decode()
                 sensor_number = self.ser.read().decode()
                 value = ""
                 while True:
@@ -88,31 +89,24 @@ class ArduinoUno:
                     if read == "\r" or read == "\n":
                         break
                     value += read
-                
-                print(f"S{sensor_number}:\t{value}")
 
-            #if read != b'':
-            #    sensor_type = read[0]
-            #    sensor_number = read[1]
-            #    value = read[3]
+                print(f"{sensor_type}{sensor_number}:\t{value}")
 
-            #    print(f"Sensor {sensor_type} #{sensor_number}: {value}")
-
-            #    if sensor_type == "S":
-            #        match sensor_number:
-            #            case "1":
-            #                self.update(Sensors.ULTRASONIC_1, value)
-            #            case "2":
-            #                self.update(Sensors.ULTRASONIC_2, value)
-            #            case "3":
-            #                self.update(Sensors.ULTRASONIC_3, value)
-            #            case "4":
-            #                self.update(Sensors.ULTRASONIC_4, value)
-            #            case "5":
-            #                self.update(Sensors.ULTRASONIC_5, value)
-            #            case "6":
-            #                self.update(Sensors.ULTRASONIC_6, value)
-            #    elif sensor_type == "F":
-            #        self.update(Sensors.FORCE_SENSOR, value)
+                if sensor_type == "S":
+                    match sensor_number:
+                        case "1":
+                            self.update(Sensors.ULTRASONIC_1, value)
+                        case "2":
+                            self.update(Sensors.ULTRASONIC_2, value)
+                        case "3":
+                            self.update(Sensors.ULTRASONIC_3, value)
+                        case "4":
+                            self.update(Sensors.ULTRASONIC_4, value)
+                        case "5":
+                            self.update(Sensors.ULTRASONIC_5, value)
+                        case "6":
+                            self.update(Sensors.ULTRASONIC_6, value)
+                elif sensor_type == "F":
+                    self.update(Sensors.FORCE_SENSOR, value)
 
         self.ser.close()
