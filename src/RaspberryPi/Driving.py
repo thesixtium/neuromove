@@ -66,6 +66,7 @@ class Driving:
         t_backward = time.time() + self.t_accel
         while time.time() < t_backward:
             self.arduino_uno.send_direction(MotorDirections.STOP)
+        time.sleep(2)
 
     def drive_one_unit(self, direction):
         match direction:
