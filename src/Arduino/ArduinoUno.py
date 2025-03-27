@@ -89,6 +89,7 @@ class ArduinoUno:
                     if read == "\r" or read == "\n":
                         break
                     value += read
+                value = float(value)
 
                 print(f"{sensor_type}{sensor_number}:\t{value}")
 
