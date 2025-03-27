@@ -33,7 +33,6 @@ class Driving:
     def driving(self):
         while self.driving_thread_running:
             local_driving_direction = self.local_driving_memory.read_local_driving()
-            print(f"D R I V E: {local_driving_direction}")
             self.drive_one_unit(local_driving_direction)
 
 
@@ -61,10 +60,12 @@ class Driving:
 
     def __drive_one_unit(self, time_to_drive, direction):
         while time.time() < time_to_drive:
+            print("DIRECTION")
             self.arduino_uno.send_direction(direction)
 
         t_backward = time.time() + self.t_accel
         while time.time() < t_backward:
+            print("STOP")
             self.arduino_uno.send_direction(MotorDirections.STOP)
         time.sleep(2)
 
