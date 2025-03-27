@@ -85,7 +85,10 @@ def direction_update(direction):
 def destination_driving_update(target_region, cropped_data, origin, point):
     # TODO: Implement
     f = open("cropped_data.txt", "w")
-    f.write(str(cropped_data.tostring()))
+    for row in cropped_data:
+        for data in row:
+            f.write(str(data))
+        f.write("\n")
     f.close()
 
     f = open("origin.txt", "w")
