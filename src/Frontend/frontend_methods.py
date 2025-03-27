@@ -105,9 +105,15 @@ def destination_driving_update(target_region, cropped_data, origin, point):
         cropped_data[0][y] = -1
         cropped_data[len(cropped_data)-1][y] = -1
 
+    st.session_state["cropped_data"][origin_x+1][origin_y+1] = 0
+    st.session_state["cropped_data"][origin_x+1][origin_y] = 0
+    st.session_state["cropped_data"][origin_x+1][origin_y-1] = 0
+    st.session_state["cropped_data"][origin_x][origin_y+1] = 0
     st.session_state["cropped_data"][origin_x][origin_y] = 0
-    for line in st.session_state["cropped_data"]:
-        print(line)
+    st.session_state["cropped_data"][origin_x][origin_y-1] = 0
+    st.session_state["cropped_data"][origin_x-1][origin_y+1] = 0
+    st.session_state["cropped_data"][origin_x-1][origin_y] = 0
+    st.session_state["cropped_data"][origin_x-1][origin_y-1] = 0
 
     plt.imshow(st.session_state["cropped_data"])
     plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
@@ -115,7 +121,6 @@ def destination_driving_update(target_region, cropped_data, origin, point):
     plt.gca().invert_yaxis()
     plt.savefig("plot.png")
 
-    input()
     st.session_state["path"] = get_full_path(jps(st.session_state["cropped_data"], origin_x, origin_y, point[0], point[1]))
     print(f'D E S T   D R I V I N G: {st.session_state["path"]}')
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
