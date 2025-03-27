@@ -53,7 +53,7 @@ def state_destination():
     move_content()
     print("move_content:\t%s" % (time.time() - start_time))
 
-    colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
+    colours = [BLACK, GREEN, REAL_PURPLE, PINK, ORANGE]
     switch_value = BUTTON_VALUE
 
     if len(st.session_state["map_sequence"]) > 0:
@@ -97,6 +97,21 @@ def state_destination():
     fig.savefig(buf, format="png")
     st.image(buf)
     print("plot image:\t%s" % (time.time() - start_time))
+
+    # TODO: GET RID OF THIS WHEN DONE DEBUGGING
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        with stylable_container("c1", make_value(GREEN, BLACK, BLACK)):
+            st.button("# 0", on_click=destination_driving_update(target_region="0"))
+    with c2:
+        with stylable_container("c2", make_value(REAL_PURPLE, BLACK, BLACK)):
+            st.button("# 1", on_click=destination_driving_update(target_region="1"))
+    with c3:
+        with stylable_container("c3", make_value(PINK, BLACK, BLACK)):
+            st.button("# 2", on_click=destination_driving_update(target_region="2"))
+    with c4:
+        with stylable_container("c4", make_value(ORANGE, BLACK, BLACK)):
+            st.button("# 3", on_click=destination_driving_update(target_region="3"))
 
     col1, col2 = st.columns([1, 1])
     with col1:

@@ -8,6 +8,10 @@ GREEN = "#206A00"
 OTHER = "#0F24FF"
 DARK_TEXT = "#00061A"
 
+PINK = "#ed7ece"
+ORANGE = "#d49624"
+REAL_PURPLE = "#62278c"
+
 def make_value(background, color, border):
     return "button { background-color: " + background + "; color: " + color + "; border-color: " + border + "; }"
 
