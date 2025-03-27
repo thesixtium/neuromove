@@ -27,7 +27,7 @@ def state_destination():
     # origin = np.loadtxt('Frontend/origin.txt')
 
     origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
-    data = occupancy_grid_to_points(occupancy_grid, origin, plot_result=True)
+    data = occupancy_grid_to_points(occupancy_grid, plot_result=True)
 
     move_content()
 
