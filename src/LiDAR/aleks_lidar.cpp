@@ -21,8 +21,8 @@ std::string port_name = "/dev/ttyUSB0";
 // Constants - Occupancy Grid
 int z1 = 1; // meters
 int LiDAR_radius_cm = 4000;
-int resolution = 20;
-int NEEDED_POINTCLOUDS_READ = 5;
+int resolution = 30;
+int NEEDED_POINTCLOUDS_READ = 10;
 
 int point_cloud_to_grid(int resolution, float pc){
   return static_cast<int>(round((pc*100) / resolution));
