@@ -80,8 +80,6 @@ class ArduinoUno:
                     value += read
                 value = float(value)
 
-                print(f"{sensor_type}{sensor_number}:\t{value}")
-
                 if sensor_type == "S":
                     match sensor_number:
                         case "1":

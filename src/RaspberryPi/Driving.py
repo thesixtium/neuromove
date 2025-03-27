@@ -33,6 +33,7 @@ class Driving:
     def driving(self):
         while self.driving_thread_running:
             local_driving_direction = self.local_driving_memory.read_local_driving()
+            print(f"D R I V E: {local_driving_direction}")
             self.drive_one_unit(local_driving_direction)
 
 
