@@ -12,7 +12,7 @@ import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
 
 from pylsl import local_clock
-
+import matplotlib.pyplot as plt
 from enums import ScreenPosition
 from style import *
 from src.RaspberryPi.States import DestinationDrivingStates, SetupStates, States
@@ -107,6 +107,12 @@ def destination_driving_update(target_region, cropped_data, origin, point):
 
     st.session_state["cropped_data"][origin_x][origin_y] = 0
     print(st.session_state["cropped_data"])
+
+    plt.imshow(st.session_state["cropped_data"])
+    plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
+    plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
+
+    input()
     st.session_state["path"] = get_full_path(jps(st.session_state["cropped_data"], origin_x, origin_y, point[0], point[1]))
     print(f'D E S T   D R I V I N G: {st.session_state["path"]}')
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
