@@ -64,6 +64,7 @@ def state_destination():
     fig = plt.figure(figsize=(6, 4))
     fig.patch.set_visible(False)
     colourmap = ListedColormap(colours)
+    print(f"D A T A:\n{data}")
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
     plt.axis('off')
