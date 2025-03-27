@@ -11,42 +11,38 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 
-from src.RaspberryPi.InternalException import CannotReadSharedMemory
+from src.RaspberryPi.InternalException import CannotReadSharedMemory, UnknownDestinationDrivingState
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
 
 
 def state_destination():
-    occupancy_grid = []
-    while True:
-        occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
-        if len(occupancy_grid) != 0:
-            break
+    match st.session_state["destination_driving_state"]:
+        case DestinationDrivingStates.MAP_ROOM:
+            occupancy_grid = []
+            while True:
+                occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
+                if len(occupancy_grid) != 0:
+                    st.session_state["occupancy_grid"] = occupancy_grid
+                    st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
+                    break
+            # st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
+            st.rerun()
+        case DestinationDrivingStates.SELECT_DESTINATION:
+            select_destination()
+        case DestinationDrivingStates.TRANSLATE_TO_MOVEMENT:
+            st.text("something ig")
+        case _:
+            raise UnknownDestinationDrivingState(st.session_state["destination_driving_state"])
 
+def select_destination():
     # data = np.loadtxt('Frontend/data.txt')
     # origin = np.loadtxt('Frontend/origin.txt')
 
     start_time = time.time()
-    np.savetxt("raw_occupancy_grid.txt", occupancy_grid)
+    np.savetxt("raw_occupancy_grid.txt", st.session_state["occupancy_grid"])
 
-    data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(occupancy_grid, plot_result=True)
+    data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True)
     np.savetxt("after_occupancy_grid_to_points.txt", data)
-    # f = open("occupancy_grid_to_points.txt", "w")
-    # f.write("occupancy_grid\n")
-    # f.write(str(occupancy_grid))
-    # f.write("\n")
-    # f.write("data\n")
-    # f.write(str(data))
-    # f.write("\n")
-    # f.write("medoid_coordinates\n")
-    # f.write(str(medoid_coordinates))
-    # f.write("\n")
-    # f.write("neighbourhood_points\n")
-    # f.write(str(neighbourhood_points))
-    # f.write("\n")
-    # f.write("origin\n")
-    # f.write(str(origin))
-    # f.write("\n")
-    # f.close()
     print("occupancy_grid_to_points:\t%s" % (time.time() - start_time))
 
     start_time = time.time()
@@ -83,35 +79,22 @@ def state_destination():
             case "Trial Ends":
                 send_special_marker("Trial Ends")
 
-    start_time = time.time()
-    fig = plt.figure(figsize=(6, 4))
-    fig.patch.set_visible(False)
-    colourmap = ListedColormap(colours)
-    plt.imshow(data, cmap=colourmap, interpolation='nearest')
-    plt.gca().invert_yaxis()
-    plt.axis('off')
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    buf = BytesIO()
-    fig.savefig(buf, format="png")
-    st.image(buf)
-    print("plot image:\t%s" % (time.time() - start_time))
+    display_map(data, origin, colours)
 
     # TODO: GET RID OF THIS WHEN DONE DEBUGGING
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         with stylable_container("c1", make_value(GREEN, BLACK, BLACK)):
-            st.button("# 0", on_click=destination_driving_update(target_region="0"))
+            st.button("# 0", on_click=destination_driving_update, args=("0"))
     with c2:
         with stylable_container("c2", make_value(REAL_PURPLE, BLACK, BLACK)):
-            st.button("# 1", on_click=destination_driving_update(target_region="1"))
+            st.button("# 1", on_click=destination_driving_update, args=("1"))
     with c3:
         with stylable_container("c3", make_value(PINK, BLACK, BLACK)):
-            st.button("# 2", on_click=destination_driving_update(target_region="2"))
+            st.button("# 2", on_click=destination_driving_update, args=("2"))
     with c4:
         with stylable_container("c4", make_value(ORANGE, BLACK, BLACK)):
-            st.button("# 3", on_click=destination_driving_update(target_region="3"))
+            st.button("# 3", on_click=destination_driving_update, args=("3"))
 
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -157,3 +140,19 @@ def state_destination():
     elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "1" and st.session_state["running"] == True and st.session_state["state"] == States.DESTINATION:
         give_map_sequence_list()
         st.rerun()
+
+def display_map(data, origin, colours):
+    start_time = time.time()
+    fig = plt.figure(figsize=(6, 4))
+    fig.patch.set_visible(False)
+    colourmap = ListedColormap(colours)
+    plt.imshow(data, cmap=colourmap, interpolation='nearest')
+    plt.gca().invert_yaxis()
+    plt.axis('off')
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    buf = BytesIO()
+    fig.savefig(buf, format="png")
+    st.image(buf)
+    print("plot image:\t%s" % (time.time() - start_time))

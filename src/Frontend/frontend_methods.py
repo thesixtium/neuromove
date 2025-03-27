@@ -15,7 +15,7 @@ from pylsl import local_clock
 
 from enums import ScreenPosition
 from style import *
-from src.RaspberryPi.States import SetupStates, States
+from src.RaspberryPi.States import DestinationDrivingStates, SetupStates, States
 
 NUMBER_OF_TRAINING_CYCLES = 1
 NUMBER_OF_DECISION_CYCLES = 5
@@ -85,12 +85,16 @@ def destination_driving_update(target_region):
     # TODO: Implement
     print(f"Destination selected {target_region}, doing nothing right now")
 
+    st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
+
 def switch():
     if st.session_state["state"] == States.LOCAL:
         st.session_state["state"] = States.DESTINATION
+        st.session_state["destination_driving_state"] = DestinationDrivingStates.MAP_ROOM
         st.session_state["requested_next_state_memory"].write_string("4")
     else:
         st.session_state["state"] = States.LOCAL
+        st.session_state["destination_driving_state"] = DestinationDrivingStates.IDLE
         st.session_state["requested_next_state_memory"].write_string("3")
     st.rerun()
 
