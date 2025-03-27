@@ -94,8 +94,8 @@ def destination_driving_update(target_region, cropped_data, origin, point):
     st.session_state["target_location"] = point
     print(f"Destination selected {target_region} with center {point}, doing nothing right now")
 
-    origin_x = min(origin[0], len(cropped_data)-2)
-    origin_y = min(origin[1], len(cropped_data[0])-2)
+    origin_x = min(origin[0], len(cropped_data)-3)
+    origin_y = min(origin[1], len(cropped_data[0])-3)
 
     for x in range(len(cropped_data)):
         cropped_data[x][0] = -1
