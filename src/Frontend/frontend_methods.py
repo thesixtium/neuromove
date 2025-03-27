@@ -82,75 +82,72 @@ def give_map_sequence_list(total_list_appends: int = NUMBER_OF_DECISION_CYCLES):
 def direction_update(direction):
     st.session_state["local_driving_memory"].write_string(direction)
 
-def destination_driving_update(target_region, cropped_data, origin, point):
-    # TODO: Implement
-    f = open("cropped_data.txt", "w")
-    for row in cropped_data:
-        for data in row:
-            f.write(str(data))
-            f.write(",")
-        f.write("\n")
-    f.close()
+def jps_wrapped(cropped_data, origin, point, display=False):
+    ### B A C K   T O   B I N A R Y ###
+    OBSTACLE = 1
+    FREE = 0
+    for i in range(len(cropped_data)):
+        for j in range(len(cropped_data[0])):
+            if cropped_data[i][j] == -1:
+                cropped_data[i][j] = OBSTACLE
+            else:
+                cropped_data[i][j] = FREE
 
-    f = open("origin.txt", "w")
-    f.write(str(origin))
-    f.close()
-
-    f = open("point.txt", "w")
-    f.write(str(point))
-    f.close()
-
-    print("\n\n")
-    print(f"Origin: {origin}")
-    print(f"Point: {point}")
-    print(f"Data Size: {len(cropped_data)} x {len(cropped_data[0])}")
-
-    st.session_state["cropped_data"] = cropped_data
-    st.session_state["start_location"] = origin
-    st.session_state["target_location"] = point
-    print(f"Destination selected {target_region} with center {point}, doing nothing right now")
-
-    origin_x = min(origin[0], len(cropped_data)-3)
-    origin_y = min(origin[1], len(cropped_data[0])-3)
-
+    ### A D D   B O R D E R ###
     for x in range(len(cropped_data)):
-        cropped_data[x][0] = -1
-        cropped_data[x][len(cropped_data[0])-1] = -1
+        cropped_data[x][0] = OBSTACLE
+        cropped_data[x][len(cropped_data[0])-1] = OBSTACLE
 
     for y in range(len(cropped_data[0])):
-        cropped_data[0][y] = -1
-        cropped_data[len(cropped_data)-1][y] = -1
+        cropped_data[0][y] = OBSTACLE
+        cropped_data[len(cropped_data)-1][y] = OBSTACLE
 
-    st.session_state["cropped_data"][origin_x+1][origin_y+1] = 0
-    st.session_state["cropped_data"][origin_x+1][origin_y] = 0
-    st.session_state["cropped_data"][origin_x+1][origin_y-1] = 0
-    st.session_state["cropped_data"][origin_x][origin_y+1] = 0
-    st.session_state["cropped_data"][origin_x][origin_y] = 0
-    st.session_state["cropped_data"][origin_x][origin_y-1] = 0
-    st.session_state["cropped_data"][origin_x-1][origin_y+1] = 0
-    st.session_state["cropped_data"][origin_x-1][origin_y] = 0
-    st.session_state["cropped_data"][origin_x-1][origin_y-1] = 0
+    ### C L E A R   O R I G I N ###
+    origin_x = min(origin[0], len(cropped_data[0])-3)
+    origin_y = min(origin[1], len(cropped_data)-3)
+    cropped_data[origin_y+1][origin_x+1] = FREE
+    cropped_data[origin_y+1][origin_x] = FREE
+    cropped_data[origin_y+1][origin_x-1] = FREE
+    cropped_data[origin_y][origin_x+1] = FREE
+    cropped_data[origin_y][origin_x] = FREE
+    cropped_data[origin_y][origin_x-1] = FREE
+    cropped_data[origin_y-1][origin_x+1] = FREE
+    cropped_data[origin_y-1][origin_x] = FREE
+    cropped_data[origin_y-1][origin_x-1] = FREE
 
-    for i in st.session_state["cropped_data"]:
-        for j in i:
-            print(j, end="")
-        print()
+    ### C L E A R   P O I N T ###
+    cropped_data[point[1]+1][point[0]+1] = FREE
+    cropped_data[point[1]+1][point[0]] = FREE
+    cropped_data[point[1]+1][point[0]-1] = FREE
+    cropped_data[point[1]][point[0]+1] = FREE
+    cropped_data[point[1]][point[0]] = FREE
+    cropped_data[point[1]][point[0]-1] = FREE
+    cropped_data[point[1]-1][point[0]+1] = FREE
+    cropped_data[point[1]-1][point[0]] = FREE
+    cropped_data[point[1]-1][point[0]-1] = FREE
 
-    for i in range(len(st.session_state["cropped_data"])):
-        for j in range(len(st.session_state["cropped_data"][0])):
-            if st.session_state["cropped_data"][i][j] == -1:
-                st.session_state["cropped_data"][i][j] = 1
-            else:
-                st.session_state["cropped_data"][i][j] = 0
 
-    plt.imshow(st.session_state["cropped_data"])
-    plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
-    plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
-    plt.gca().invert_yaxis()
-    plt.savefig("plot.png")
+    ### P A T H ###
+    flipped_path = get_full_path(jps(cropped_data, origin_y, origin_x, point[1], point[0]))
+    path = []
+    for path_point in flipped_path:
+        path.append((path_point[1], path_point[0]))
 
-    st.session_state["path"] = get_full_path(jps(st.session_state["cropped_data"], origin_x, origin_y, point[0], point[1]))
-    print(f'D E S T   D R I V I N G: {st.session_state["path"]}')
+    if display:
+        fig = plt.figure(figsize=(6, 4))
+        fig.patch.set_visible(False)
+        plt.imshow(cropped_data)
+        plt.plot(*zip(*path))
+        plt.gca().invert_yaxis()
+        plt.axis('off')
+        plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
+        plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
+        plt.savefig("6_path.png")
+
+    return path
+
+def destination_driving_update(target_region, cropped_data, origin, point):
+    st.session_state["path"] = jps_wrapped(cropped_data, origin, point)
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
 
 def switch():
