@@ -468,6 +468,9 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
                 if j > max_x:
                     max_x = j
 
+    # limit to only stuff in front of chair
+    min_y = max(min_y, origin[1])
+
     # bottom left & top right corners
     top_right = (max_x, max_y)
     bottom_left = (min_x, min_y)  
