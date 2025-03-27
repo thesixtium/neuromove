@@ -30,7 +30,7 @@ def state_destination():
         case DestinationDrivingStates.SELECT_DESTINATION:
             select_destination()
         case DestinationDrivingStates.TRANSLATE_TO_MOVEMENT:
-            display_map(st.session_state["neighbourhood_grid"], st.session_state["origin"], [BLACK, GREEN, REAL_PURPLE, PINK, ORANGE])
+            display_path(st.session_state["cropped_data"], st.session_state["origin"], st.session_state["path"])
             st.button("# back to select", on_click=back_to_select)
         case _:
             raise UnknownDestinationDrivingState(st.session_state["destination_driving_state"])
@@ -47,7 +47,7 @@ def select_destination():
     start_time = time.time()
     np.savetxt("raw_occupancy_grid.txt", st.session_state["occupancy_grid"])
 
-    data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True)
+    data, cropped_data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True)
 
     st.session_state["neighbourhood_grid"] = data
     st.session_state["origin"] = origin
@@ -95,16 +95,16 @@ def select_destination():
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         with stylable_container("c1", make_value(GREEN, BLACK, BLACK)):
-            st.button("# 0", on_click=destination_driving_update, args=("0", medoid_coordinates[0]))
+            st.button("# 0", on_click=destination_driving_update, args=("0", cropped_data, origin, medoid_coordinates[0]))
     with c2:
         with stylable_container("c2", make_value(REAL_PURPLE, BLACK, BLACK)):
-            st.button("# 1", on_click=destination_driving_update, args=("1", medoid_coordinates[1]))
+            st.button("# 1", on_click=destination_driving_update, args=("1", cropped_data, origin, medoid_coordinates[1]))
     with c3:
         with stylable_container("c3", make_value(PINK, BLACK, BLACK)):
-            st.button("# 2", on_click=destination_driving_update, args=("2", medoid_coordinates[2]))
+            st.button("# 2", on_click=destination_driving_update, args=("2", cropped_data, origin, medoid_coordinates[2]))
     with c4:
         with stylable_container("c4", make_value(ORANGE, BLACK, BLACK)):
-            st.button("# 3", on_click=destination_driving_update, args=("3", medoid_coordinates[3]))
+            st.button("# 3", on_click=destination_driving_update, args=("3", cropped_data, origin, medoid_coordinates[3]))
 
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -166,3 +166,19 @@ def display_map(data, origin, colours):
     fig.savefig(buf, format="png")
     st.image(buf)
     print("plot image:\t%s" % (time.time() - start_time))
+
+def display_path(data, origin, path):
+    fig = plt.figure(figsize=(6, 4))
+    fig.patch.set_visible(False)
+    plt.imshow(data)
+    plt.plot(*zip(*path))
+    plt.gca().invert_yaxis()
+    plt.axis('off')
+
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+    buf = BytesIO()
+    fig.savefig(buf, format="png")
+    st.image(buf)

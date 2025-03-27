@@ -16,6 +16,7 @@ from pylsl import local_clock
 from enums import ScreenPosition
 from style import *
 from src.RaspberryPi.States import DestinationDrivingStates, SetupStates, States
+from src.RaspberryPi.jps import *
 
 NUMBER_OF_TRAINING_CYCLES = 1
 NUMBER_OF_DECISION_CYCLES = 5
@@ -81,10 +82,15 @@ def give_map_sequence_list(total_list_appends: int = NUMBER_OF_DECISION_CYCLES):
 def direction_update(direction):
     st.session_state["local_driving_memory"].write_string(direction)
 
-def destination_driving_update(target_region, point):
+def destination_driving_update(target_region, cropped_data, origin, point):
     # TODO: Implement
+    st.session_state["cropped_data"] = cropped_data
+    #st.session_state["start_location"] = origin
+    #st.session_state["target_location"] = point
     print(f"Destination selected {target_region} with center {point}, doing nothing right now")
 
+    st.session_state["path"] = jps(cropped_data, origin[0], origin[1], point[0], point[1])
+    print(f'D E S T   D R I V I N G: {st.session_state["path"]}')
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
 
 def switch():
