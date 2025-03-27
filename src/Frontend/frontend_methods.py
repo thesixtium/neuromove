@@ -326,6 +326,8 @@ def move_content():
             css_pos = "center"
         case ScreenPosition.RIGHT:
             css_pos = "right"
+        case _:
+            css_pos = "center"
     st.markdown("""<style>
     .stMain {
         display: flex;
