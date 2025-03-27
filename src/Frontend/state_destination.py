@@ -93,6 +93,9 @@ def select_destination():
 
     # TODO: GET RID OF THIS WHEN DONE DEBUGGING
     c1, c2, c3, c4 = st.columns(4)
+    print()
+    for coord in medoid_coordinates:
+        print(coord)
     with c1:
         with stylable_container("c1", make_value(GREEN, BLACK, BLACK)):
             st.button("# 0", on_click=destination_driving_update, args=("0", cropped_data, origin, medoid_coordinates[0]))
