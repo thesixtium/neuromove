@@ -11,7 +11,9 @@ page_background = '''
 <style>
 [data-testid="stAppViewContainer"] {
 background-color: #667FAD;
-back
+}
+[data-testid="stHeader"] {
+background-color: #667FAD;
 }
 </style>
 '''
