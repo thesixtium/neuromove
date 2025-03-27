@@ -51,12 +51,6 @@ class ArduinoUno:
         self.serial_read_thread = threading.Thread(target=self.serial_read)
         self.serial_read_thread.start()
 
-        # Start serial writing thread
-        self.local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
-        self.serial_writing_thread_running = True
-        self.serial_writing_thread = threading.Thread(target=self.serial_write)
-        self.serial_writing_thread.start()
-
     def send_direction(self, motor_direction: MotorDirections):
         self.ser.write(motor_direction.value)
 
@@ -70,11 +64,6 @@ class ArduinoUno:
             print("\n\n\n\n\nPANIC\n\n\n\n\n")
             raise SensorDistanceAlert(sensor.name)
 
-    def serial_write(self):
-        while self.serial_writing_thread_running:
-            time.sleep(1)
-            local_driving_direction = self.local_driving_memory.read_local_driving()
-            self.send_direction(local_driving_direction)
 
     def serial_read(self):
         while self.serial_read_thread_running:

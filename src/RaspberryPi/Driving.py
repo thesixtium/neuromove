@@ -1,3 +1,5 @@
+import threading
+
 import numpy as np
 import pandas as pd
 import scipy
@@ -22,6 +24,17 @@ class Driving:
         self.t_rotconst = 0.77  # in seconds, calculated w/ 1 estimated value
         self.driving_direction_memory = SharedMemory("driving_direction", 10, create=True)
         self.arduino_uno = ArduinoUno()
+
+        self.local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
+        self.driving_thread_running = True
+        self.driving_thread = threading.Thread(target=self.driving)
+        self.driving_thread.start()
+
+    def driving(self):
+        while self.driving_thread_running:
+            local_driving_direction = self.local_driving_memory.read_local_driving()
+            self.drive_one_unit(local_driving_direction)
+
 
     def close(self):
         self.arduino_uno.close()
