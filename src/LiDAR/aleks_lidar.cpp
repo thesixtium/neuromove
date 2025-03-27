@@ -139,7 +139,6 @@ int main(){
                     }
 
                     strncpy( (char *)addr_oc, values.data(), shm_size_oc );
-                    std::cout << "Pointcloud Pushed" << std::endl;
                     pointcloud_reads = 0;
                 } else {
                     pointcloud_reads++;

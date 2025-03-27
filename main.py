@@ -13,7 +13,7 @@ from src.RaspberryPi.InternalException import *
 
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.point_selection import occupancy_grid_to_points
-from src.RaspberryPi.States import States, DestinationDrivingStates
+from src.RaspberryPi.States import States, DestinationDrivingStates, MotorDirections
 from src.LiDAR.build.RunLiDAR import RunLiDAR
 from src.Frontend.run import RunUI
 from src.RaspberryPi.EyeTracking import EyeTracking
@@ -151,6 +151,8 @@ def main():
 
                             if isinstance(current_exception, SensorDistanceAlert):
                                 print("Sensor distance alert")
+                                driving.drive_one_unit(MotorDirections.STOP)
+                                next_state = States.OFF
                                 # TODO: stop moving, idk what function to call
 
                             # destination driving exception that can stay in destination driving state

@@ -36,8 +36,8 @@ class ArduinoUno:
         except Exception as e:
             print(e)
             print(e.args)
-        #self.sensor_values = dict()
-        #self.ultrasonic_minimum_distance = ultrasonic_minimum_distance
+        self.sensor_values = dict()
+        self.ultrasonic_minimum_distance = ultrasonic_minimum_distance
 
         # Open serial port
         try:
@@ -51,12 +51,6 @@ class ArduinoUno:
         self.serial_read_thread = threading.Thread(target=self.serial_read)
         self.serial_read_thread.start()
 
-        # Start serial writing thread
-        self.local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
-        self.serial_writing_thread_running = True
-        self.serial_writing_thread = threading.Thread(target=self.serial_write)
-        self.serial_writing_thread.start()
-
     def send_direction(self, motor_direction: MotorDirections):
         self.ser.write(motor_direction.value)
 
@@ -67,39 +61,40 @@ class ArduinoUno:
     def update(self, sensor: Sensors, value: int):
         self.sensor_values[sensor.value] = value
         if (sensor.value == 7 and value == 1) or (sensor.value != 7 and value <= self.ultrasonic_minimum_distance):
+            print("\n\n\n\n\nPANIC\n\n\n\n\n")
             raise SensorDistanceAlert(sensor.name)
 
-    def serial_write(self):
-        while self.serial_writing_thread_running:
-            time.sleep(1)
-            local_driving_direction = self.local_driving_memory.read_local_driving()
-            self.send_direction(local_driving_direction)
 
     def serial_read(self):
         while self.serial_read_thread_running:
             read = self.ser.read()
-            #if read != b'':
-            #    sensor_type = read[0]
-            #    sensor_number = read[1]
-            #    value = read[3]
 
-            #    print(f"Sensor {sensor_type} #{sensor_number}: {value}")
+            if read == b'S':
+                sensor_type = read.decode()
+                sensor_number = self.ser.read().decode()
+                value = ""
+                while True:
+                    read = self.ser.read().decode()
+                    if read == "\r" or read == "\n":
+                        break
+                    value += read
+                value = float(value)
 
-            #    if sensor_type == "S":
-            #        match sensor_number:
-            #            case "1":
-            #                self.update(Sensors.ULTRASONIC_1, value)
-            #            case "2":
-            #                self.update(Sensors.ULTRASONIC_2, value)
-            #            case "3":
-            #                self.update(Sensors.ULTRASONIC_3, value)
-            #            case "4":
-            #                self.update(Sensors.ULTRASONIC_4, value)
-            #            case "5":
-            #                self.update(Sensors.ULTRASONIC_5, value)
-            #            case "6":
-            #                self.update(Sensors.ULTRASONIC_6, value)
-            #    elif sensor_type == "F":
-            #        self.update(Sensors.FORCE_SENSOR, value)
+                if sensor_type == "S":
+                    match sensor_number:
+                        case "1":
+                            self.update(Sensors.ULTRASONIC_1, value)
+                        case "2":
+                            self.update(Sensors.ULTRASONIC_2, value)
+                        case "3":
+                            self.update(Sensors.ULTRASONIC_3, value)
+                        case "4":
+                            self.update(Sensors.ULTRASONIC_4, value)
+                        case "5":
+                            self.update(Sensors.ULTRASONIC_5, value)
+                        case "6":
+                            self.update(Sensors.ULTRASONIC_6, value)
+                elif sensor_type == "F":
+                    self.update(Sensors.FORCE_SENSOR, value)
 
         self.ser.close()

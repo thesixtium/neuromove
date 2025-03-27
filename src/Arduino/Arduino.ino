@@ -49,10 +49,9 @@ void readUltrasonics(){
     duration = pulseIn( ultrasonicPinArray[i], HIGH );
     distance = ( scaling_m * duration ) + scaling_b;
 
-    //Serial.print( "S" );
-    //Serial.print( ultrasonicPinArray[i] - ultrasonicPinArray[0] );
-    //Serial.print( ":" );
-    //Serial.println( distance );
+    Serial.print( "S" );
+    Serial.print( ultrasonicPinArray[i] - ultrasonicPinArray[0] );
+    Serial.println( distance );
   }
 
   delay(5);
@@ -61,8 +60,8 @@ void readUltrasonics(){
 
 void readForceSensingResistor(){
   fsrReading = analogRead( fsrAnalogPin );
-  //Serial.print( "F1:" );
-  //Serial.println( fsrReading );
+  Serial.print( "F1" );
+  Serial.println( fsrReading );
 }
 
 void setup() {
@@ -81,10 +80,15 @@ void setup() {
   stopMotors();
 }
 
+int loops = 0;
 void loop() {
-  // Writing Sensor Data
-  //readUltrasonics();
-  //readForceSensingResistor();
+  if (loops==0){
+    // Writing Sensor Data
+    readUltrasonics();
+    readForceSensingResistor();
+  }
+  loops = (loops + 1) % 25;
+
 
   // Reading Motor Control
   driveMotors();
