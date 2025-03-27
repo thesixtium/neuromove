@@ -111,7 +111,7 @@ def destination_driving_update(target_region, cropped_data, origin, point):
     plt.imshow(st.session_state["cropped_data"])
     plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
     plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
-    plt.show()
+    plt.savefig("plot.png")
 
     input()
     st.session_state["path"] = get_full_path(jps(st.session_state["cropped_data"], origin_x, origin_y, point[0], point[1]))
