@@ -26,6 +26,7 @@ class Driving:
         self.arduino_uno = ArduinoUno()
 
         self.local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
+        self.directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
         self.driving_thread_running = True
         self.driving_thread = threading.Thread(target=self.driving)
         self.driving_thread.start()
@@ -33,7 +34,30 @@ class Driving:
     def driving(self):
         while self.driving_thread_running:
             local_driving_direction = self.local_driving_memory.read_local_driving()
-            self.drive_one_unit(local_driving_direction)
+            destination_driving = self.directions_memory.read_string()
+
+            if destination_driving != "":
+                print("\n\nDESTINATION DRIVE TIME\n")
+                while destination_driving != "":
+                    print(f"\t{destination_driving}")
+                    next_direction = destination_driving[0]
+                    if len(destination_driving) > 1:
+                        destination_driving = destination_driving[1:]
+                    else:
+                        destination_driving = ""
+
+                    match next_direction:
+                        case "d":
+                            self.drive_one_unit(MotorDirections.RIGHT)
+                        case "w":
+                            self.drive_one_unit(MotorDirections.FORWARD)
+                        case "a":
+                            self.drive_one_unit(MotorDirections.LEFT)
+
+
+                self.directions_memory.write_string("")
+            else:
+                self.drive_one_unit(local_driving_direction)
 
     def close(self):
         self.arduino_uno.close()

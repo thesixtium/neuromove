@@ -1,8 +1,10 @@
+import math
+
 import numpy as np
 import matplotlib.pyplot as plt
 from src.RaspberryPi.jps import *
 from io import BytesIO
-from src.Frontend.frontend_methods import jps_wrapped
+from src.Frontend.frontend_methods import jps_wrapped, path_to_directions
 
 
 ## I M P O R T   D A T A ###
@@ -34,4 +36,10 @@ plt.gca().invert_yaxis()
 plt.savefig("1_import_data.png")
 
 
-jps_wrapped(cropped_data, origin, point, display=True)
+cropped_data, origin, point, path = jps_wrapped(cropped_data, origin, point, display=True)
+
+print(path)
+
+print(path_to_directions(path))
+
+

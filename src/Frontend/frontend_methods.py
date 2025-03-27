@@ -5,6 +5,8 @@ from os.path import join, dirname
 import sys
 import os
 
+from src.RaspberryPi.SharedMemory import SharedMemory
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 
@@ -13,11 +15,13 @@ from streamlit_extras.stylable_container import stylable_container
 
 from pylsl import local_clock
 import matplotlib.pyplot as plt
-from enums import ScreenPosition
-from style import *
+from src.Frontend.enums import ScreenPosition
+from src.Frontend.style import *
 from src.RaspberryPi.States import DestinationDrivingStates, SetupStates, States
 from src.RaspberryPi.jps import *
 
+from src.RaspberryPi.States import MotorDirections
+import math
 NUMBER_OF_TRAINING_CYCLES = 1
 NUMBER_OF_DECISION_CYCLES = 5
 
@@ -142,15 +146,43 @@ def jps_wrapped(cropped_data, origin, point, display=False):
         plt.axis('off')
         plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
         plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
-        plt.savefig("6_path.png")
+        plt.savefig("jps_path.png")
 
+    return cropped_data, origin, point, path
+
+def path_to_directions(path):
+    drive_lookup = {
+        -90: [MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.FORWARD],
+        -45: [MotorDirections.LEFT, MotorDirections.FORWARD],
+        -0: [MotorDirections.FORWARD],
+        45: [MotorDirections.RIGHT, MotorDirections.FORWARD],
+        90: [MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.FORWARD],
+    }
+    directions = []
+    for i in range(len(path) - 1):
+        start_point = path[i]
+        next_point = path[i + 1]
+
+        delta_x = next_point[0] - start_point[0]
+        delta_y = next_point[1] - start_point[1]
+
+        rad = math.atan2(delta_y, delta_x)
+        deg = int(90 - (rad * (180 / math.pi)))
+
+        directions += drive_lookup[deg]
+
+    return "".join([i.value.decode() for i in directions])
+
+def destination_driving_update(target_region, cropped_data, origin, point):
+    cropped_data, origin, point, path = jps_wrapped(cropped_data, origin, point)
     st.session_state["cropped_data"] = cropped_data
     st.session_state["origin"] = origin
     st.session_state["target_location"] = point
     st.session_state["path"] = path
 
-def destination_driving_update(target_region, cropped_data, origin, point):
-    jps_wrapped(cropped_data, origin, point)
+    directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
+    directions_memory.write_string(path_to_directions(path))
+
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
 
 def switch():
