@@ -88,6 +88,7 @@ def destination_driving_update(target_region, cropped_data, origin, point):
     for row in cropped_data:
         for data in row:
             f.write(str(data))
+            f.write(",")
         f.write("\n")
     f.close()
 
