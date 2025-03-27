@@ -55,7 +55,7 @@ def select_destination():
         medoid_coordinates[i][1] = x
 
         print(f"({y}, {x}) -> {len(data)} x {len(data[0])}")
-        data[y][x] = 0
+        data[x][y] = 0
 
     st.session_state["neighbourhood_grid"] = data
     st.session_state["origin"] = origin
