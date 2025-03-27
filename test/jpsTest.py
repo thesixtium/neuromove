@@ -1,0 +1,109 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from src.RaspberryPi.jps import *
+from io import BytesIO
+
+
+## I M P O R T   D A T A ###
+f = open("cropped_data.txt", "r")
+cropped_data = np.fromstring(f.read(), dtype=int)
+f.close()
+
+f = open("origin.txt", "r")
+origin = f.read()
+origin_split = origin.replace("(", "").replace(")", "").split(", ")
+origin = (int(origin_split[0]), int(origin_split[1]))
+f.close()
+
+f = open("point.txt", "r")
+point = f.read()
+point_split = point.replace("[", "").replace("]", "").split(" ")
+point = [int(point_split[0]), int(point_split[1])]
+f.close()
+
+origin_x = min(origin[0], len(cropped_data)-3)
+origin_y = min(origin[1], len(cropped_data[0])-3)
+
+plt.imshow(cropped_data)
+plt.gca().invert_yaxis()
+plt.savefig("1_import_data.png")
+
+
+### A D D   B O R D E R ###
+
+for x in range(len(cropped_data)):
+    cropped_data[x][0] = -1
+    cropped_data[x][len(cropped_data[0])-1] = -1
+
+for y in range(len(cropped_data[0])):
+    cropped_data[0][y] = -1
+    cropped_data[len(cropped_data)-1][y] = -1
+
+plt.imshow(cropped_data)
+plt.gca().invert_yaxis()
+plt.savefig("2_add_border.png")
+
+
+### C L E A R   O R I G I N ###
+
+cropped_data[origin_x+1][origin_y+1] = 0
+cropped_data[origin_x+1][origin_y] = 0
+cropped_data[origin_x+1][origin_y-1] = 0
+cropped_data[origin_x][origin_y+1] = 0
+cropped_data[origin_x][origin_y] = 0
+cropped_data[origin_x][origin_y-1] = 0
+cropped_data[origin_x-1][origin_y+1] = 0
+cropped_data[origin_x-1][origin_y] = 0
+cropped_data[origin_x-1][origin_y-1] = 0
+
+plt.imshow(cropped_data)
+plt.gca().invert_yaxis()
+plt.savefig("3_clear_origin.png")
+
+### C L E A R   P O I N T ###
+
+cropped_data[point[0]+1][point[1]+1] = 0
+cropped_data[point[0]+1][point[1]] = 0
+cropped_data[point[0]+1][point[1]-1] = 0
+cropped_data[point[0]][point[1]+1] = 0
+cropped_data[point[0]][point[1]] = 0
+cropped_data[point[0]][point[1]-1] = 0
+cropped_data[point[0]-1][point[1]+1] = 0
+cropped_data[point[0]-1][point[1]] = 0
+cropped_data[point[0]-1][point[1]-1] = 0
+
+plt.imshow(cropped_data)
+plt.gca().invert_yaxis()
+plt.savefig("4_clear_point.png")
+
+
+### B A C K   T O   B I N A R Y ###
+
+for i in range(len(cropped_data)):
+    for j in range(len(cropped_data[0])):
+        if cropped_data[i][j] == -1:
+            cropped_data[i][j] = 1
+        else:
+            cropped_data[i][j] = 0
+
+plt.imshow(cropped_data)
+plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
+plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
+plt.gca().invert_yaxis()
+plt.savefig("5_back_to_binary.png")
+
+
+### P A T H ###
+
+path = get_full_path(jps(cropped_data, origin_x, origin_y, point[0], point[1]))
+fig = plt.figure(figsize=(6, 4))
+fig.patch.set_visible(False)
+plt.imshow(cropped_data)
+plt.plot(*zip(*path))
+plt.gca().invert_yaxis()
+plt.axis('off')
+plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
+plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
+plt.savefig("6_path.png")
+
+
