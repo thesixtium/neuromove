@@ -112,14 +112,7 @@ def main():
                         case DestinationDrivingStates.IDLE:
                             pass
                         case DestinationDrivingStates.MAP_ROOM:
-                            # Get point selections
-                            occupancy_grid = np.array(occupancy_grid_memory.read_grid())
-                            origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
-                            frontend_origin_memory.write_string(f"{origin}")
-                            selected_points = occupancy_grid_to_points(occupancy_grid, origin, plot_result=True)
-                            point_selection_memory.write_np_array(selected_points)
-
-                            destination_driving_state_memory.write_string("s")
+                            pass
                         case DestinationDrivingStates.SELECT_DESTINATION:
                             pass
                         case DestinationDrivingStates.TRANSLATE_TO_MOVEMENT:
