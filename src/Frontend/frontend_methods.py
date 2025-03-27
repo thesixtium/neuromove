@@ -120,6 +120,13 @@ def destination_driving_update(target_region, cropped_data, origin, point):
             print(j, end="")
         print()
 
+    for i in range(len(st.session_state["cropped_data"])):
+        for j in range(len(st.session_state["cropped_data"][0])):
+            if st.session_state["cropped_data"][i][j] == -1:
+                st.session_state["cropped_data"][i][j] = 1
+            else:
+                st.session_state["cropped_data"][i][j] = 0
+
     plt.imshow(st.session_state["cropped_data"])
     plt.scatter(origin[0], origin[1], color='#fff59f', marker='*', s=[200])
     plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
