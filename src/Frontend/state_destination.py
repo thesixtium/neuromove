@@ -19,16 +19,19 @@ def state_destination():
     occupancy_grid = []
     while True:
         occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
-        print(f"P O I N T   S E L E C T I O N: {occupancy_grid}")
         if len(occupancy_grid) != 0:
             break
 
     # data = np.loadtxt('Frontend/data.txt')
     # origin = np.loadtxt('Frontend/origin.txt')
 
+    start_time = time.time()
     data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(occupancy_grid, plot_result=True)
+    print("occupancy_grid_to_points:\t%s" % (time.time() - start_time))
 
+    start_time = time.time()
     move_content()
+    print("move_content:\t%s" % (time.time() - start_time))
 
     colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
     switch_value = BUTTON_VALUE
@@ -60,6 +63,7 @@ def state_destination():
             case "Trial Ends":
                 send_special_marker("Trial Ends")
 
+    start_time = time.time()
     fig = plt.figure(figsize=(6, 4))
     fig.patch.set_visible(False)
     colourmap = ListedColormap(colours)
@@ -72,6 +76,7 @@ def state_destination():
     buf = BytesIO()
     fig.savefig(buf, format="png")
     st.image(buf)
+    print("plot image:\t%s" % (time.time() - start_time))
 
     col1, col2 = st.columns([1, 1])
     with col1:
