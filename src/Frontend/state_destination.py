@@ -26,8 +26,7 @@ def state_destination():
     # data = np.loadtxt('Frontend/data.txt')
     # origin = np.loadtxt('Frontend/origin.txt')
 
-    origin = (occupancy_grid.shape[0] // 2, occupancy_grid.shape[1] // 2)
-    data = occupancy_grid_to_points(occupancy_grid, plot_result=True)
+    data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(occupancy_grid, plot_result=True)
 
     move_content()
 
@@ -64,7 +63,6 @@ def state_destination():
     fig = plt.figure(figsize=(6, 4))
     fig.patch.set_visible(False)
     colourmap = ListedColormap(colours)
-    print(f"D A T A:\n{data}")
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
     plt.gca().invert_yaxis()
     plt.axis('off')
