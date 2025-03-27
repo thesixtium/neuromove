@@ -145,10 +145,12 @@ def jps_wrapped(cropped_data, origin, point, display=False):
         plt.savefig("6_path.png")
 
     st.session_state["cropped_data"] = cropped_data
-    return path
+    st.session_state["origin"] = origin
+    st.session_state["target_location"] = point
+    st.session_state["path"] = path
 
 def destination_driving_update(target_region, cropped_data, origin, point):
-    st.session_state["path"] = jps_wrapped(cropped_data, origin, point)
+    jps_wrapped(cropped_data, origin, point)
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
 
 def switch():
