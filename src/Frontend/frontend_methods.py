@@ -94,7 +94,10 @@ def destination_driving_update(target_region, cropped_data, origin, point):
     st.session_state["target_location"] = point
     print(f"Destination selected {target_region} with center {point}, doing nothing right now")
 
-    st.session_state["path"] = jps(st.session_state["cropped_data"], min(origin[0], len(cropped_data)-1), min(origin[1], len(cropped_data[0])-1), point[0], point[1])
+    origin_x = min(origin[0], len(cropped_data)-1)
+    origin_y = min(origin[1], len(cropped_data[0])-1)
+    st.session_state["cropped_data"][origin_x][origin_y] = 0
+    st.session_state["path"] = jps(st.session_state["cropped_data"], origin_x, origin_y, point[0], point[1])
     print(f'D E S T   D R I V I N G: {st.session_state["path"]}')
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
 
