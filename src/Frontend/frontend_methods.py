@@ -240,7 +240,7 @@ def local_driving_grid(training: bool = False):
             st.button("↑", on_click=function_to_call, args=("f",))
 
         with stylable_container("stop", css_styles=stop_value):
-            st.button("⯃", on_click=function_to_call, args=("s",))
+            st.button("X", on_click=function_to_call, args=("s",))
     with col3:
         with stylable_container("right", css_styles=add_padding(right_value, 13)):
             st.button("→", on_click=function_to_call, args=("r",))
