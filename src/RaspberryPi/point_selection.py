@@ -499,7 +499,9 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
 if __name__ == "__main__":
     # load in data from testData
-    with open('src/LiDAR/testData', 'r') as file:
-        data_str = file.read()
+    with open('raw_occupancy_grid.txt', 'r') as file:
+        data_str = file.readlines()
 
-    selected_points = occupancy_grid_to_points(input_data=data_str, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4, save_result_to_disk=True)
+    array_2d = np.array([list(map(float, line.split())) for line in data_str])
+
+    selected_points = occupancy_grid_to_points(input_data=array_2d, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4, save_result_to_disk=True)

@@ -81,9 +81,9 @@ def give_map_sequence_list(total_list_appends: int = NUMBER_OF_DECISION_CYCLES):
 def direction_update(direction):
     st.session_state["local_driving_memory"].write_string(direction)
 
-def destination_driving_update(target_region):
+def destination_driving_update(target_region, point):
     # TODO: Implement
-    print(f"Destination selected {target_region}, doing nothing right now")
+    print(f"Destination selected {target_region} with center {point}, doing nothing right now")
 
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
 

@@ -74,3 +74,9 @@ def run_setup():
 
     if "occupancy_grid" not in st.session_state:
         st.session_state["occupancy_grid"] = None
+
+    if "neighbourhood_grid" not in st.session_state:
+        st.session_state["neighbourhood_grid"] = None
+    
+    if "origin" not in st.session_state:
+        st.session_state["origin"] = None
