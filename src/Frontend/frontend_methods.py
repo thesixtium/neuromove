@@ -84,12 +84,14 @@ def direction_update(direction):
 
 def destination_driving_update(target_region, cropped_data, origin, point):
     # TODO: Implement
+    cropped_data[origin[0]][origin[1]] = 0
     st.session_state["cropped_data"] = cropped_data
-    #st.session_state["start_location"] = origin
-    #st.session_state["target_location"] = point
+    st.session_state["start_location"] = origin
+    st.session_state["target_location"] = point
     print(f"Destination selected {target_region} with center {point}, doing nothing right now")
 
-    st.session_state["path"] = jps(st.session_state["neighbourhood_grid"], origin[0], origin[1], point[0], point[1])
+    st.session_state["path"] = []
+    #st.session_state["path"] = jps(st.session_state["neighbourhood_grid"], origin[0], origin[1], point[0], point[1])
     print(f'D E S T   D R I V I N G: {st.session_state["path"]}')
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
 
