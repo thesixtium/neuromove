@@ -144,6 +144,7 @@ def jps_wrapped(cropped_data, origin, point, display=False):
         plt.scatter(point[0], point[1], color='#fff59f', marker='*', s=[200])
         plt.savefig("6_path.png")
 
+    st.session_state["cropped_data"] = cropped_data
     return path
 
 def destination_driving_update(target_region, cropped_data, origin, point):
