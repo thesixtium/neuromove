@@ -98,16 +98,16 @@ def select_destination():
         print(coord)
     with c1:
         with stylable_container("c1", make_value(GREEN, BLACK, BLACK)):
-            st.button("# 0", on_click=destination_driving_update, args=("0", cropped_data, origin, medoid_coordinates[0]))
+            st.button("# 0", on_click=destination_driving_update, args=("0", data, origin, medoid_coordinates[0]))
     with c2:
         with stylable_container("c2", make_value(REAL_PURPLE, BLACK, BLACK)):
-            st.button("# 1", on_click=destination_driving_update, args=("1", cropped_data, origin, medoid_coordinates[1]))
+            st.button("# 1", on_click=destination_driving_update, args=("1", data, origin, medoid_coordinates[1]))
     with c3:
         with stylable_container("c3", make_value(PINK, BLACK, BLACK)):
-            st.button("# 2", on_click=destination_driving_update, args=("2", cropped_data, origin, medoid_coordinates[2]))
+            st.button("# 2", on_click=destination_driving_update, args=("2", data, origin, medoid_coordinates[2]))
     with c4:
         with stylable_container("c4", make_value(ORANGE, BLACK, BLACK)):
-            st.button("# 3", on_click=destination_driving_update, args=("3", cropped_data, origin, medoid_coordinates[3]))
+            st.button("# 3", on_click=destination_driving_update, args=("3", data, origin, medoid_coordinates[3]))
 
     col1, col2 = st.columns([1, 1])
     with col1:
