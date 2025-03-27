@@ -1,7 +1,8 @@
 from src.RaspberryPi.lattepanda_server import lattepanda_server
 
-print("STARTING LATTE PANDA SERVER")
+if __name__ =="__main__":
+    print("STARTING LATTE PANDA SERVER")
 
-lattepanda_server()
+    lattepanda_server()
 
-print("DONE LATTE PANDA SERVER")
+    print("DONE LATTE PANDA SERVER")
