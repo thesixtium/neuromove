@@ -194,8 +194,9 @@ def occupancy_grid_to_points(
     return data, medoid_coordinates, neighbourhood_points, origin 
 
 def format_data(raw_data: np.ndarray = None) -> Tuple[np.ndarray, tuple]:
-    data = literal_eval(raw_data)
-    data = np.array(data).T
+    data = raw_data.T
+    #data = literal_eval(raw_data)
+    #data = np.array(data).T
     
     if len(data.shape) != 2:
         raise InvalidValueToPointSelection("Data must be a 2D array")
