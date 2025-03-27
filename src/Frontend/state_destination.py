@@ -48,6 +48,11 @@ def select_destination():
     np.savetxt("raw_occupancy_grid.txt", st.session_state["occupancy_grid"])
 
     data, cropped_data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True)
+    for i in range(len(medoid_coordinates)):
+        x = medoid_coordinates[i][0]
+        y = medoid_coordinates[i][1]
+        medoid_coordinates[i][0] = y
+        medoid_coordinates[i][1] = x
 
     st.session_state["neighbourhood_grid"] = data
     st.session_state["origin"] = origin
