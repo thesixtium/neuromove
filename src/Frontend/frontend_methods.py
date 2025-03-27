@@ -98,12 +98,12 @@ def destination_driving_update(target_region, cropped_data, origin, point):
     origin_y = min(origin[1], len(cropped_data[0])-2)
 
     for x in range(len(cropped_data)):
-        cropped_data[x][0] = 1
-        cropped_data[x][len(cropped_data[0])-1] = 1
+        cropped_data[x][0] = -1
+        cropped_data[x][len(cropped_data[0])-1] = -1
 
     for y in range(len(cropped_data[0])):
-        cropped_data[0][y] = 1
-        cropped_data[len(cropped_data)-1][y] = 1
+        cropped_data[0][y] = -1
+        cropped_data[len(cropped_data)-1][y] = -1
 
     st.session_state["cropped_data"][origin_x][origin_y] = 0
     for line in st.session_state["cropped_data"]:
