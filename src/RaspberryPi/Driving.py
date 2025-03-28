@@ -41,7 +41,7 @@ class Driving:
 
             if destination_driving != "":
                 print("\n\nDESTINATION DRIVE TIME\n")
-                while destination_driving != "" and self.directions_memory.read_string() != "":
+                while destination_driving != "" and self.directions_memory.read_string() != "s":
                     print(f"\tNew: {self.directions_memory.read_string()}")
                     print(f"\tCurrent: {destination_driving}")
                     next_direction = destination_driving[0]
@@ -57,8 +57,10 @@ class Driving:
                             self.drive_one_unit(MotorDirections.FORWARD)
                         case "a":
                             self.drive_one_unit(MotorDirections.LEFT)
+                        case _:
+                            self.drive_one_unit(MotorDirections.STOP)
 
-                    
+
 
                 self.directions_memory.write_string("")
             else:
