@@ -168,6 +168,7 @@ def path_to_directions(path):
         -0: [MotorDirections.FORWARD],
         45: [MotorDirections.RIGHT, MotorDirections.FORWARD],
         90: [MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.FORWARD],
+        225: []
     }
     directions = []
     for i in range(len(path) - 1):
