@@ -32,9 +32,17 @@ def state_destination():
             select_destination()
         case DestinationDrivingStates.TRANSLATE_TO_MOVEMENT:
             display_path(st.session_state["cropped_data"], st.session_state["origin"], st.session_state["target_location"], st.session_state["path"])
-            st.button("# back to select", on_click=back_to_select)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.button("# back to select", on_click=back_to_select)
+            with col2:
+                st.button("# stop", on_click=stop_travelling)
         case _:
             raise UnknownDestinationDrivingState(st.session_state["destination_driving_state"])
+
+def stop_travelling():
+    #ALEKS HERE
+    pass
 
 def back_to_select():
     st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
