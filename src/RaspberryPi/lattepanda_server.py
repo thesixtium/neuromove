@@ -4,9 +4,15 @@ from time import sleep
 from src.RaspberryPi.InternalException import LattePandaError, LattePandaNotResponding
 from src.RaspberryPi.SharedMemory import SharedMemory
 
+import sys
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/RaspberryPi", "")))
+
 #TODO: add elegant shutdown signal to Panda
 
-def main():
+def lattepanda_server():
     # Create a socket object
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
@@ -59,4 +65,4 @@ def main():
         server_socket.close()
 
 if __name__ == "__main__":
-    main()
+    lattepanda_server()

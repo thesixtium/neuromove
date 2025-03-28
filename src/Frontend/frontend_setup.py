@@ -17,7 +17,7 @@ def run_setup():
         st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
 
     if "state" not in st.session_state:
-        st.session_state["state"] = States.LOCAL
+        st.session_state["state"] = States.SETUP
 
     if "local_driving_memory" not in st.session_state:
         st.session_state["local_driving_memory"] = SharedMemory(shem_name="local_driving", size=10, create=True)
