@@ -93,7 +93,7 @@ def direction_update(direction):
 def direction_stop():
     print("STOOOOOOOOOP")
     directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
-    directions_memory.write_string("")
+    directions_memory.write_string("aleks")
 
 def jps_wrapped(cropped_data, origin, point, display=False):
     ### B A C K   T O   B I N A R Y ###
