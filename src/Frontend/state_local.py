@@ -27,8 +27,8 @@ def state_local():
         st.session_state["waiting_for_bci_response"] = False
         print(f"RECEIVED {read_string} FROM SHARED MEM")
         st.session_state['bci_selection_memory'].write_string("   ")
-        st.session_state['last_bci_selection'] = read_string
         read_string = read_string.strip()
+        st.session_state['last_bci_selection'] = read_string
 
         match read_string:
             case "[0]":

@@ -10,7 +10,7 @@ from src.RaspberryPi.BCI.bci_essentials_wrapper import Bessy, load_and_return_mo
 
     
 def run_bci():
-    messenger = SharedMemoryMessenger(debug=False)
+    messenger = SharedMemoryMessenger(debug=False, confidence=0.2)
 
     bessy = Bessy(messenger=messenger)
     print("DONE CONSTRUCTOR")
