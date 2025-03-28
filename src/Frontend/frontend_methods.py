@@ -91,6 +91,7 @@ def direction_update(direction):
     st.session_state["local_driving_memory"].write_string(direction)
 
 def direction_stop():
+    print("STOOOOOOOOOP")
     directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
     directions_memory.write_string("")
 
