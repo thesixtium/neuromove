@@ -42,7 +42,7 @@ class SharedMemoryMessenger(Messenger):
 
         if prediction.probabilities[0] > self.__confidence:
             # write to shared memory
-            self.__shared_memory.write_string(f"{prediction.labels}")
+            self.__shared_memory.write_string(f"{prediction.labels}    ")
         else:
             # write empty string to show no prediciton made
             self.__shared_memory.write_string("[]   ")

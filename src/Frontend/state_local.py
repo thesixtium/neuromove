@@ -11,7 +11,6 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 
 def state_local():
-    print("LOCAL DRIVING")
     move_content()
     local_driving_grid()
 
