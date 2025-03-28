@@ -45,7 +45,7 @@ def back_to_select():
     st.rerun()
 
 def stop():
-    direction_update("s")
+    direction_stop()
     back_to_select()
 
 def select_destination():

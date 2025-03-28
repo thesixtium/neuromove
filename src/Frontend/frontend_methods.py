@@ -90,6 +90,10 @@ def direction_update(direction):
     print(f"Moving {direction}")
     st.session_state["local_driving_memory"].write_string(direction)
 
+def direction_stop():
+    directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
+    directions_memory.write_string("")
+
 def jps_wrapped(cropped_data, origin, point, display=False):
     ### B A C K   T O   B I N A R Y ###
     OBSTACLE = 1

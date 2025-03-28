@@ -104,7 +104,6 @@ class Driving:
         time.sleep(2)
 
     def drive_one_unit(self, direction):
-        print(f"Drive One Unit: {direction}")
         match direction:
             case MotorDirections.FORWARD:
                 time_to_drive = time.time() + self.t_accel + self.t_const
