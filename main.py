@@ -2,6 +2,7 @@
 
 #!/usr/bin/env python3
 
+import threading
 import time
 import logging
 import numpy as np
@@ -44,6 +45,7 @@ def main():
     initialized = False
     eye_tracking = None
     driving = None
+    bci_thread = None
 
     def signal_handler(sig, frame):
         if initialized:
@@ -57,6 +59,7 @@ def main():
             destination_driving_state_memory.close()
             frontend_origin_memory.close()
             imu_memory.close()
+            bci_thread.join()
         print("Exited safely")
         sys.exit(3001)
 
@@ -98,7 +101,7 @@ def main():
                         lidar = RunLiDAR()
                         eye_tracking = EyeTracking()
                         driving = Driving()
-                        bci = run_bci()
+                        bci_thread = threading.Thread(target=run_bci())
 
                         initialized = True
                         requested_next_state_memory.write_string("2")
@@ -198,6 +201,7 @@ def main():
         directions_memory.close()
         imu_memory.close()
         eye_tracking.close()
+        bci_thread.join()
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())
