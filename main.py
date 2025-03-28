@@ -32,7 +32,7 @@ def main():
     next_state = States.START
     current_exception = None
     lidar = None
-    eye_tracking_memory = None
+    #eye_tracking_memory = None
     occupancy_grid_memory = None
     point_selection_memory = None
     local_driving_memory = None
@@ -42,13 +42,13 @@ def main():
     directions_memory = None
     frontend_origin_memory = None
     initialized = False
-    eye_tracking = None
+    #eye_tracking = None
     driving = None
 
     def signal_handler(sig, frame):
         if initialized:
             driving.close()
-            eye_tracking_memory.close()
+            #eye_tracking_memory.close()
             # p300_socket.close()
             occupancy_grid_memory.close()
             point_selection_memory.close()
@@ -82,7 +82,7 @@ def main():
                     if not initialized:
 
                         print("Setting up shared memory... ", end="")
-                        eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=True)
+                        #eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=True)
                         local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
                         requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=10, create=True)
                         directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
@@ -96,7 +96,7 @@ def main():
 
                         frontend = RunUI()
                         lidar = RunLiDAR()
-                        eye_tracking = EyeTracking()
+                        #eye_tracking = EyeTracking()
                         driving = Driving()
 
                         initialized = True
@@ -186,7 +186,7 @@ def main():
 
     if initialized:
         driving.close()
-        eye_tracking_memory.close()
+        #eye_tracking_memory.close()
         #p300_socket.close()
         occupancy_grid_memory.close()
         point_selection_memory.close()
@@ -196,7 +196,7 @@ def main():
         frontend_origin_memory.close()
         directions_memory.close()
         imu_memory.close()
-        eye_tracking.close()
+        #eye_tracking.close()
         bci_thread.join()
 
     if isinstance(current_exception, InternalException):
