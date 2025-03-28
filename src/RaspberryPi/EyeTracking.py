@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import os
 import joblib
@@ -11,8 +13,8 @@ from mediapipe.tasks.python import vision
 
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.InternalException import EyeTrackingNoRet
-
-import psutil
+import warnings
+warnings.filterwarnings("ignore")
 
 class EyeTracking:
     def __init__(self):
@@ -31,7 +33,7 @@ class EyeTracking:
         self.cap = cv2.VideoCapture(0)  # 0 for default camera
 
         # Initialize a deque (double-ended queue) to store the features from the last 30 frames.
-        self.window_size = 5 #set to predict 1 time every 30s
+        self.window_size = 2 #set to predict 1 time every 30s
         self.prediction_threshold = 0.43
 
         self.feature_window = deque(maxlen=self.window_size)
@@ -47,8 +49,6 @@ class EyeTracking:
 
     def serial_read(self):
         while self.eye_tracking_thread_running:
-            process = psutil.Process()
-            print(f"Eye Tracking: {process.memory_info().rss * 0.000001}")
             ret, frame = self.cap.read()
             if not ret:
                 raise EyeTrackingNoRet()
@@ -95,3 +95,4 @@ class EyeTracking:
                     #prediction = 1
                     self.eye_tracking_memory.write_string(str(prediction))
                     print(f"Eye Tracking: {prediction}")
+                    time.sleep(2.5)
