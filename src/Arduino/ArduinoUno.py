@@ -59,6 +59,9 @@ class ArduinoUno:
         self.serial_writing_thread_running = False
 
     def update(self, sensor: Sensors, value: int):
+        for key in self.sensor_values:
+            print(f"{key}: {self.sensor_values[key]}", end="\t")
+        print()
         self.sensor_values[sensor.value] = value
         if (sensor.value == 7 and value == 1) or (sensor.value != 7 and value <= self.ultrasonic_minimum_distance):
             self.send_direction(MotorDirections.STOP)
@@ -67,6 +70,7 @@ class ArduinoUno:
 
     def serial_read(self):
         while self.serial_read_thread_running:
+
             read = self.ser.read()
 
             if read == b'S':
