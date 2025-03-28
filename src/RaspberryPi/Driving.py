@@ -92,7 +92,8 @@ class Driving:
 
         self.arduino_uno.send_direction(direction)
         while time.time() < time_to_drive:
-            continue
+            if self.arduino_uno.stop:
+                break
             #print("DIRECTION")
 
         t_backward = time.time() + self.t_accel
