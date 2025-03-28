@@ -8,6 +8,7 @@ import numpy as np
 import signal
 import sys
 
+from run_bci import run_bci
 from src.RaspberryPi.Driving import Driving
 from src.RaspberryPi.InternalException import *
 
@@ -90,7 +91,7 @@ def main():
                         point_selection_memory = SharedMemory(shem_name="point_selection", size=100000, create=True)
                         destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=10, create=True)
                         frontend_origin_memory = SharedMemory(shem_name="frontend_origin_memory", size=100, create=True)
-                        bci_selection_memory = SharedMemory(shem_name="bci_selection", size=20, create=True)
+                        bci_selection_memory = SharedMemory(shem_name="bci_selection", size=200, create=True)
                         print("Done")
 
                         frontend = RunUI()
@@ -196,6 +197,7 @@ def main():
         directions_memory.close()
         imu_memory.close()
         eye_tracking.close()
+        bci_thread.join()
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())
