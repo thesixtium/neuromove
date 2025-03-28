@@ -83,3 +83,6 @@ def run_setup():
 
     if "last_bci_selection" not in st.session_state:
         st.session_state["last_bci_selection"] = None
+    
+    if "bci_wait_start_time" not in st.session_state:
+        st.session_state["bci_wait_start_time"] = None

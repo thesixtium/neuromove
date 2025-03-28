@@ -1,3 +1,4 @@
+from datetime import datetime
 from random import shuffle
 from time import sleep
 from os.path import join, dirname
@@ -58,6 +59,7 @@ def give_local_sequence_list(total_list_appends: int = NUMBER_OF_DECISION_CYCLES
     
     if st.session_state["currently_training"] == False:
         st.session_state["waiting_for_bci_response"] = True
+        st.session_state["bci_wait_start_time"] = datetime.now()
 
     if st.session_state["training_target"] == 4 and st.session_state["state"] == States.SETUP:
         return_list = return_list + ["Training Complete"]
@@ -80,10 +82,12 @@ def give_map_sequence_list(total_list_appends: int = NUMBER_OF_DECISION_CYCLES):
 
     if st.session_state["currently_training"] == False: 
         st.session_state["waiting_for_bci_response"] = True
+        st.session_state["bci_wait_start_time"] = datetime.now()
 
     st.session_state["map_sequence"] = return_list
 
 def direction_update(direction):
+    print(f"Moving {direction}")
     st.session_state["local_driving_memory"].write_string(direction)
 
 def jps_wrapped(cropped_data, origin, point, display=False):
@@ -174,6 +178,7 @@ def path_to_directions(path):
     return "".join([i.value.decode() for i in directions])
 
 def destination_driving_update(target_region, cropped_data, origin, point):
+    print(f"Going to {point}")
     cropped_data, origin, point, path = jps_wrapped(cropped_data, origin, point)
     st.session_state["cropped_data"] = cropped_data
     st.session_state["origin"] = origin
@@ -251,14 +256,16 @@ def local_driving_grid(training: bool = False):
         if training is True:
             st.button("# Placeholder", on_click=None)
         else:
-            st.button("# Run", on_click=start_running)
+            text = "# Run" if st.session_state["running"] == False else "# Stop"
+            st.button(text, on_click=swap_running)
 
     with col2:
         with stylable_container("switch_mode", css_styles=add_padding(switch_value, 11)):
             st.button("⇄", on_click=function_to_call)
 
-def start_running():
-    st.session_state["running"] = True
+def swap_running():
+
+    st.session_state["running"] = not st.session_state["running"]
 
 def start():
     st.session_state["requested_next_state_memory"].write_string("3")

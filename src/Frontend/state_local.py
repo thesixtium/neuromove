@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from math import e
 import threading
 import time
@@ -29,33 +29,31 @@ def state_local():
         read_string = read_string.strip()
         st.session_state['last_bci_selection'] = read_string
 
-        match read_string:
-            case "[0]":
-                direction_update("f")
-            case "[1]":
-                direction_update("l")
-            case "[2]":
-                direction_update("s")
-            case "[3]":
-                direction_update("r")
-            case "[4]":
-                switch()
-            case _:
-                print("Not confident enough to make a decision")
+        # match read_string:
+        #     case "[0]":
+        #         direction_update("f")
+        #     case "[1]":
+        #         direction_update("l")
+        #     case "[2]":
+        #         direction_update("s")
+        #     case "[3]":
+        #         direction_update("r")
+        #     case "[4]":
+        #         switch()
+        #     case _:
+        #         print("Not confident enough to make a decision")
 
     if len(st.session_state["flash_sequence"]) > 0:
         st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
         time.sleep(0.1)
         st.rerun()
     elif st.session_state["waiting_for_bci_response"] == True:
+        if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=30):
+            print("Waiting for BCI controller to respond timed out")
+            st.session_state["waiting_for_bci_response"] = False
         time.sleep(0.5)
         st.rerun()
-    elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "[0]":
-        time.sleep(0.1)
-        st.rerun()
-    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "[1]" and st.session_state["running"] == True and st.session_state["state"] == States.LOCAL:
+    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["running"] == True:
         give_local_sequence_list()
         st.rerun()
-    else:
-        print("???")
     

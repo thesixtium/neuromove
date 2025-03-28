@@ -1,3 +1,4 @@
+from datetime import timedelta
 import time
 import numpy as np
 from io import BytesIO
@@ -19,13 +20,13 @@ def state_destination():
     match st.session_state["destination_driving_state"]:
         case DestinationDrivingStates.MAP_ROOM:
             occupancy_grid = []
-            while True:
-                occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
-                if len(occupancy_grid) != 0:
-                    st.session_state["occupancy_grid"] = occupancy_grid
-                    st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
-                    break
-            # st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
+            # while True:
+            #     occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
+            #     if len(occupancy_grid) != 0:
+            #         st.session_state["occupancy_grid"] = occupancy_grid
+            #         st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
+            #         break`
+            st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
             st.rerun()
         case DestinationDrivingStates.SELECT_DESTINATION:
             select_destination()
@@ -119,10 +120,18 @@ def select_destination():
 
     col1, col2 = st.columns([1, 1])
     with col1:
-        st.button("# Run", on_click=give_map_sequence_list)
+        text = "# Run" if st.session_state["running"] == False else "# Stop"
+        st.button(text, on_click=swap_running)
     with col2:
         with stylable_container("switch", css_styles=switch_value):
             st.button("⇄", on_click=switch)
+
+    display_string = "No previous selection"
+    if st.session_state["last_bci_selection"] is not None:
+        selection = st.session_state["last_bci_selection"]
+        display_string = f"Read {selection} from BCI controller"
+
+    st.text(display_string)
 
     read_string = st.session_state['bci_selection_memory'].read_string()
     if len(read_string) > 0 and "[" in read_string:
@@ -130,20 +139,21 @@ def select_destination():
         print(f"RECEIVED {read_string} FROM SHARED MEM")
         st.session_state['bci_selection_memory'].write_string("   ")
         read_string = read_string.strip()
+        st.session_state['last_bci_selection'] = read_string
 
-        match read_string:
-            case "[0]":
-                destination_driving_update(target_region="0", point=medoid_coordinates[0])
-            case "[1]":
-                destination_driving_update(target_region="1", point=medoid_coordinates[1])
-            case "[2]":
-                destination_driving_update(target_region="2", point=medoid_coordinates[2])
-            case "[3]":
-                destination_driving_update(target_region="3", point=medoid_coordinates[3])
-            case "[4]":
-                switch()
-            case _:
-                print("Not confident enough to make a decision")
+        # match read_string:
+        #     case "[0]":
+        #         destination_driving_update(target_region="0", point=medoid_coordinates[0])
+        #     case "[1]":
+        #         destination_driving_update(target_region="1", point=medoid_coordinates[1])
+        #     case "[2]":
+        #         destination_driving_update(target_region="2", point=medoid_coordinates[2])
+        #     case "[3]":
+        #         destination_driving_update(target_region="3", point=medoid_coordinates[3])
+        #     case "[4]":
+        #         switch()
+        #     case _:
+        #         print("Not confident enough to make a decision")
 
     if len(st.session_state["map_sequence"]) > 0:
         st.session_state["map_sequence"] = st.session_state["map_sequence"][1:]
@@ -151,14 +161,13 @@ def select_destination():
         st.rerun()
 
     elif st.session_state["waiting_for_bci_response"] == True:
+        if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=30):
+            print("Waiting for BCI controller to respond timed out")
+            st.session_state["waiting_for_bci_response"] = False
         time.sleep(0.5)
         st.rerun()
-
-    elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "0":
-        time.sleep(0.1)
-        st.rerun()
         
-    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "1" and st.session_state["running"] == True and st.session_state["state"] == States.DESTINATION:
+    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["running"] == True:
         give_map_sequence_list()
         st.rerun()
 
