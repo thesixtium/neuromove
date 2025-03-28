@@ -64,7 +64,7 @@ class Driving:
             else:
                 self.drive_one_unit(local_driving_direction)
 
-            time.sleep(1)
+            time.sleep(0.25)
 
     def close(self):
         self.arduino_uno.close()
