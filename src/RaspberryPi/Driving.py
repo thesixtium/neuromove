@@ -89,14 +89,17 @@ class Driving:
         return error
 
     def __drive_one_unit(self, time_to_drive, direction):
+
+        self.arduino_uno.send_direction(direction)
         while time.time() < time_to_drive:
+            continue
             #print("DIRECTION")
-            self.arduino_uno.send_direction(direction)
 
         t_backward = time.time() + self.t_accel
+        self.arduino_uno.send_direction(MotorDirections.STOP)
         while time.time() < t_backward:
             #print("STOP")
-            self.arduino_uno.send_direction(MotorDirections.STOP)
+            continue
         time.sleep(2)
 
     def drive_one_unit(self, direction):
