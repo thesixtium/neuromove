@@ -23,6 +23,9 @@ from src.RaspberryPi.jps import *
 
 from src.RaspberryPi.States import MotorDirections
 import math
+
+directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
+
 NUMBER_OF_TRAINING_CYCLES = 5
 NUMBER_OF_DECISION_CYCLES = 5
 
@@ -91,9 +94,7 @@ def direction_update(direction):
     st.session_state["local_driving_memory"].write_string(direction)
 
 def direction_stop():
-    directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
-    directions_memory.write_string("aleks")
-    print("STOOOOOOOOOP")
+    directions_memory.write_string("nope")
 
 def jps_wrapped(cropped_data, origin, point, display=False):
     ### B A C K   T O   B I N A R Y ###
@@ -190,7 +191,6 @@ def destination_driving_update(target_region, cropped_data, origin, point):
     st.session_state["target_location"] = point
     st.session_state["path"] = path
 
-    directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
     directions_memory.write_string(path_to_directions(path))
 
     st.session_state["destination_driving_state"] = DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
