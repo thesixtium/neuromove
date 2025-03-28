@@ -51,8 +51,15 @@ class ArduinoUno:
         self.serial_read_thread = threading.Thread(target=self.serial_read)
         self.serial_read_thread.start()
 
+        self.stop = False
+
     def send_direction(self, motor_direction: MotorDirections):
-        self.ser.write(motor_direction.value)
+        if self.stop:
+            print("'Mergency Stop")
+            self.ser.write(MotorDirections.STOP.value)
+        else:
+            print(f"Drive {motor_direction.value}")
+            self.ser.write(motor_direction.value)
 
     def close(self):
         self.serial_read_thread_running = False
@@ -64,7 +71,9 @@ class ArduinoUno:
         print()
         self.sensor_values[sensor.value] = value
         if (sensor.value == 7 and value == 1) or (sensor.value != 7 and value <= self.ultrasonic_minimum_distance):
-            self.send_direction(MotorDirections.STOP)
+            self.stop = True
+        else:
+            self.stop = False
             #raise SensorDistanceAlert(sensor.name)
 
 
