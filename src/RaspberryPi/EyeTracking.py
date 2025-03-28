@@ -33,7 +33,7 @@ class EyeTracking:
         self.cap = cv2.VideoCapture(0)  # 0 for default camera
 
         # Initialize a deque (double-ended queue) to store the features from the last 30 frames.
-        self.window_size = 5 #set to predict 1 time every 30s
+        self.window_size = 2 #set to predict 1 time every 30s
         self.prediction_threshold = 0.43
 
         self.feature_window = deque(maxlen=self.window_size)
