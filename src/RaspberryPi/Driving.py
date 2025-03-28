@@ -41,7 +41,8 @@ class Driving:
 
             if destination_driving != "":
                 print("\n\nDESTINATION DRIVE TIME\n")
-                while destination_driving != "":
+                while destination_driving != "" and self.directions_memory.read_string() != "":
+                    print(f"New: {self.directions_memory.read_string()}")
                     print(f"\t{destination_driving}")
                     next_direction = destination_driving[0]
                     if len(destination_driving) > 1:
