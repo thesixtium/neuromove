@@ -65,7 +65,7 @@ class ArduinoUno:
         self.sensor_values[sensor.value] = value
         if (sensor.value == 7 and value == 1) or (sensor.value != 7 and value <= self.ultrasonic_minimum_distance):
             self.send_direction(MotorDirections.STOP)
-            raise SensorDistanceAlert(sensor.name)
+            #raise SensorDistanceAlert(sensor.name)
 
 
     def serial_read(self):
