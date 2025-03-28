@@ -8,6 +8,7 @@ import numpy as np
 import signal
 import sys
 
+from run_bci import run_bci
 from src.RaspberryPi.Driving import Driving
 from src.RaspberryPi.InternalException import *
 
@@ -97,6 +98,7 @@ def main():
                         lidar = RunLiDAR()
                         eye_tracking = EyeTracking()
                         driving = Driving()
+                        bci = run_bci()
 
                         initialized = True
                         requested_next_state_memory.write_string("2")
