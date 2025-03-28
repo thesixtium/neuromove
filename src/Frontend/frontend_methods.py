@@ -94,7 +94,7 @@ def direction_update(direction):
     st.session_state["local_driving_memory"].write_string(direction)
 
 def direction_stop():
-    directions_memory.write_string("")
+    directions_memory.write_string("testing")
     print("Stopping")
 
 def jps_wrapped(cropped_data, origin, point, display=False):
