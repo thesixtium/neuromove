@@ -12,7 +12,6 @@ from mediapipe.tasks.python import vision
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.InternalException import EyeTrackingNoRet
 
-import psutil
 
 class EyeTracking:
     def __init__(self):
@@ -47,8 +46,6 @@ class EyeTracking:
 
     def serial_read(self):
         while self.eye_tracking_thread_running:
-            process = psutil.Process()
-            print(f"Eye Tracking: {process.memory_info().rss * 0.000001}")
             ret, frame = self.cap.read()
             if not ret:
                 raise EyeTrackingNoRet()

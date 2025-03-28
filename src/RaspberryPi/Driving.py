@@ -2,7 +2,6 @@ import threading
 
 import numpy as np
 import pandas as pd
-import psutil
 import scipy
 import time
 
@@ -34,9 +33,6 @@ class Driving:
 
     def driving(self):
         while self.driving_thread_running:
-
-            process = psutil.Process()
-            print(f"Driving: {process.memory_info().rss * 0.000001}")
             local_driving_direction = self.local_driving_memory.read_local_driving()
             destination_driving = self.directions_memory.read_string()
 

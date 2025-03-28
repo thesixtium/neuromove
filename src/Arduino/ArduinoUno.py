@@ -1,6 +1,5 @@
 import time
 
-import psutil
 import serial
 from enum import Enum
 import threading
@@ -68,8 +67,6 @@ class ArduinoUno:
 
     def serial_read(self):
         while self.serial_read_thread_running:
-            process = psutil.Process()
-            print(f"Arduino Uno: {process.memory_info().rss * 0.000001}")
             read = self.ser.read()
 
             if read == b'S':
