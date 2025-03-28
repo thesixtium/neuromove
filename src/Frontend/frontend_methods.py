@@ -95,6 +95,7 @@ def direction_update(direction):
 
 def direction_stop():
     directions_memory.write_string("")
+    print("Stopping")
 
 def jps_wrapped(cropped_data, origin, point, display=False):
     ### B A C K   T O   B I N A R Y ###
