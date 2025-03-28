@@ -80,3 +80,6 @@ def run_setup():
     
     if "origin" not in st.session_state:
         st.session_state["origin"] = None
+
+    if "last_bci_selection" not in st.session_state:
+        st.session_state["last_bci_selection"] = None
