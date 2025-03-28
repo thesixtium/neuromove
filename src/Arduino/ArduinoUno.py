@@ -60,7 +60,6 @@ class ArduinoUno:
         else:
             print(f"Drive {motor_direction.value}")
             self.ser.write(motor_direction.value)
-        time.sleep(0.5)
 
     def close(self):
         self.serial_read_thread_running = False
@@ -69,26 +68,17 @@ class ArduinoUno:
     def update(self, sensor: Sensors, value: int):
         self.sensor_values[sensor.value] = value
 
-        print("\n\n")
         stop_value = False
         for key in self.sensor_values:
-            print(f"\t{key}:", end="\t")
             if (key == 7 and self.sensor_values[key] == 1) or (
                     key != 7 and self.sensor_values[key] <= self.ultrasonic_minimum_distance):
                 self.stop = True
-                print("True")
-            else:
-                print("False")
-
-        print(stop_value)
-        print("\n\n")
 
         self.stop = stop_value
 
 
     def serial_read(self):
         while self.serial_read_thread_running:
-
             read = self.ser.read()
 
             if read == b'S':
