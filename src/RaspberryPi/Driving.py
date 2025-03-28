@@ -58,8 +58,7 @@ class Driving:
                         case "a":
                             self.drive_one_unit(MotorDirections.LEFT)
 
-                    self.directions_memory.write_string(destination_driving)
-
+                    
 
                 self.directions_memory.write_string("")
             else:
