@@ -36,13 +36,17 @@ def state_destination():
             with col1:
                 st.button("# back to select", on_click=back_to_select)
             with col2:
-                st.button("# stop", on_click=direction_update, args=("s"))
+                st.button("# stop", on_click=stop)
         case _:
             raise UnknownDestinationDrivingState(st.session_state["destination_driving_state"])
 
 def back_to_select():
     st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
     st.rerun()
+
+def stop():
+    direction_update("s")
+    back_to_select()
 
 def select_destination():
     # data = np.loadtxt('Frontend/data.txt')
