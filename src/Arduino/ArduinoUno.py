@@ -19,7 +19,7 @@ class Sensors(Enum):
 
 class ArduinoUno:
 
-    def __init__(self, port='/dev/ttyACM0', baudrate=19200, timeout=1, ultrasonic_minimum_distance=10):
+    def __init__(self, port='/dev/ttyACM0', baudrate=19200, timeout=1, ultrasonic_minimum_distance=1):
         try:
             arduino = pyduinocli.Arduino("./src/Arduino/arduino-cli")
             brds = arduino.board.list()
