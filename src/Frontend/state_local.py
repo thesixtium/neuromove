@@ -10,18 +10,24 @@ import numpy as np
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 
-from src.RaspberryPi.SharedMemory import SharedMemory
-
 def state_local():
     print("LOCAL DRIVING")
     move_content()
     local_driving_grid()
 
+    display_string = "No previous selection"
+    if st.session_state["last_bci_selection"] is not None:
+        selection = st.session_state["last_bci_selection"]
+        display_string = f"Read {selection} from BCI controller"
+
+    st.text(display_string)
+ 
     read_string = st.session_state['bci_selection_memory'].read_string()
     if len(read_string) > 0 and "[" in read_string:
         st.session_state["waiting_for_bci_response"] = False
         print(f"RECEIVED {read_string} FROM SHARED MEM")
         st.session_state['bci_selection_memory'].write_string("   ")
+        st.session_state['last_bci_selection'] = read_string
         read_string = read_string.strip()
 
         match read_string:
