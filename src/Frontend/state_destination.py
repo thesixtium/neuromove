@@ -20,12 +20,12 @@ def state_destination():
     match st.session_state["destination_driving_state"]:
         case DestinationDrivingStates.MAP_ROOM:
             occupancy_grid = []
-            # while True:
-            #     occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
-            #     if len(occupancy_grid) != 0:
-            #         st.session_state["occupancy_grid"] = occupancy_grid
-            #         st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
-            #         break`
+            while True:
+                occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
+                if len(occupancy_grid) != 0:
+                    st.session_state["occupancy_grid"] = occupancy_grid
+                    st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
+                    break
             st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
             st.rerun()
         case DestinationDrivingStates.SELECT_DESTINATION:
