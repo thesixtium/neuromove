@@ -36,13 +36,9 @@ def state_destination():
             with col1:
                 st.button("# back to select", on_click=back_to_select)
             with col2:
-                st.button("# stop", on_click=stop_travelling)
+                st.button("# stop", on_click=direction_update, args=("s"))
         case _:
             raise UnknownDestinationDrivingState(st.session_state["destination_driving_state"])
-
-def stop_travelling():
-    #ALEKS HERE
-    pass
 
 def back_to_select():
     st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
