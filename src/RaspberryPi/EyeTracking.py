@@ -94,4 +94,4 @@ class EyeTracking:
                     #prediction = 1
                     self.eye_tracking_memory.write_string(str(prediction))
                     print(f"Eye Tracking: {prediction}")
-                    time.sleep(0.5)
+                    time.sleep(2.5)

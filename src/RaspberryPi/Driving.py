@@ -36,6 +36,9 @@ class Driving:
             local_driving_direction = self.local_driving_memory.read_local_driving()
             destination_driving = self.directions_memory.read_string()
 
+            print(f"local_driving_direction: {local_driving_direction}")
+            print(f"destination_driving: {destination_driving}")
+
             if destination_driving != "":
                 print("\n\nDESTINATION DRIVE TIME\n")
                 while destination_driving != "":
@@ -60,6 +63,8 @@ class Driving:
                 self.directions_memory.write_string("")
             else:
                 self.drive_one_unit(local_driving_direction)
+
+            time.sleep(1)
 
     def close(self):
         self.arduino_uno.close()
@@ -95,6 +100,7 @@ class Driving:
         time.sleep(2)
 
     def drive_one_unit(self, direction):
+        print(f"Drive One Unit: {direction}")
         match direction:
             case MotorDirections.FORWARD:
                 time_to_drive = time.time() + self.t_accel + self.t_const
