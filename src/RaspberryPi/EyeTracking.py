@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import os
 import joblib
@@ -92,3 +94,4 @@ class EyeTracking:
                     #prediction = 1
                     self.eye_tracking_memory.write_string(str(prediction))
                     print(f"Eye Tracking: {prediction}")
+                    time.sleep(0.5)

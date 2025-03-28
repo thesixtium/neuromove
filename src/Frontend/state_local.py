@@ -13,7 +13,6 @@ sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 from src.RaspberryPi.SharedMemory import SharedMemory
 
 def state_local():
-    print("LOCAL DRIVING")
     move_content()
     local_driving_grid()
 
