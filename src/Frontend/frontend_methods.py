@@ -163,12 +163,17 @@ def jps_wrapped(cropped_data, origin, point, display=False):
 
 def path_to_directions(path):
     drive_lookup = {
+        -225: [MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.LEFT,MotorDirections.FORWARD],
+        -180: [MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.FORWARD],
+        -135: [MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.FORWARD],
         -90: [MotorDirections.LEFT, MotorDirections.LEFT, MotorDirections.FORWARD],
         -45: [MotorDirections.LEFT, MotorDirections.FORWARD],
         -0: [MotorDirections.FORWARD],
         45: [MotorDirections.RIGHT, MotorDirections.FORWARD],
         90: [MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.FORWARD],
-        225: []
+        135: [MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.FORWARD],
+        180: [MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.FORWARD],
+        225: [MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.RIGHT, MotorDirections.FORWARD],
     }
     directions = []
     for i in range(len(path) - 1):
