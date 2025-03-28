@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 from src.RaspberryPi.jps import *
 from io import BytesIO
 from src.Frontend.frontend_methods import jps_wrapped, path_to_directions
-
+import psutil
+process = psutil.Process()
+print(f"JPS Test: {process.memory_info().rss * 0.000001}")
 
 ## I M P O R T   D A T A ###
 f = open("cropped_data.txt", "r")

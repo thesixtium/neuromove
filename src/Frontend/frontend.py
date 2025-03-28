@@ -1,3 +1,5 @@
+import psutil
+
 from frontend_setup import run_setup
 from frontend_methods import *
 
@@ -20,6 +22,8 @@ background-color: #667FAD;
 
 st.markdown(page_background, unsafe_allow_html=True)
 
+process = psutil.Process()
+print(f"Frontend: {process.memory_info().rss * 0.000001}")
 match st.session_state["state"]:
     case States.SETUP:
         state_setup()
