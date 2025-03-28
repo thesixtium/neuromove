@@ -5,6 +5,7 @@ import time
 from frontend_methods import *
 import sys
 import os
+import numpy as np
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
@@ -12,6 +13,7 @@ sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/Frontend", "")))
 from src.RaspberryPi.SharedMemory import SharedMemory
 
 def state_local():
+    print("LOCAL DRIVING")
     move_content()
     local_driving_grid()
 
@@ -38,19 +40,38 @@ def state_local():
 
     if len(st.session_state["flash_sequence"]) > 0:
         print("FLASHING")
+        f = open("status.txt", "a")
+        f.write("FLASHING")
+        f.close()
+
         st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
         time.sleep(0.1)
         st.rerun()
     elif st.session_state["waiting_for_bci_response"] == True:
         print("WAITING FOR BCI")
+        f = open("status.txt", "a")
+        f.write("WAITING FOR BCI")
+        f.close()
         time.sleep(0.5)
         st.rerun()
-    elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "0":
+    elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "[0]":
         print("EYES AWAY")
+        f = open("status.txt", "a")
+        f.write("EYES AWAY")
+        f.close()
         time.sleep(0.1)
         st.rerun()
-    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "1" and st.session_state["running"] == True and st.session_state["state"] == States.LOCAL:
+    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() != "[1]" and st.session_state["running"] == True and st.session_state["state"] == States.LOCAL:
         print("NEW DATA")
+        f = open("status.txt", "a")
+        f.write("NEW DATA")
+        f.close()
         give_local_sequence_list()
         st.rerun()
+    else:
+        print("BRO")
+        print(st.session_state["waiting_for_bci_response"])
+        print(st.session_state["eye_tracking_memory"].read_string())
+        print(st.session_state["running"])
+        print(st.session_state["state"])
     
