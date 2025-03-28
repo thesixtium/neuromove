@@ -13,7 +13,8 @@ from mediapipe.tasks.python import vision
 
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.InternalException import EyeTrackingNoRet
-
+import warnings
+warnings.filterwarnings("ignore")
 
 class EyeTracking:
     def __init__(self):
