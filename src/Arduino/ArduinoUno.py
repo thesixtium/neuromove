@@ -60,9 +60,9 @@ class ArduinoUno:
 
     def update(self, sensor: Sensors, value: int):
         self.sensor_values[sensor.value] = value
-        if (sensor.value == 7 and value == 1) or (sensor.value != 7 and value <= self.ultrasonic_minimum_distance):
-            print("\n\n\n\n\nPANIC\n\n\n\n\n")
-            raise SensorDistanceAlert(sensor.name)
+        #if (sensor.value == 7 and value == 1) or (sensor.value != 7 and value <= self.ultrasonic_minimum_distance):
+        #    print("\n\n\n\n\nPANIC\n\n\n\n\n")
+        #    raise SensorDistanceAlert(sensor.name)
 
 
     def serial_read(self):
