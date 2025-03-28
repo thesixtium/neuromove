@@ -16,7 +16,7 @@ from src.RaspberryPi.InternalException import EyeTrackingNoRet
 class EyeTracking:
     def __init__(self):
         self.eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=False)
-        self.model = joblib.load(os.path.join("src", "RaspberryPi", "GeneralizedModel2Edit5"))
+        self.model = joblib.load(os.path.join("src", "RaspberryPi", "GeneralizedModel3Compress9"))
 
         # Create a FaceLandmarker object.
         base_options = python.BaseOptions(model_asset_path=os.path.join("src", "RaspberryPi", "face_landmarker2.task"))
@@ -36,7 +36,7 @@ class EyeTracking:
         self.feature_window = deque(maxlen=self.window_size)
 
         self.eye_tracking_thread_running = True
-        self.eye_tracking_thread = threading.Thread(target=self.eye_tracking)
+        self.eye_tracking_thread = threading.Thread(target=self.serial_read)
         self.eye_tracking_thread.start()
 
     def close(self):
@@ -44,7 +44,7 @@ class EyeTracking:
         self.cap.release()
         cv2.destroyAllWindows()
 
-    def eye_tracking(self):
+    def serial_read(self):
         while self.eye_tracking_thread_running:
             ret, frame = self.cap.read()
             if not ret:
