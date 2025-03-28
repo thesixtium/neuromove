@@ -266,7 +266,7 @@ def start():
 
 def training():
     col1, col2, col3= st.columns([5,1,1])
-    targets = ["↑", "←", "⯃", "→", "⇄"]
+    targets = ["↑", "←", "X", "→", "⇄"]
 
     with col1:
         with stylable_container("training_header", get_training_header_style()):
