@@ -22,7 +22,7 @@ from src.RaspberryPi.jps import *
 
 from src.RaspberryPi.States import MotorDirections
 import math
-NUMBER_OF_TRAINING_CYCLES = 20
+NUMBER_OF_TRAINING_CYCLES = 5
 NUMBER_OF_DECISION_CYCLES = 5
 
 def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
