@@ -14,6 +14,7 @@ occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, cr
 LiDAR_runs_memory = SharedMemory(shem_name="LiDAR_runs", size=284622, create=True)
 
 RunLiDAR()
+print("LiDAR thread started")
 
 start_time = time.time()
 hertz = []
@@ -44,5 +45,7 @@ while True:
             now = time.time() - start_time
             hertz.append(now / runs)
         plt.plot(hertz)
+    else:
+        print("No value")
 
     plt.show()
