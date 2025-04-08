@@ -1,6 +1,7 @@
 import subprocess
 import threading
-
+import os
+import sys
 
 class RunLiDAR:
     def __init__(self):
@@ -8,4 +9,5 @@ class RunLiDAR:
         self.serial_read_thread.start()
 
     def start(self):
-        subprocess.run(["dir && cmake .. && make -j2 && ../bin/aleks_lidar"])
+#        subprocess.run(["cd -P ~/Documents/neuromove/src/LiDAR/build && cmake .. && make -j2 && ../bin/aleks_lidar"], shell=True)
+        subprocess.run(["cd -P ~/Documents/neuromove/src/LiDAR/build && ../bin/aleks_lidar"], shell=True)
