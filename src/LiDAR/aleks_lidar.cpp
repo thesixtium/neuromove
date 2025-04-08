@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
+#include <chrono>
 
 using namespace unitree_lidar_sdk;
 
@@ -103,7 +104,9 @@ int main(){
     if ( addr_imu == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
     // Read Data
+    int runs = 0
     while (true) {
+        auto t1 = std::chrono::high_resolution_clock::now();
         result = lreader->runParse(); // You need to call this function at least 1500Hz
 
         switch (result) {
@@ -146,25 +149,17 @@ int main(){
                 break;
             }
 
-
-            case IMU: {
-                std::string values;
-
-                values += std::to_string( lreader->getIMU().quaternion[0] );
-                values += ",";
-                values += std::to_string( lreader->getIMU().quaternion[1] );
-                values += ",";
-                values += std::to_string( lreader->getIMU().quaternion[2] );
-                values += ",";
-                values += std::to_string( lreader->getIMU().quaternion[3] );
-                
-                strncpy( (char *)addr_imu, values.data(), shm_size_imu );
-                break;
-            }
-
             default:
                 break;
         }
+
+        auto t2 = std::chrono::high_resolution_clock::now();
+        runs = runs + 1;
+
+        std::chrono::duration<double, std::milli> ms_double = t2 - t1;
+        auto milliseconds = ms_double.count();
+        auto hertz = 1 / (milliseconds / 1000);
+        std::out << "F: " << hertz << std::endl;
     }
 
     return 0;
