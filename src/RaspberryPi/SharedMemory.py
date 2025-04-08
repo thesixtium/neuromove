@@ -4,7 +4,7 @@ from multiprocessing import shared_memory
 import numpy as np
 
 from src.RaspberryPi.InternalException import DidNotCreateSharedMemory, NotEnoughSharedMemory
-from src.Arduino.ArduinoUno import MotorDirections
+from src.RaspberryPi.States import MotorDirections
 from src.RaspberryPi.States import States, DestinationDrivingStates
 
 class SharedMemory:
@@ -28,6 +28,11 @@ class SharedMemory:
         self._check_size(encoded)
         self.memory.buf[:len(encoded)] = encoded
 
+    def write_enum(self, enum):
+        encoded = enum.value.encode()
+        self._check_size(encoded)
+        self.memory.buf[:len(encoded)] = encoded
+
     def write_np_array(self, array):
         encoded = str(array).encode()
         self._check_size(encoded)
@@ -48,9 +53,15 @@ class SharedMemory:
 
         if value:
             value = value.replace("[", "").replace("]", "")
-            value_split = value.split("\n")
-            value_split = [[int(k) for k in list(filter(lambda j: j != '', i.split(" ")))] for i in value_split]
-            return np.array(value_split)
+            value_split = value.split("|")
+            data = []
+            for values in value_split:
+                new_line = []
+                for number in values:
+                    new_line.append(int(number))
+                if len(new_line) != 0:
+                    data.append(new_line)
+            return np.array(data)
         else:
             return []
 

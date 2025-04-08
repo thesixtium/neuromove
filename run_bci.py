@@ -1,6 +1,6 @@
 import asyncio
 from time import sleep
-from os.path import join, dirname
+from os.path import join, dirname, exists
 
 from src.RaspberryPi.InternalException import BciSetupException
 from src.RaspberryPi.SharedMemory import SharedMemory
@@ -9,11 +9,11 @@ from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMesse
 from src.RaspberryPi.BCI.bci_essentials_wrapper import Bessy, load_and_return_model
 
     
-async def main():
-    messenger = SharedMemoryMessenger(False)
+def run_bci():
+    messenger = SharedMemoryMessenger(debug=False, confidence=0.2)
 
-    print("DONE CONSTRUCTOR")
     bessy = Bessy(messenger=messenger)
+    print("DONE CONSTRUCTOR")
 
     # wait for result from shared memory
     bci_mem = SharedMemory(shem_name="bci_selection", size=20, create=False)
@@ -23,50 +23,22 @@ async def main():
         sleep(0.5)
         name = bci_mem.read_string()
 
-    model = None
     if name != "N/A":
         model_file_name = "save_on_exit_" + name + ".pk1"
         model_path = join(dirname(__file__), "models", model_file_name)
-
-        try:
-            model = load_and_return_model(model_path)
-        except FileNotFoundError:
-            raise BciSetupException("Model does not exist")
-
-    bessy.set_model(model)
+        if exists(model_path):
+            bessy.set_model(name)
+        else:
+            bessy.set_username(name)
     print("DONE SETTING MODEL")
         
-    await bessy.run()
+    bessy.run()
 
-async def run_main():
-    stop_event = asyncio.Event()
 
-    async def wait_for_exit():
-        try:
-            while not stop_event.is_set():
-                await asyncio.sleep(0.5)
-        except asyncio.CancelledError:
-            pass
-
-    task = asyncio.create_task(main())
-    stop_task = asyncio.create_task(wait_for_exit())
-
-    try:
-        await stop_task  # Wait for Ctrl+C
-    except asyncio.CancelledError:
-        pass
-
-    print("Stopping main task...")
-    task.cancel()
-
-    try:
-        await task
-    except asyncio.CancelledError:
-        pass  # Cleanup already handled
 
 if __name__ == "__main__":
     try:
-        asyncio.run(run_main())
+        run_bci()
     except KeyboardInterrupt:
         print("Received Ctrl+C, shutting down gracefully.")
 

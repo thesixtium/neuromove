@@ -19,10 +19,10 @@ int cloud_scan_num = 18;
 std::string port_name = "/dev/ttyUSB0";
 
 // Constants - Occupancy Grid
-int z1 = 1; // meters
+int z1 = 1.3; // meters
 int LiDAR_radius_cm = 4000;
-int resolution = 20;
-int NEEDED_POINTCLOUDS_READ = 5;
+int resolution = 24;
+int NEEDED_POINTCLOUDS_READ = 30;
 
 int point_cloud_to_grid(int resolution, float pc){
   return static_cast<int>(round((pc*100) / resolution));
@@ -85,9 +85,9 @@ int main(){
     const char * shmem_name_oc = "occupancy_grid";
     int shmem_fd_oc = shm_open( shmem_name_oc, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
     if ( shmem_fd_oc == -1 ) { perror("shm_open"); return 1; }
-    std::cout << "Shared Memory segment opened with fd " << shmem_fd_oc << std::endl;
+    std::cout << "OC Shared Memory segment opened with fd " << shmem_fd_oc << std::endl;
     if ( ftruncate( shmem_fd_oc, shm_size_oc ) == -1 ) { perror( "ftruncate" ); return 1; }
-    std::cout << "Shared Memory segment resized to " << shm_size_oc << std::endl;
+    std::cout << "OC Shared Memory segment resized to " << shm_size_oc << std::endl;
     void * addr_oc = mmap( 0, shm_size_oc, PROT_WRITE, MAP_SHARED, shmem_fd_oc, 0 );
     if ( addr_oc == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
@@ -96,18 +96,17 @@ int main(){
     const char * shmem_name_imu = "imu";
     int shmem_fd_imu = shm_open( shmem_name_imu, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
     if ( shmem_fd_imu == -1 ) { perror("shm_open"); return 1; }
-    std::cout << "Shared Memory segment opened with fd " << shmem_fd_imu << std::endl;
+    std::cout << "IMU Shared Memory segment opened with fd " << shmem_fd_imu << std::endl;
     if ( ftruncate( shmem_fd_imu, shm_size_imu ) == -1 ) { perror( "ftruncate" ); return 1; }
-    std::cout << "Shared Memory segment resized to " << shm_size_imu << std::endl;
+    std::cout << "I M U Shared Memory segment resized to " << shm_size_imu << std::endl;
     void * addr_imu = mmap( 0, shm_size_imu, PROT_WRITE, MAP_SHARED, shmem_fd_imu, 0 );
     if ( addr_imu == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
-    // Read Data
     while (true) {
         result = lreader->runParse(); // You need to call this function at least 1500Hz
 
-        switch (result) {
 
+        switch (result) {
 
             case POINTCLOUD: {
                 cloud = lreader->getCloud();
@@ -140,6 +139,7 @@ int main(){
                     }
 
                     strncpy( (char *)addr_oc, values.data(), shm_size_oc );
+                    pointcloud_reads = 0;
                 } else {
                     pointcloud_reads++;
                 }

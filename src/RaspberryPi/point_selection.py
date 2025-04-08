@@ -61,7 +61,7 @@ logger.debug("Logging initialized")
 def occupancy_grid_to_points(
         input_data: str = None, 
         number_of_neighbourhoods: int = 4, number_of_points_per_neighbourhood: int = 4,
-        plot_result: bool = False, save_result_to_disk: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, tuple]:
+        plot_result: bool = False, save_result_to_disk: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, tuple]:
     '''
     Takes an occupancy grid with 0s as open spaces and 1s as obstacles and returns a list of points sorted into neighbourhoods.
 
@@ -124,6 +124,7 @@ def occupancy_grid_to_points(
 
     #NOTE: is it ok if we overwrite data?
     data, origin = find_room_size(data, origin)
+    cropped_data = data.copy()
 
     logger.debug(f"Trimmed data shape: {data.shape}. New origin:  {origin}")
 
@@ -141,8 +142,9 @@ def occupancy_grid_to_points(
         raise PamFailedPointSelection(number_of_neighbourhoods, len(medoid_coordinates))
 
     # get points in each neighbourhood
-    neighbourhood_points = get_points_in_neighbourhood(data, origin, medoid_coordinates, number_of_points_per_neighbourhood)
-    logger.debug(f"neighbourhood_points shape: {neighbourhood_points.shape}")
+    # neighbourhood_points = get_points_in_neighbourhood(data, origin, medoid_coordinates, number_of_points_per_neighbourhood)
+    # logger.debug(f"neighbourhood_points shape: {neighbourhood_points.shape}")
+    neighbourhood_points = None
 
     if plot_result:
         colours = ['#202020', '#FFE18D', '#B3D88D', '#FF8383', '#E9BFE9']
@@ -166,8 +168,8 @@ def occupancy_grid_to_points(
 
         dark_colours = ['#B78B14', '#547A2E', '#A62424', '#864385']
 
-        for i in range(number_of_neighbourhoods):
-            plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=dark_colours[i])
+        # for i in range(number_of_neighbourhoods):
+        #     plt.scatter(neighbourhood_points[i][:, 1], neighbourhood_points[i][:, 0], color=dark_colours[i])
 
         # replot medoids to make sure they're on top
         plt.scatter(medoid_coordinates[:, 1], medoid_coordinates[:, 0], color='black')
@@ -188,14 +190,15 @@ def occupancy_grid_to_points(
     if save_result_to_disk:
         np.savetxt("data.txt", data)
         np.savetxt('middles.txt', medoid_coordinates)
-        np.savetxt('neighbourhood_points.txt', neighbourhood_points.flatten())
+        # np.savetxt('neighbourhood_points.txt', neighbourhood_points.flatten())
         np.savetxt('origin.txt', origin)
 
-    return data, medoid_coordinates, neighbourhood_points, origin 
+    return data, cropped_data, medoid_coordinates, neighbourhood_points, origin
 
 def format_data(raw_data: np.ndarray = None) -> Tuple[np.ndarray, tuple]:
-    data = literal_eval(raw_data)
-    data = np.array(data).T
+    data = raw_data.T
+    #data = literal_eval(raw_data)
+    #data = np.array(data).T
     
     if len(data.shape) != 2:
         raise InvalidValueToPointSelection("Data must be a 2D array")
@@ -466,6 +469,9 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
                 if j > max_x:
                     max_x = j
 
+    # limit to only stuff in front of chair
+    min_y = max(min_y, origin[1])
+
     # bottom left & top right corners
     top_right = (max_x, max_y)
     bottom_left = (min_x, min_y)  
@@ -494,7 +500,9 @@ def find_room_size(data: np.ndarray, origin: tuple) -> tuple[np.ndarray, tuple]:
 
 if __name__ == "__main__":
     # load in data from testData
-    with open('src/LiDAR/testData', 'r') as file:
-        data_str = file.read()
+    with open('raw_occupancy_grid.txt', 'r') as file:
+        data_str = file.readlines()
 
-    selected_points = occupancy_grid_to_points(input_data=data_str, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4, save_result_to_disk=True)
+    array_2d = np.array([list(map(float, line.split())) for line in data_str])
+
+    selected_points = occupancy_grid_to_points(input_data=array_2d, plot_result=True, number_of_neighbourhoods=4, number_of_points_per_neighbourhood=4, save_result_to_disk=True)
