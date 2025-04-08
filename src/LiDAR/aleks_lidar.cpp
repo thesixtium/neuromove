@@ -92,23 +92,21 @@ int main(){
     void * addr_oc = mmap( 0, shm_size_oc, PROT_WRITE, MAP_SHARED, shmem_fd_oc, 0 );
     if ( addr_oc == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
-    // IMU Shared Memory
-    size_t shm_size_imu = 284622;
-    const char * shmem_name_imu = "imu";
-    int shmem_fd_imu = shm_open( shmem_name_imu, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
-    if ( shmem_fd_imu == -1 ) { perror("shm_open"); return 1; }
-    std::cout << "Shared Memory segment opened with fd " << shmem_fd_imu << std::endl;
-    if ( ftruncate( shmem_fd_imu, shm_size_imu ) == -1 ) { perror( "ftruncate" ); return 1; }
-    std::cout << "Shared Memory segment resized to " << shm_size_imu << std::endl;
-    void * addr_imu = mmap( 0, shm_size_imu, PROT_WRITE, MAP_SHARED, shmem_fd_imu, 0 );
-    if ( addr_imu == MAP_FAILED ) { perror( "mmap" ); return 1; }
+    // LiDAR Runs Shared Memory
+    size_t shm_size_runs = 284622;
+    const char * shmem_name_runs = "LiDAR_runs";
+    int shmem_fd_runs = shm_open( shmem_name_runs, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
+    if ( shmem_fd_runs == -1 ) { perror("shm_open"); return 1; }
+    std::cout << "Shared Memory segment opened with fd " << shmem_fd_runs << std::endl;
+    if ( ftruncate( shmem_fd_runs, shm_size_runs ) == -1 ) { perror( "ftruncate" ); return 1; }
+    std::cout << "Shared Memory segment resized to " << shm_size_runs << std::endl;
+    void * addr_runs = mmap( 0, shm_size_runs, PROT_WRITE, MAP_SHARED, shmem_fd_runs, 0 );
+    if ( addr_runs == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
     // Read Data
     int runs = 0
     while (true) {
-        auto t1 = std::chrono::high_resolution_clock::now();
         result = lreader->runParse(); // You need to call this function at least 1500Hz
-
         switch (result) {
 
 
@@ -153,13 +151,8 @@ int main(){
                 break;
         }
 
-        auto t2 = std::chrono::high_resolution_clock::now();
-        runs = runs + 1;
-
-        std::chrono::duration<double, std::milli> ms_double = t2 - t1;
-        auto milliseconds = ms_double.count();
-        auto hertz = 1 / (milliseconds / 1000);
-        std::out << "F: " << hertz << std::endl;
+        std::string runs_string = std::to_string( runs++ );
+        strncpy( (char *)addr_runs, runs_string.data(), shm_size_runs );
     }
 
     return 0;
