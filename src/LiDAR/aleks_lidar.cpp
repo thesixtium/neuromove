@@ -1,5 +1,4 @@
-// pi@raspberrypi:~/Documents/neuromove/src/LiDAR/bin $ cmake .. && make -j2 && sudo ../bin/aleks_lidar
-
+// pi@raspberrypi:~/Documents/neuromove/src/LiDAR/ $ cmake . && make -j2
 
 #include "unitree_lidar_sdk.h"
 #include "udp_handler.h"
@@ -22,7 +21,7 @@ std::string port_name = "/dev/ttyUSB0";
 // Constants - Occupancy Grid
 int z1 = 1; // meters
 int LiDAR_radius_cm = 4000;
-int resolution = 2;
+int resolution = 8;
 int NEEDED_POINTCLOUDS_READ = 100;
 
 int point_cloud_to_grid(int resolution, float pc){
@@ -67,10 +66,12 @@ int main(){
     sleep(2);
 
     // Occupancy Grid Sizing
+    std::cout << "Occupancy Grid Sizing" << std::endl;
     int grid_height = (LiDAR_radius_cm * 2) / resolution;
     int grid_width = grid_height;
 
     // Parse PointCloud and IMU data
+    std::cout << "Parse PointCloud and IMU data" << std::endl;
     MessageType result;
     std::string version;
     PointCloudUnitree cloud;
@@ -82,7 +83,8 @@ int main(){
     int pointcloud_reads = 0;
 
     // OC Shared Memory
-    size_t shm_size_oc = 284622;
+    std::cout << "OC Shared Memory" << std::endl;
+    size_t shm_size_oc = 28462200;
     const char * shmem_name_oc = "occupancy_grid";
     int shmem_fd_oc = shm_open( shmem_name_oc, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
     if ( shmem_fd_oc == -1 ) { perror("shm_open"); return 1; }
@@ -92,19 +94,7 @@ int main(){
     void * addr_oc = mmap( 0, shm_size_oc, PROT_WRITE, MAP_SHARED, shmem_fd_oc, 0 );
     if ( addr_oc == MAP_FAILED ) { perror( "mmap" ); return 1; }
 
-    // LiDAR Runs Shared Memory
-    size_t shm_size_runs = 284622;
-    const char * shmem_name_runs = "LiDAR_runs";
-    int shmem_fd_runs = shm_open( shmem_name_runs, O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
-    if ( shmem_fd_runs == -1 ) { perror("shm_open"); return 1; }
-    std::cout << "Shared Memory segment opened with fd " << shmem_fd_runs << std::endl;
-    if ( ftruncate( shmem_fd_runs, shm_size_runs ) == -1 ) { perror( "ftruncate" ); return 1; }
-    std::cout << "Shared Memory segment resized to " << shm_size_runs << std::endl;
-    void * addr_runs = mmap( 0, shm_size_runs, PROT_WRITE, MAP_SHARED, shmem_fd_runs, 0 );
-    if ( addr_runs == MAP_FAILED ) { perror( "mmap" ); return 1; }
-
     // Read Data
-    int runs = 0
     while (true) {
         result = lreader->runParse(); // You need to call this function at least 1500Hz
         switch (result) {
@@ -131,17 +121,24 @@ int main(){
                 if ( pointcloud_reads >= NEEDED_POINTCLOUDS_READ ) {
                     // Write values to memory and erase old grid
                     std::string values;
+                    int points = 0;
+                    int total = 0;
 
                     for( int i = 0; i < grid_width; i++ ) {
                         for( int j = 0; j < grid_height; j++ ) {
                             values += std::to_string( occupancy_grid[i][j] );
+                            if (occupancy_grid[i][j] == 1){
+                                points += 1;
+                            }
+                            total += 1;
                             occupancy_grid[i][j] = 0;
                         }
                         values += "|";
                     }
 
                     strncpy( (char *)addr_oc, values.data(), shm_size_oc );
-                    std::cout << "Cloud" << std::endl;
+                    pointcloud_reads = 0;
+                    std::cout << "Cloud: " << points << "/" << total << std::endl;
                 } else {
                     pointcloud_reads++;
                 }
@@ -151,9 +148,6 @@ int main(){
             default:
                 break;
         }
-
-        std::string runs_string = std::to_string( runs++ );
-        strncpy( (char *)addr_runs, runs_string.data(), shm_size_runs );
     }
 
     return 0;

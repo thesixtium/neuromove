@@ -1,0 +1,3 @@
+/home/pi/Documents/neuromove/src/LiDAR/CMakeFiles/aleks_lidar.dir
+/home/pi/Documents/neuromove/src/LiDAR/CMakeFiles/edit_cache.dir
+/home/pi/Documents/neuromove/src/LiDAR/CMakeFiles/rebuild_cache.dir
