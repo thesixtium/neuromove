@@ -1,8 +1,15 @@
+import os
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/test", "")))
+
 from src.LiDAR.build.RunLiDAR import RunLiDAR
 from src.RaspberryPi.SharedMemory import SharedMemory
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+
 occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
 LiDAR_runs_memory = SharedMemory(shem_name="LiDAR_runs", size=284622, create=True)
 RunLiDAR()
