@@ -49,13 +49,13 @@ while True:
         cropped_grid = [row[min_col:max_col + 1] for row in convolved_grid[min_row:max_row + 1]]
 
         # Clear Origin
-        orign_buffer = 3
+        orign_buffer = 4
         origin = (len(grid[0]) // 2 - min_col, len(grid) // 2 - min_row)
         x_range = range(max(0, origin[1] - orign_buffer), min(len(cropped_grid), origin[1] + orign_buffer + 1))
         y_range = range(max(0, origin[0] - orign_buffer), min(len(cropped_grid[0]), origin[0] + orign_buffer + 1))
         for x in x_range:
             for y in y_range:
-                cropped_grid[x][y] = 2
+                cropped_grid[x][y] = 0
 
         # Plot
         fig = plt.figure(figsize=(6, 6))
