@@ -51,8 +51,8 @@ while True:
         # Clear Origin
         orign_buffer = 10
         origin = (len(grid[0]) // 2 - min_col, len(grid) // 2 - min_row)
-        x_range = range(max(0, origin[0] - orign_buffer), min(len(grid), origin[0] + orign_buffer + 1))
-        y_range = range(max(0, origin[1] - orign_buffer), min(len(grid[0]), origin[1] + orign_buffer + 1))
+        x_range = range(max(0, origin[0] - orign_buffer), min(len(cropped_grid), origin[0] + orign_buffer + 1))
+        y_range = range(max(0, origin[1] - orign_buffer), min(len(cropped_grid[0]), origin[1] + orign_buffer + 1))
         for x in x_range:
             for y in y_range:
                 cropped_grid[x][y] = 2
