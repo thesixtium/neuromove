@@ -20,8 +20,6 @@ while True:
     grid = occupancy_grid_memory.read_grid()
 
     if len(grid) > 1:
-        # Origin
-        origin = (len(grid[0]) // 2, len(grid) // 2)
 
         # Convolve
         convolved_grid = [[0 for _ in grid[0]] for _ in grid]
@@ -49,6 +47,9 @@ while True:
                     min_col = min(min_col, c)
                     max_col = max(max_col, c)
         cropped_grid = [row[min_col:max_col + 1] for row in convolved_grid[min_row:max_row + 1]]
+
+        # Origin
+        origin = (len(grid[0]) // 2 - min_col, len(grid) // 2 - min_row)
 
         # Plot
         fig = plt.figure(figsize=(6, 6))
