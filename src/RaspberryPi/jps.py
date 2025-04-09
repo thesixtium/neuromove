@@ -271,3 +271,20 @@ def get_full_path(path):
             cur_y += _signum(path[i + 1][1] - path[i][1])
             result.append((cur_x, cur_y))
     return result
+
+def get_jps_path(grid, origin, target):
+    for x in range(len(grid)):
+        grid[x][0] = 1
+        grid[x][len(grid[0]) - 1] = 1
+
+    for y in range(len(grid[0])):
+        grid[0][y] = 1
+        grid[len(grid) - 1][y] = 1
+
+    ### P A T H ###
+    flipped_path = get_full_path(jps(grid, origin[1], origin[0], target[1], target[0]))
+    path = []
+    for path_point in flipped_path:
+        path.append((path_point[1], path_point[0]))
+
+    return path
