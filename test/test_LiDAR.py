@@ -1,6 +1,8 @@
 import os
 import sys
 
+from networkx.algorithms.bipartite.basic import color
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR.replace(r"/test", r"/src")))
 
@@ -15,20 +17,21 @@ occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=28462200, 
 RunLiDAR()
 print("LiDAR thread started")
 
-start_time = time.time()
-hertz = []
+edge_buffer = 2
 while True:
     grid = occupancy_grid_memory.read_grid()
 
     if len(grid) > 1:
+        # Origin
+        origin = (len(grid) // 2, len(grid[0]) // 2)
+
         # Convolve
         convolved_grid = [[0 for _ in grid[0]] for _ in grid]
         for i in range(len(grid)):
             for j in range(len(grid[0])):
                 if grid[i][j] == 1:
-                    x_range = range(max(0, i-3), min(len(grid), i+4))
-                    y_range = range(max(0, j-3), min(len(grid[0]), j+4))
-
+                    x_range = range(max(0, i-edge_buffer), min(len(grid), i+edge_buffer+1))
+                    y_range = range(max(0, j-edge_buffer), min(len(grid[0]), j+edge_buffer+1))
                     for x in x_range:
                         for y in y_range:
                             convolved_grid[x][y] = 1
@@ -47,11 +50,11 @@ while True:
                     max_row = max(max_row, r)
                     min_col = min(min_col, c)
                     max_col = max(max_col, c)
-
         cropped_grid = [row[min_col:max_col + 1] for row in convolved_grid[min_row:max_row + 1]]
 
+        # Plot
         fig = plt.figure(figsize=(6, 6))
         ax = fig.add_subplot()
         plt.imshow(cropped_grid)
-
+        plt.scatter(origin[0], origin[1], color="red")
         plt.show()
