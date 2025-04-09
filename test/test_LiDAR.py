@@ -49,9 +49,10 @@ while True:
         cropped_grid = [row[min_col:max_col + 1] for row in convolved_grid[min_row:max_row + 1]]
 
         # Clear Origin
+        orign_buffer = 10
         origin = (len(grid[0]) // 2 - min_col, len(grid) // 2 - min_row)
-        x_range = range(max(0, origin[0] - edge_buffer), min(len(grid), origin[0] + edge_buffer + 1))
-        y_range = range(max(0, origin[1] - edge_buffer), min(len(grid[0]), origin[1] + edge_buffer + 1))
+        x_range = range(max(0, origin[0] - orign_buffer), min(len(grid), origin[0] + orign_buffer + 1))
+        y_range = range(max(0, origin[1] - orign_buffer), min(len(grid[0]), origin[1] + orign_buffer + 1))
         for x in x_range:
             for y in y_range:
                 convolved_grid[x][y] = 2
