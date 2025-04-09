@@ -21,8 +21,8 @@ while True:
     grid = occupancy_grid_memory.read_grid()
 
     if len(grid) > 1:
+        # Convolve
         convolved_grid = [[0 for _ in grid[0]] for _ in grid]
-
         for i in range(len(grid)):
             for j in range(len(grid[0])):
                 if grid[i][j] == 1:
@@ -33,9 +33,25 @@ while True:
                         for y in y_range:
                             convolved_grid[x][y] = 1
 
+        # Shrink
+        rows = len(convolved_grid)
+        cols = len(convolved_grid[0])
+        min_row = rows
+        max_row = -1
+        min_col = cols
+        max_col = -1
+        for r in range(rows):
+            for c in range(cols):
+                if convolved_grid[r][c] == 1:
+                    min_row = min(min_row, r)
+                    max_row = max(max_row, r)
+                    min_col = min(min_col, c)
+                    max_col = max(max_col, c)
+
+        cropped_grid = [row[min_col:max_col + 1] for row in convolved_grid[min_row:max_row + 1]]
+
         fig = plt.figure(figsize=(6, 6))
         ax = fig.add_subplot()
-        plt.imshow(grid)
-        plt.imshow(convolved_grid, alpha=0.5)
+        plt.imshow(cropped_grid)
 
         plt.show()
