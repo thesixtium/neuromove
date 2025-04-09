@@ -21,7 +21,7 @@ while True:
 
     if len(grid) > 1:
         # Origin
-        origin = (len(grid) // 2, len(grid[0]) // 2)
+        origin = (len(grid[0]) // 2, len(grid) // 2)
 
         # Convolve
         convolved_grid = [[0 for _ in grid[0]] for _ in grid]
