@@ -47,7 +47,7 @@ class ArduinoUno:
                 time_to_drive = self.t_accel + self.t_const
             case _:
                 direction = MotorDirections.STOP
-                time_to_drive = 0
+                time_to_drive = self.t_accel + self.t_const
 
         self.ser.write(direction.value)
         time.sleep(time_to_drive)
