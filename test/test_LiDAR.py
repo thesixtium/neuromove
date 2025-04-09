@@ -54,7 +54,7 @@ while True:
         y_range = range(max(0, origin[1] - edge_buffer), min(len(grid[0]), origin[1] + edge_buffer + 1))
         for x in x_range:
             for y in y_range:
-                convolved_grid[x][y] = 0
+                convolved_grid[x][y] = 2
 
         # Plot
         fig = plt.figure(figsize=(6, 6))
