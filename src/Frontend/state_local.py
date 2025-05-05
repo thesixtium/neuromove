@@ -53,7 +53,11 @@ def state_local():
             st.session_state["waiting_for_bci_response"] = False
         time.sleep(0.5)
         st.rerun()
-    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["running"] == True:
+    elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "[0]":
+        time.sleep(0.1)
+        st.rerun()
+    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "[1]" and st.session_state["running"] == True and st.session_state["state"] == States.LOCAL:
         give_local_sequence_list()
         st.rerun()
+
     

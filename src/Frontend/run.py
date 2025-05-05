@@ -1,4 +1,5 @@
 import threading
+from time import sleep
 from streamlit.web.bootstrap import run
 import os
 import asyncio
@@ -16,4 +17,10 @@ class RunUI:
         self.ui_thread.start()
 
     def start(self):
-        process = run(["streamlit", "run", r"src/Frontend/frontend.py"])
+        process = run(["streamlit", "run", r"Frontend/frontend.py"])
+
+if __name__ == "__main__": 
+    RunUI()
+
+    while True:
+        sleep(0.1)
