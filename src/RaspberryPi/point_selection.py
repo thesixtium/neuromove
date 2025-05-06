@@ -61,7 +61,7 @@ logger.debug("Logging initialized")
 def occupancy_grid_to_points(
         input_data: str = None, 
         number_of_neighbourhoods: int = 4, number_of_points_per_neighbourhood: int = 4,
-        plot_result: bool = False, save_result_to_disk: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, tuple]:
+        plot_result: bool = False, save_result_to_disk: bool = False, origin: tuple = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, tuple]:
     '''
     Takes an occupancy grid with 0s as open spaces and 1s as obstacles and returns a list of points sorted into neighbourhoods.
 
@@ -104,7 +104,9 @@ def occupancy_grid_to_points(
     ```
     '''
 
-    data, origin = format_data(raw_data=input_data)
+    data, found_origin = format_data(raw_data=input_data)
+    if origin is None:
+        origin = found_origin
     
     if number_of_neighbourhoods < 1 or number_of_points_per_neighbourhood < 1:
         raise InvalidValueToPointSelection("Number of neighbourhoods and number of points per neighbourhood must be greater than 0")
@@ -119,8 +121,8 @@ def occupancy_grid_to_points(
     elif origin[0] < 0 or origin[0] >= data.shape[1] or origin[1] < 0 or origin[1] >= data.shape[0]:
         raise InvalidValueToPointSelection(f"Origin {origin} is not within the data with shape {data.shape}")
     
-    logger.debug(f"Data has shape {data.shape}")
-    logger.debug(f"Origin: {origin}")
+    # logger.debug(f"Data has shape {data.shape}")
+    # logger.debug(f"Origin: {origin}")
 
     #NOTE: is it ok if we overwrite data?
     data, origin = find_room_size(data, origin)
@@ -185,7 +187,7 @@ def occupancy_grid_to_points(
         # Remove axis labels and whitespace
         plt.show()
 
-    logger.info("Point selection complete")
+    # logger.info("Point selection complete")
 
     if save_result_to_disk:
         np.savetxt("data.txt", data)

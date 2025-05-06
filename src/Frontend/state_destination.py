@@ -29,7 +29,6 @@ def state_destination():
             st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
             st.rerun()
         case DestinationDrivingStates.SELECT_DESTINATION:
-            print("HERE!!")
             select_destination()
         case DestinationDrivingStates.TRANSLATE_TO_MOVEMENT:
             display_path(st.session_state["cropped_data"], st.session_state["origin"], st.session_state["target_location"], st.session_state["path"])
@@ -50,10 +49,10 @@ def stop():
     back_to_select()
 
 def select_destination():
-    data = np.loadtxt('Frontend/testData2.txt')
-    print(f"DATA SHAPE {data.shape}")
+    data = np.loadtxt('Frontend/testData.txt')
+    # print(f"DATA SHAPE {data.shape}")
     origin = np.loadtxt('Frontend/origin.txt')
-    print(f"ORIGIN {origin}")
+    # print(f"ORIGIN {origin}")
     medoid_coordinates = [[14,12], [5,17],[17,26],[6,5],[5,29]]
     st.session_state["occupancy_grid"] = data
 
@@ -67,20 +66,21 @@ def select_destination():
         medoid_coordinates[i][0] = y
         medoid_coordinates[i][1] = x
 
-        print(f"({y}, {x}) -> {len(data)} x {len(data[0])}")
+        # print(f"({y}, {x}) -> {len(data)} x {len(data[0])}")
         data[x][y] = 0
 
     st.session_state["neighbourhood_grid"] = data
     st.session_state["origin"] = origin
 
     np.savetxt("after_occupancy_grid_to_points.txt", data)
-    print("occupancy_grid_to_points:\t%s" % (time.time() - start_time))
+    # print("occupancy_grid_to_points:\t%s" % (time.time() - start_time))
 
     start_time = time.time()
     move_content()
-    print("move_content:\t%s" % (time.time() - start_time))
+    # print("move_content:\t%s" % (time.time() - start_time))
 
-    colours = [BLACK, GREEN, REAL_PURPLE, PINK, ORANGE]
+    # colours = [BLACK, GREEN, REAL_PURPLE, PINK, ORANGE] # colourful for display
+    colours = [BLACK, GREEN, GREEN, GREEN, GREEN]
     switch_value = BUTTON_VALUE
 
     if len(st.session_state["map_sequence"]) > 0:
@@ -114,21 +114,21 @@ def select_destination():
 
     # TODO: GET RID OF THIS WHEN DONE DEBUGGING
     c1, c2, c3, c4 = st.columns(4)
-    print()
-    for coord in medoid_coordinates:
-        print(coord)
-    with c1:
-        with stylable_container("c1", make_value(GREEN, BLACK, BLACK)):
-            st.button("# 0", on_click=destination_driving_update, args=("0", data, origin, medoid_coordinates[0]))
-    with c2:
-        with stylable_container("c2", make_value(REAL_PURPLE, BLACK, BLACK)):
-            st.button("# 1", on_click=destination_driving_update, args=("1", data, origin, medoid_coordinates[1]))
-    with c3:
-        with stylable_container("c3", make_value(PINK, BLACK, BLACK)):
-            st.button("# 2", on_click=destination_driving_update, args=("2", data, origin, medoid_coordinates[2]))
-    with c4:
-        with stylable_container("c4", make_value(ORANGE, BLACK, BLACK)):
-            st.button("# 3", on_click=destination_driving_update, args=("3", data, origin, medoid_coordinates[3]))
+    # print()
+    # for coord in medoid_coordinates:
+    #     print(coord)
+    # with c1:`
+    #     with stylable_container("c1", make_value(GREEN, BLACK, BLACK)):
+    #         st.button("# 0", on_click=destination_driving_update, args=("0", data, origin, medoid_coordinates[0]))
+    # with c2:
+    #     with stylable_container("c2", make_value(REAL_PURPLE, BLACK, BLACK)):
+    #         st.button("# 1", on_click=destination_driving_update, args=("1", data, origin, medoid_coordinates[1]))
+    # with c3:
+    #     with stylable_container("c3", make_value(PINK, BLACK, BLACK)):
+    #         st.button("# 2", on_click=destination_driving_update, args=("2", data, origin, medoid_coordinates[2]))
+    # with c4:
+    #     with stylable_container("c4", make_value(ORANGE, BLACK, BLACK)):
+    #         st.button("# 3", on_click=destination_driving_update, args=("3", data, origin, medoid_coordinates[3]))`
 
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -179,17 +179,17 @@ def select_destination():
         time.sleep(0.5)
         st.rerun()
         
-    elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "0":
-        time.sleep(0.1)
-        st.rerun()
+    # elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "0":
+    #     time.sleep(0.1)
+    #     st.rerun()
         
-    elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "1" and st.session_state["running"] == True and st.session_state["state"] == States.DESTINATION:
+    elif st.session_state["waiting_for_bci_response"] == False: # and st.session_state["eye_tracking_memory"].read_string() == "1" and st.session_state["running"] == True and st.session_state["state"] == States.DESTINATION:
         give_map_sequence_list()
         st.rerun()
 
 def display_map(data, origin, medoid_coordinates, colours):
     start_time = time.time()
-    fig = plt.figure(figsize=(6, 4))
+    fig = plt.figure(figsize=(4, 2.75))
     fig.patch.set_visible(False)
     colourmap = ListedColormap(colours)
     plt.imshow(data, cmap=colourmap, interpolation='nearest')
@@ -205,7 +205,7 @@ def display_map(data, origin, medoid_coordinates, colours):
     buf = BytesIO()
     fig.savefig(buf, format="png")
     st.image(buf)
-    print("plot image:\t%s" % (time.time() - start_time))
+    # print("plot image:\t%s" % (time.time() - start_time))
 
 def display_path(data, origin, target, path):
     fig = plt.figure(figsize=(6, 4))
