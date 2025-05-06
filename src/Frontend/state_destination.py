@@ -29,6 +29,7 @@ def state_destination():
             st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
             st.rerun()
         case DestinationDrivingStates.SELECT_DESTINATION:
+            print("HERE!!")
             select_destination()
         case DestinationDrivingStates.TRANSLATE_TO_MOVEMENT:
             display_path(st.session_state["cropped_data"], st.session_state["origin"], st.session_state["target_location"], st.session_state["path"])
@@ -49,14 +50,17 @@ def stop():
     back_to_select()
 
 def select_destination():
-    # data = np.loadtxt('Frontend/data.txt')
-    # origin = np.loadtxt('Frontend/origin.txt')
-    # medoid_coordinates = [[14,12], [5,17],[17,26],[6,5],[5,29]]
+    data = np.loadtxt('Frontend/testData2.txt')
+    print(f"DATA SHAPE {data.shape}")
+    origin = np.loadtxt('Frontend/origin.txt')
+    print(f"ORIGIN {origin}")
+    medoid_coordinates = [[14,12], [5,17],[17,26],[6,5],[5,29]]
+    st.session_state["occupancy_grid"] = data
 
     start_time = time.time()
     np.savetxt("raw_occupancy_grid.txt", st.session_state["occupancy_grid"])
 
-    data, cropped_data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True)
+    data, cropped_data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True, origin=None)
     for i in range(len(medoid_coordinates)):
         x = medoid_coordinates[i][0]
         y = medoid_coordinates[i][1]
