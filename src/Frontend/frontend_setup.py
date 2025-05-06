@@ -13,7 +13,7 @@ from frontend_methods import *
 from enums import *
 
 def run_setup():
-    with open("src/Frontend/frontend.css") as f:
+    with open("Frontend/frontend.css") as f:
         st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
 
     if "state" not in st.session_state:
