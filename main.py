@@ -39,7 +39,6 @@ def main():
     bci = None
 
     def signal_handler(sig, frame):
-        print("IN SIG HANDLER")
         if initialized:
             # driving.close()
             eye_tracking_memory.close()
@@ -53,7 +52,7 @@ def main():
             destination_driving_state_memory.close()
             # frontend_origin_memory.close()
             bci_selection_memory.close()
-            # frontend.close()
+            frontend.close()
         print("Exited safely")
         sys.exit(3001)
 
@@ -87,7 +86,7 @@ def main():
                         bci_selection_memory = SharedMemory(shem_name="bci_selection", size=200, create=True)
                         print("Done")
 
-                        # frontend = RunUI()
+                        frontend = RunUI()
                         eye_tracking = EyeTracking()
                         bci = Bessy()
                         bci.run()
