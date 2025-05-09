@@ -17,14 +17,13 @@ def run_setup():
         st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
 
     if "state" not in st.session_state:
-        st.session_state["state"] = States.DESTINATION
+        st.session_state["state"] = States.LOCAL
 
     if "local_driving_memory" not in st.session_state:
         st.session_state["local_driving_memory"] = SharedMemory(shem_name="local_driving", size=10, create=True)
 
     if "requested_next_state_memory" not in st.session_state:
-        st.session_state["requested_next_state_memory"] = SharedMemory(shem_name="requested_next_state", size=10,
-                                                                       create=True)
+        st.session_state["requested_next_state_memory"] = SharedMemory(shem_name="requested_next_state", size=10, create=True)
     if "marker_outlet" not in st.session_state:
         st.session_state["marker_info"] = StreamInfo(
             name='MarkerStream',
@@ -55,7 +54,7 @@ def run_setup():
         st.session_state["waiting_for_bci_response"] = False
 
     if "setup_substate" not in st.session_state:
-        st.session_state["setup_substate"] = SetupStates.SELECT_USER
+        st.session_state["setup_substate"] = SetupStates.TRAIN
 
     if "screen_position" not in st.session_state:
         st.session_state["screen_position"] = ScreenPosition.CENTRE

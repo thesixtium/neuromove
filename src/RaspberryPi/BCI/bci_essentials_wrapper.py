@@ -3,16 +3,14 @@ import threading
 from time import sleep
 import joblib
 from sklearn.pipeline import Pipeline
-from os.path import join, dirname
+from os.path import join
 
-from src.RaspberryPi.BCI.input.xdf_input import OldXdfFormatInput
 from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
 from src.RaspberryPi.InternalException import BciSetupException, BessyFailedException
 
 from lib.bci_essentials.bci_essentials.io.lsl_sources import LslEegSource, LslMarkerSource
 from lib.bci_essentials.bci_essentials.io.messenger import Messenger
 from lib.bci_essentials.bci_essentials.paradigm.p300_paradigm import P300Paradigm
-from lib.bci_essentials.bci_essentials.io.xdf_sources import XdfEegSource, XdfMarkerSource
 from lib.bci_essentials.bci_essentials.data_tank.data_tank import DataTank
 from lib.bci_essentials.bci_essentials.bci_controller import BciController
 from lib.bci_essentials.bci_essentials.classification.erp_rg_classifier import ErpRgClassifier
@@ -146,12 +144,12 @@ class Bessy:
         self.__thread = threading.Thread(target=self.__bessy_step_loop)
         self.__thread.start()
 
-        while self.__thread.is_alive():
-            if self.__exception:
-                print("RAISING EXCEPTION")
-                raise self.__exception
+        # while self.__thread.is_alive():
+        #     if self.__exception:
+        #         print("RAISING EXCEPTION")
+        #         raise self.__exception
             
-            sleep(0.1)
+        #     sleep(0.1)
             
 
 

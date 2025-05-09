@@ -31,15 +31,12 @@ def main():
     current_exception = None
     eye_tracking_memory = None
     occupancy_grid_memory = None
-    point_selection_memory = None
     local_driving_memory = None
     requested_next_state_memory = None
     destination_driving_state_memory = None
-    frontend_origin_memory = None
     initialized = False
     eye_tracking  = None
-    driving = None
-    bci_thread = None
+    bci = None
 
     def signal_handler(sig, frame):
         print("IN SIG HANDLER")
@@ -47,6 +44,7 @@ def main():
             # driving.close()
             eye_tracking_memory.close()
             eye_tracking.close()
+            bci.set_stop()
             # p300_socket.close()
             occupancy_grid_memory.close()
             # point_selection_memory.close()
@@ -55,6 +53,7 @@ def main():
             destination_driving_state_memory.close()
             # frontend_origin_memory.close()
             bci_selection_memory.close()
+            # frontend.close()
         print("Exited safely")
         sys.exit(3001)
 
@@ -90,7 +89,8 @@ def main():
 
                         # frontend = RunUI()
                         eye_tracking = EyeTracking()
-                        # bci = Bessy()
+                        bci = Bessy()
+                        bci.run()
 
                         initialized = True
                         requested_next_state_memory.write_string("2")

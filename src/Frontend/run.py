@@ -5,7 +5,7 @@ import os
 import asyncio
 import webbrowser
 import subprocess
-from subprocess import run
+from subprocess import Popen, run
 
 import threading
 import sys
@@ -22,7 +22,12 @@ class RunUI:
     def start(self):
         frontend_path = os.path.join(os.path.dirname(__file__), "frontend.py")
         frontend_dir = os.path.dirname(frontend_path)
-        process = run(["streamlit", "run", frontend_path], cwd=os.path.join(frontend_dir, ".."))
+        self.process = Popen(["streamlit", "run", frontend_path], cwd=os.path.join(frontend_dir, ".."))
+
+    def close(self):
+        self.process.terminate()
+        self.process.wait()
+        self.ui_thread.join()
 
 if __name__ == "__main__": 
     RunUI()
