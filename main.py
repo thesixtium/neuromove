@@ -42,16 +42,18 @@ def main():
     bci_thread = None
 
     def signal_handler(sig, frame):
+        print("IN SIG HANDLER")
         if initialized:
-            driving.close()
+            # driving.close()
             eye_tracking_memory.close()
+            eye_tracking.close()
             # p300_socket.close()
             occupancy_grid_memory.close()
-            point_selection_memory.close()
+            # point_selection_memory.close()
             local_driving_memory.close()
             requested_next_state_memory.close()
             destination_driving_state_memory.close()
-            frontend_origin_memory.close()
+            # frontend_origin_memory.close()
             bci_selection_memory.close()
         print("Exited safely")
         sys.exit(3001)
@@ -86,8 +88,8 @@ def main():
                         bci_selection_memory = SharedMemory(shem_name="bci_selection", size=200, create=True)
                         print("Done")
 
-                        frontend = RunUI()
-                        # eye_tracking = EyeTracking()
+                        # frontend = RunUI()
+                        eye_tracking = EyeTracking()
                         # bci = Bessy()
 
                         initialized = True
@@ -147,6 +149,10 @@ def main():
                                 print("Unknown destination driving state")
                                 next_state = States.DESTINATION
 
+                    elif isinstance(current_exception, KeyboardInterrupt):
+                        print("Ended with Ctrl+C. Shutting down...")
+                        next_state = States.OFF
+
                     # If is an error that we didn't throw
                     elif isinstance(current_exception, Exception):
                         print(f"External Error: {current_exception.args}")
@@ -172,19 +178,19 @@ def main():
 
 
         except Exception as e:
+            print(f"GOT EXCEPTION {e}")
             current_exception = e
 
 
     if initialized:
-        driving.close()
         eye_tracking_memory.close()
         #p300_socket.close()
         occupancy_grid_memory.close()
-        point_selection_memory.close()
+        # point_selection_memory.close()
         local_driving_memory.close()
         requested_next_state_memory.close()
         destination_driving_state_memory.close()
-        frontend_origin_memory.close()
+        # frontend_origin_memory.close()
         eye_tracking.close()
         # bci_thread.join()
 

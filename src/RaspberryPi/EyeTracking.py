@@ -45,6 +45,7 @@ class EyeTracking:
     def close(self):
         self.eye_tracking_thread_running = False
         self.cap.release()
+        self.eye_tracking_thread.join()
         cv2.destroyAllWindows()
 
     def serial_read(self):
