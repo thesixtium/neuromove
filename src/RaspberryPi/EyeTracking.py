@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore")
 
 class EyeTracking:
     def __init__(self):
-        self.eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=False)
+        self.eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=True)
         self.model = joblib.load(os.path.join("src", "RaspberryPi", "GeneralizedModel3Compress9"))
 
         # Create a FaceLandmarker object.
@@ -96,3 +96,7 @@ class EyeTracking:
                     self.eye_tracking_memory.write_string(str(prediction))
                     print(f"Eye Tracking: {prediction}")
                     time.sleep(2.5)
+
+
+if __name__ == "__main__":
+    EyeTracking()

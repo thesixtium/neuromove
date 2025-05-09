@@ -9,13 +9,11 @@ import signal
 import sys
 
 from run_bci import run_bci
-from src.RaspberryPi.Driving import Driving
+from src.RaspberryPi.BCI.bci_essentials_wrapper import Bessy
 from src.RaspberryPi.InternalException import *
 
 from src.RaspberryPi.SharedMemory import SharedMemory
-from src.RaspberryPi.point_selection import occupancy_grid_to_points
-from src.RaspberryPi.States import States, DestinationDrivingStates, MotorDirections
-from src.LiDAR.build.RunLiDAR import RunLiDAR
+from src.RaspberryPi.States import States, DestinationDrivingStates
 from src.Frontend.run import RunUI
 from src.RaspberryPi.EyeTracking import EyeTracking
 
@@ -31,24 +29,22 @@ def main():
     state = States.START
     next_state = States.START
     current_exception = None
-    lidar = None
-    #eye_tracking_memory = None
+    eye_tracking_memory = None
     occupancy_grid_memory = None
     point_selection_memory = None
     local_driving_memory = None
-    imu_memory = None
     requested_next_state_memory = None
     destination_driving_state_memory = None
-    directions_memory = None
     frontend_origin_memory = None
     initialized = False
-    #eye_tracking = None
+    eye_tracking  = None
     driving = None
+    bci_thread = None
 
     def signal_handler(sig, frame):
         if initialized:
             driving.close()
-            #eye_tracking_memory.close()
+            eye_tracking_memory.close()
             # p300_socket.close()
             occupancy_grid_memory.close()
             point_selection_memory.close()
@@ -56,7 +52,7 @@ def main():
             requested_next_state_memory.close()
             destination_driving_state_memory.close()
             frontend_origin_memory.close()
-            imu_memory.close()
+            bci_selection_memory.close()
         print("Exited safely")
         sys.exit(3001)
 
@@ -82,22 +78,17 @@ def main():
                     if not initialized:
 
                         print("Setting up shared memory... ", end="")
-                        #eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=True)
+                        eye_tracking_memory = SharedMemory(shem_name="eye_tracking", size=10, create=True)
                         local_driving_memory = SharedMemory(shem_name="local_driving", size=10, create=True)
                         requested_next_state_memory = SharedMemory(shem_name="requested_next_state", size=10, create=True)
-                        directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
                         occupancy_grid_memory = SharedMemory(shem_name="occupancy_grid", size=284622, create=True)
-                        imu_memory = SharedMemory(shem_name="imu", size=284622, create=True)
-                        point_selection_memory = SharedMemory(shem_name="point_selection", size=100000, create=True)
                         destination_driving_state_memory = SharedMemory(shem_name="destination_driving_state", size=10, create=True)
-                        frontend_origin_memory = SharedMemory(shem_name="frontend_origin_memory", size=100, create=True)
                         bci_selection_memory = SharedMemory(shem_name="bci_selection", size=200, create=True)
                         print("Done")
 
                         frontend = RunUI()
-                        lidar = RunLiDAR()
-                        #eye_tracking = EyeTracking()
-                        driving = Driving()
+                        # eye_tracking = EyeTracking()
+                        # bci = Bessy()
 
                         initialized = True
                         requested_next_state_memory.write_string("2")
@@ -147,7 +138,7 @@ def main():
 
                             if isinstance(current_exception, SensorDistanceAlert):
                                 print("Sensor distance alert")
-                                driving.drive_one_unit(MotorDirections.STOP)
+                                # driving.drive_one_unit(MotorDirections.STOP)
                                 next_state = States.OFF
                                 # TODO: stop moving, idk what function to call
 
@@ -186,7 +177,7 @@ def main():
 
     if initialized:
         driving.close()
-        #eye_tracking_memory.close()
+        eye_tracking_memory.close()
         #p300_socket.close()
         occupancy_grid_memory.close()
         point_selection_memory.close()
@@ -194,10 +185,8 @@ def main():
         requested_next_state_memory.close()
         destination_driving_state_memory.close()
         frontend_origin_memory.close()
-        directions_memory.close()
-        imu_memory.close()
-        #eye_tracking.close()
-        bci_thread.join()
+        eye_tracking.close()
+        # bci_thread.join()
 
     if isinstance(current_exception, InternalException):
         exit(current_exception.get_exception_id())

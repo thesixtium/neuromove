@@ -11,13 +11,18 @@ import threading
 import sys
 from streamlit.web import cli as stcli
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(os.path.join("src", SCRIPT_DIR)))
+
 class RunUI:
     def __init__(self):
         self.ui_thread = threading.Thread(target=self.start, daemon=True)
         self.ui_thread.start()
 
     def start(self):
-        process = run(["streamlit", "run", r"Frontend/frontend.py"])
+        frontend_path = os.path.join(os.path.dirname(__file__), "frontend.py")
+        frontend_dir = os.path.dirname(frontend_path)
+        process = run(["streamlit", "run", frontend_path], cwd=os.path.join(frontend_dir, ".."))
 
 if __name__ == "__main__": 
     RunUI()
