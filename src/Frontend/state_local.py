@@ -29,7 +29,7 @@ def state_local():
         read_string = read_string.strip()
         st.session_state['last_bci_selection'] = read_string
 
-        # match read_string:
+        match read_string:
         #     case "[0]":
         #         direction_update("f")
         #     case "[1]":
@@ -38,8 +38,8 @@ def state_local():
         #         direction_update("s")
         #     case "[3]":
         #         direction_update("r")
-        #     case "[4]":
-        #         switch()
+            case "[4]":
+                switch()
         #     case _:
         #         print("Not confident enough to make a decision")
 
@@ -54,10 +54,16 @@ def state_local():
         time.sleep(0.5)
         st.rerun()
     elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "[0]":
+        print("waiting for eye tracking")
         time.sleep(0.1)
         st.rerun()
     elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "[1]" and st.session_state["running"] == True and st.session_state["state"] == States.LOCAL:
+        print("got attention")
         give_local_sequence_list()
         st.rerun()
+    # else:
+    #     print("???")
+    #     print(f"running: {st.session_state['running']}")
+    #     print(f"eye tracking: {st.session_state['eye_tracking_memory'].read_string()}")
 
     

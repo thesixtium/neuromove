@@ -153,7 +153,7 @@ def select_destination():
         read_string = read_string.strip()
         st.session_state['last_bci_selection'] = read_string
 
-        # match read_string:
+        match read_string:
         #     case "[0]":
         #         destination_driving_update(target_region="0", point=medoid_coordinates[0])
         #     case "[1]":
@@ -162,8 +162,8 @@ def select_destination():
         #         destination_driving_update(target_region="2", point=medoid_coordinates[2])
         #     case "[3]":
         #         destination_driving_update(target_region="3", point=medoid_coordinates[3])
-        #     case "[4]":
-        #         switch()
+            case "[4]":
+                switch()
         #     case _:
         #         print("Not confident enough to make a decision")
 

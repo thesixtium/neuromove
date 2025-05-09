@@ -88,7 +88,7 @@ def main():
 
                         frontend = RunUI()
                         eye_tracking = EyeTracking()
-                        bci = Bessy()
+                        bci = Bessy(confidence=0.0)
                         bci.run()
 
                         initialized = True

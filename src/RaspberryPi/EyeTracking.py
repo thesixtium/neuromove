@@ -30,7 +30,7 @@ class EyeTracking:
         self.detector = vision.FaceLandmarker.create_from_options(options)
 
         # Real-time camera capture with sliding window prediction.
-        self.cap = cv2.VideoCapture(0)  # 0 for default camera
+        self.cap = cv2.VideoCapture(1)  # 0 for default camera
 
         # Initialize a deque (double-ended queue) to store the features from the last 30 frames.
         self.window_size = 2 #set to predict 1 time every 30s
@@ -96,7 +96,7 @@ class EyeTracking:
                     #prediction = 1
                     self.eye_tracking_memory.write_string(str(prediction))
                     print(f"Eye Tracking: {prediction}")
-                    time.sleep(2.5)
+                    time.sleep(2)
 
 
 if __name__ == "__main__":
