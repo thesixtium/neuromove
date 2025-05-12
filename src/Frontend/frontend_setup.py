@@ -69,7 +69,7 @@ def run_setup():
         st.session_state["running"] = False
 
     if "destination_driving_state" not in st.session_state:
-        st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
+        st.session_state["destination_driving_state"] = DestinationDrivingStates.MAP_ROOM
 
     if "occupancy_grid" not in st.session_state:
         st.session_state["occupancy_grid"] = None

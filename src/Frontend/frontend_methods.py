@@ -205,7 +205,7 @@ def destination_driving_update(target_region, cropped_data, origin, point):
 def switch():
     if st.session_state["state"] == States.LOCAL:
         st.session_state["state"] = States.DESTINATION
-        st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
+        st.session_state["destination_driving_state"] = DestinationDrivingStates.MAP_ROOM
         st.session_state["requested_next_state_memory"].write_string("4")
     else:
         st.session_state["state"] = States.LOCAL

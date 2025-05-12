@@ -19,13 +19,38 @@ from src.RaspberryPi.point_selection import occupancy_grid_to_points
 def state_destination():
     match st.session_state["destination_driving_state"]:
         case DestinationDrivingStates.MAP_ROOM:
-            occupancy_grid = []
-            while True:
-                occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
-                if len(occupancy_grid) != 0:
-                    st.session_state["occupancy_grid"] = occupancy_grid
-                    st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
-                    break
+            data = np.loadtxt('Frontend/testData.txt')
+            # print(f"DATA SHAPE {data.shape}")
+            origin = np.loadtxt('Frontend/origin.txt')
+            # print(f"ORIGIN {origin}")
+            st.session_state["occupancy_grid"] = data
+
+            # start_time = time.time()
+            np.savetxt("raw_occupancy_grid.txt", st.session_state["occupancy_grid"])
+
+            data, cropped_data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True, origin=None)
+            for i in range(len(medoid_coordinates)):
+                x = medoid_coordinates[i][0]
+                y = medoid_coordinates[i][1]
+                medoid_coordinates[i][0] = y
+                medoid_coordinates[i][1] = x
+
+                # print(f"({y}, {x}) -> {len(data)} x {len(data[0])}")
+                data[x][y] = 0
+            st.session_state["medoid_coordinates"] = medoid_coordinates
+
+            st.session_state["neighbourhood_grid"] = data
+            st.session_state["origin"] = origin
+
+            np.savetxt("after_occupancy_grid_to_points.txt", data)
+
+            # occupancy_grid = []
+            # while True:
+            #     occupancy_grid = st.session_state['point_selection_memory'].read_np_array()
+            #     if len(occupancy_grid) != 0:
+            #         st.session_state["occupancy_grid"] = occupancy_grid
+            #         st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
+            #         break
             st.session_state["destination_driving_state"] = DestinationDrivingStates.SELECT_DESTINATION
             st.rerun()
         case DestinationDrivingStates.SELECT_DESTINATION:
@@ -49,33 +74,32 @@ def stop():
     back_to_select()
 
 def select_destination():
-    data = np.loadtxt('Frontend/testData.txt')
-    # print(f"DATA SHAPE {data.shape}")
-    origin = np.loadtxt('Frontend/origin.txt')
-    # print(f"ORIGIN {origin}")
-    medoid_coordinates = [[14,12], [5,17],[17,26],[6,5],[5,29]]
-    st.session_state["occupancy_grid"] = data
+    # data = np.loadtxt('Frontend/testData.txt')
+    # # print(f"DATA SHAPE {data.shape}")
+    # origin = np.loadtxt('Frontend/origin.txt')
+    # # print(f"ORIGIN {origin}")
+    # st.session_state["occupancy_grid"] = data
 
-    start_time = time.time()
-    np.savetxt("raw_occupancy_grid.txt", st.session_state["occupancy_grid"])
+    # start_time = time.time()
+    # np.savetxt("raw_occupancy_grid.txt", st.session_state["occupancy_grid"])
 
-    data, cropped_data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True, origin=None)
-    for i in range(len(medoid_coordinates)):
-        x = medoid_coordinates[i][0]
-        y = medoid_coordinates[i][1]
-        medoid_coordinates[i][0] = y
-        medoid_coordinates[i][1] = x
+    # data, cropped_data, medoid_coordinates, neighbourhood_points, origin = occupancy_grid_to_points(st.session_state["occupancy_grid"], plot_result=True, origin=None)
+    # for i in range(len(medoid_coordinates)):
+    #     x = medoid_coordinates[i][0]
+    #     y = medoid_coordinates[i][1]
+    #     medoid_coordinates[i][0] = y
+    #     medoid_coordinates[i][1] = x
 
-        # print(f"({y}, {x}) -> {len(data)} x {len(data[0])}")
-        data[x][y] = 0
+    #     # print(f"({y}, {x}) -> {len(data)} x {len(data[0])}")
+    #     data[x][y] = 0
 
-    st.session_state["neighbourhood_grid"] = data
-    st.session_state["origin"] = origin
+    # st.session_state["neighbourhood_grid"] = data
+    # st.session_state["origin"] = origin
 
-    np.savetxt("after_occupancy_grid_to_points.txt", data)
-    # print("occupancy_grid_to_points:\t%s" % (time.time() - start_time))
+    # np.savetxt("after_occupancy_grid_to_points.txt", data)
+    # # print("occupancy_grid_to_points:\t%s" % (time.time() - start_time))
 
-    start_time = time.time()
+    # start_time = time.time()
     move_content()
     # print("move_content:\t%s" % (time.time() - start_time))
 
@@ -110,25 +134,10 @@ def select_destination():
             case "Trial Ends":
                 send_special_marker("Trial Ends")
 
+    data = st.session_state["neighbourhood_grid"]
+    origin = st.session_state["origin"]
+    medoid_coordinates = st.session_state["medoid_coordinates"]
     display_map(data, origin, medoid_coordinates, colours)
-
-    # TODO: GET RID OF THIS WHEN DONE DEBUGGING
-    c1, c2, c3, c4 = st.columns(4)
-    # print()
-    # for coord in medoid_coordinates:
-    #     print(coord)
-    # with c1:`
-    #     with stylable_container("c1", make_value(GREEN, BLACK, BLACK)):
-    #         st.button("# 0", on_click=destination_driving_update, args=("0", data, origin, medoid_coordinates[0]))
-    # with c2:
-    #     with stylable_container("c2", make_value(REAL_PURPLE, BLACK, BLACK)):
-    #         st.button("# 1", on_click=destination_driving_update, args=("1", data, origin, medoid_coordinates[1]))
-    # with c3:
-    #     with stylable_container("c3", make_value(PINK, BLACK, BLACK)):
-    #         st.button("# 2", on_click=destination_driving_update, args=("2", data, origin, medoid_coordinates[2]))
-    # with c4:
-    #     with stylable_container("c4", make_value(ORANGE, BLACK, BLACK)):
-    #         st.button("# 3", on_click=destination_driving_update, args=("3", data, origin, medoid_coordinates[3]))`
 
     col1, col2 = st.columns([1, 1])
     with col1:

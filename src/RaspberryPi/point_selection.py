@@ -104,6 +104,8 @@ def occupancy_grid_to_points(
     ```
     '''
 
+    print("KSJFHKAJFDz")
+
     data, found_origin = format_data(raw_data=input_data)
     if origin is None:
         origin = found_origin
