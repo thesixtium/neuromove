@@ -54,7 +54,7 @@ def state_local():
         time.sleep(0.5)
         st.rerun()
     elif st.session_state["running"] == True and st.session_state["eye_tracking_memory"].read_string() == "[0]":
-        print("waiting for eye tracking")
+        # print("waiting for eye tracking")
         time.sleep(0.1)
         st.rerun()
     elif st.session_state["waiting_for_bci_response"] == False and st.session_state["eye_tracking_memory"].read_string() == "[1]" and st.session_state["running"] == True and st.session_state["state"] == States.LOCAL:
