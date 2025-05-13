@@ -171,7 +171,7 @@ def select_destination():
         #         destination_driving_update(target_region="2", point=medoid_coordinates[2])
         #     case "[3]":
         #         destination_driving_update(target_region="3", point=medoid_coordinates[3])
-            case "[4]":
+            case "[0]":
                 switch()
         #     case _:
         #         print("Not confident enough to make a decision")
@@ -182,7 +182,7 @@ def select_destination():
         st.rerun()
 
     elif st.session_state["waiting_for_bci_response"] == True:
-        if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=30):
+        if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=10):
             print("Waiting for BCI controller to respond timed out")
             st.session_state["waiting_for_bci_response"] = False
         time.sleep(0.5)

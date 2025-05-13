@@ -26,8 +26,8 @@ import math
 
 directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
 
-NUMBER_OF_TRAINING_CYCLES = 5
-NUMBER_OF_DECISION_CYCLES = 5
+NUMBER_OF_TRAINING_CYCLES = 20
+NUMBER_OF_DECISION_CYCLES = 10
 
 def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
     st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{current_target},{flashed_as_num}"], local_clock())

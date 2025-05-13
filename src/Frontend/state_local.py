@@ -48,7 +48,7 @@ def state_local():
         time.sleep(0.1)
         st.rerun()
     elif st.session_state["waiting_for_bci_response"] == True:
-        if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=30):
+        if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=10):
             print("Waiting for BCI controller to respond timed out")
             st.session_state["waiting_for_bci_response"] = False
         time.sleep(0.5)
