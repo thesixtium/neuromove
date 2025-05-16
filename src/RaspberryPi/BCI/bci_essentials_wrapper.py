@@ -5,6 +5,7 @@ import joblib
 from sklearn.pipeline import Pipeline
 from os.path import join
 
+from lib.bci_essentials.bci_essentials.classification.erp_rg_classifier_hyperparamgridsearch import ErpRgClassifierHyperparamGridSearch
 from src.RaspberryPi.BCI.output.shared_memory_messenger import SharedMemoryMessenger
 from src.RaspberryPi.InternalException import BciSetupException, BessyFailedException
 
@@ -71,7 +72,7 @@ class Bessy:
         match self.__paradigm_type:
             case Paradigm.P300:
                 self.__paradigm = P300Paradigm()
-                self.__classifier = ErpRgClassifier()
+                self.__classifier = ErpRgClassifierHyperparamGridSearch()
                 self.__classifier.set_p300_clf_settings()
 
                 if model is not None:
@@ -82,7 +83,7 @@ class Bessy:
 
         # default to shared memory without debug text file 
         if messenger is None:
-            self.__messenger = SharedMemoryMessenger(debug=False, confidence=confidence)
+            self.__messenger = SharedMemoryMessenger(debug=True, confidence=confidence)
         else:
             self.__messenger = messenger
     
@@ -103,7 +104,7 @@ class Bessy:
             messenger=self.__messenger
         )
 
-        bci_controller.setup(online=True, train_complete=self.__pre_trained)
+        bci_controller.setup(online=True, train_complete=False)
         
         bci_controller.event_timestamp_buffer = []
         bci_controller.event_marker_buffer = []

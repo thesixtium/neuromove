@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, time
 from math import e
+from random import randrange
 import threading
 import time
 from frontend_methods import *
@@ -39,13 +40,18 @@ def state_local():
         #     case "[3]":
         #         direction_update("r")
             case "[4]":
-                switch()
+                pass
+                # switch()
         #     case _:
         #         print("Not confident enough to make a decision")
 
     if len(st.session_state["flash_sequence"]) > 0:
+        if len(st.session_state["flash_sequence"]) > 0 and st.session_state["flash_sequence"][0] == "break":
+            break_time = randrange(50, 250)
+            time.sleep(break_time / 1000)
+        else:
+            time.sleep(0.1)
         st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
-        time.sleep(0.1)
         st.rerun()
     elif st.session_state["waiting_for_bci_response"] == True:
         if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=10):

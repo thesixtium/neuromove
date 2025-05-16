@@ -94,9 +94,11 @@ class EyeTracking:
                     y_pred_test = self.model.predict_proba(averaged_features)
                     prediction = (y_pred_test[:, 1] >= self.prediction_threshold).astype(int)
                     #prediction = 1
+                    if self.eye_tracking_memory.read_string() != prediction:
+                        print(f"Eye Tracking: {prediction}")
+
                     self.eye_tracking_memory.write_string(str(prediction))
-                    print(f"Eye Tracking: {prediction}")
-                    time.sleep(2)
+                    time.sleep(1)
 
 
 if __name__ == "__main__":

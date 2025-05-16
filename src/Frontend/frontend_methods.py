@@ -1,5 +1,5 @@
 from datetime import datetime
-from random import shuffle
+from random import randrange, shuffle
 from time import sleep
 from os.path import join, dirname
 
@@ -313,8 +313,12 @@ def training():
     local_driving_grid(training=True)
     
     if len(st.session_state["flash_sequence"]) > 0:
+        if len(st.session_state["flash_sequence"]) > 0 and st.session_state["flash_sequence"][0] == "break":
+            break_time = randrange(50, 250)
+            sleep(break_time / 1000)
+        else:
+            sleep(0.1)
         st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
-        sleep(0.1)
         st.rerun()
     elif st.session_state["currently_training"] is True:
         st.session_state["currently_training"] = False

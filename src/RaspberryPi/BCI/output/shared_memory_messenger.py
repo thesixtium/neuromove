@@ -20,12 +20,12 @@ class SharedMemoryMessenger(Messenger):
         return file
 
     def ping(self):
-        if self.__write_to_text:
+        if False and self.__write_to_text:
             file = self.__open_file()
             file.write("ping\n")
     
     def marker_received(self, marker):
-        if self.__write_to_text:
+        if False and self.__write_to_text:
             file = self.__open_file()
             file.write(f"processed marker: {marker}\n")
 
