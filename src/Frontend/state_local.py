@@ -23,7 +23,7 @@ def state_local():
     st.text(display_string)
  
     read_string = st.session_state['bci_selection_memory'].read_string()
-    if len(read_string) > 0 and "[" in read_string:
+    if len(read_string) > 0 and "[" in read_string and st.session_state["waiting_for_bci_response"] is True:
         st.session_state["waiting_for_bci_response"] = False
         print(f"RECEIVED {read_string} FROM SHARED MEM")
         st.session_state['bci_selection_memory'].write_string("   ")
@@ -45,7 +45,7 @@ def state_local():
         #     case _:
         #         print("Not confident enough to make a decision")
 
-    if len(st.session_state["flash_sequence"]) > 0:
+    if len(st.session_state["flash_sequence"]) > 0 and st.session_state["eye_tracking_memory"].read_string() == "[1]":
         if len(st.session_state["flash_sequence"]) > 0 and st.session_state["flash_sequence"][0] == "break":
             break_time = randrange(50, 250)
             time.sleep(break_time / 1000)
@@ -53,8 +53,15 @@ def state_local():
             time.sleep(0.1)
         st.session_state["flash_sequence"] = st.session_state["flash_sequence"][1:]
         st.rerun()
+    elif len(st.session_state["flash_sequence"]) > 0:
+        # interrupted by attention lost
+        print("lost attention")
+        send_special_marker("Trial Ends")
+        st.session_state["flash_sequence"] = []
+        st.session_state["waiting_for_bci_response"] = False
+        st.rerun()
     elif st.session_state["waiting_for_bci_response"] == True:
-        if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=10):
+        if  datetime.now() - st.session_state["bci_wait_start_time"] > timedelta(seconds=30):
             print("Waiting for BCI controller to respond timed out")
             st.session_state["waiting_for_bci_response"] = False
         time.sleep(0.5)
