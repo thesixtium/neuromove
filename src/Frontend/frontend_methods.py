@@ -26,8 +26,8 @@ import math
 
 directions_memory = SharedMemory(shem_name="directions", size=10000, create=True)
 
-NUMBER_OF_TRAINING_CYCLES = 1
-NUMBER_OF_DECISION_CYCLES = 10
+NUMBER_OF_TRAINING_CYCLES = 5
+NUMBER_OF_DECISION_CYCLES = 5
 
 def send_marker(number_of_options: int, flashed_as_num: int, current_target: int = -1):
     st.session_state["marker_outlet"].push_sample([f"p300,s,{number_of_options},{current_target},{flashed_as_num}"], local_clock())
@@ -285,7 +285,7 @@ def start():
 
 def training():
     col1, col2, col3= st.columns([5,1,1])
-    targets = ["↑", "←", "X", "→", "⇄"]
+    targets = ["↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄"]
 
     with col1:
         with stylable_container("training_header", get_training_header_style()):
