@@ -64,7 +64,7 @@ def give_local_sequence_list(total_list_appends: int = NUMBER_OF_DECISION_CYCLES
         st.session_state["waiting_for_bci_response"] = True
         st.session_state["bci_wait_start_time"] = datetime.now()
 
-    if st.session_state["training_target"] == 4 and st.session_state["state"] == States.SETUP:
+    if st.session_state["training_target"] == len(targets) - 1 and st.session_state["state"] == States.SETUP:
         return_list = return_list + ["Training Complete"]
 
     st.session_state["flash_sequence"] = return_list
@@ -222,6 +222,7 @@ def local_driving_grid(training: bool = False):
     switch_value = BUTTON_VALUE
 
     current_target = st.session_state["training_target"] if training is True else -1
+    current_target = current_target % 5
 
     if len(st.session_state["flash_sequence"]) > 0:
         match st.session_state["flash_sequence"][0]:
@@ -283,9 +284,9 @@ def start():
     st.session_state["requested_next_state_memory"].write_string("3")
     st.session_state["state"] = States.LOCAL
 
+targets = ["↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄"]
 def training():
     col1, col2, col3= st.columns([5,1,1])
-    targets = ["↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄", "↑", "←", "X", "→", "⇄"]
 
     with col1:
         with stylable_container("training_header", get_training_header_style()):
