@@ -221,8 +221,7 @@ def local_driving_grid(training: bool = False):
     stop_value = BUTTON_VALUE
     switch_value = BUTTON_VALUE
 
-    current_target = st.session_state["training_target"] if training is True else -1
-    current_target = current_target % 5
+    current_target = st.session_state["training_target"] % 5 if training is True else -1
 
     if len(st.session_state["flash_sequence"]) > 0:
         match st.session_state["flash_sequence"][0]:
