@@ -1,0 +1,269 @@
+version: 1.21.3       date: 2026-06-02
+- Linux ARM64 shared library is now built in a Debian Bullseye container
+  (GLIBC 2.31) instead of on the ubuntu-latest runner (GLIBC 2.38+). The
+  resulting libDSI-Linux-arm64.so now runs on any Linux ARM64 system with
+  GLIBC >= 2.31 (e.g. Raspberry Pi OS / Debian Bookworm), fixing the
+  "version `GLIBC_2.38' not found" runtime error on older distributions.
+
+version: 1.21.2       date: 2026-05-28
+- Fix wired USB connection on Apple Silicon Macs (arm64).
+  macOS silently ignores the standard POSIX B921600 constant passed via
+  tcsetattr() for USB-to-UART serial ports (e.g. CP210x). Baud rates above
+  230400 require the macOS-specific IOSSIOSPEED ioctl (IOKit/serial/ioss.h)
+  to be correctly programmed into the hardware. Without this fix the CP210x
+  chip inside the headset received no valid baud rate configuration and the
+  initial handshake failed on every wired connection attempt on Apple Silicon.
+  Change is guarded with #ifdef __APPLE__ — Windows and Linux are unaffected.
+  File changed: devel/src/SerialConnectionOriginal.cpp
+
+version: 1.21.1       date: 2026-04-24
+- Latch mLinkLost when Send() exhausts retries ("Command failed too many
+  times"), fixing a double-timeout on wired USB connections where WriteFile
+  succeeds but no reply arrives. Phase 2 (Delete) now fast-fails in
+  milliseconds instead of paying a second full retry cycle (~20 s).
+
+version: 1.21.0       date: 2026-04-24
+- Bounded all serial writes to 20 s via SetCommTimeouts so the API can no
+  longer hang indefinitely on a dropped Bluetooth link.
+- DSI_Headset_IsConnected() now actively probes the link with a bounded
+  Echo ping after 2 s of silence.
+- New command:
+    DSI_Headset_SetWatchdogInterval( h, seconds );
+        Background link-loss watchdog. Pass 0 to disable (default).
+
+version: 1.20.4	      date: 2025-11-03
+- Modified build scripts to accommodate ARM64 for MS Surface Pro with Snapdragon 
+  chips and options for VS 17 (2022)
+
+version: 1.20.3       date: 2025-01-29
+- Reverted all "sleep" calls except those associated with buffered sensor polling
+  to use Timing::Sleep() solution (i.e. the Sleep() funciton from windows.h) 
+  rather than the Timing::SleepSeconds() solution which uses CreateWaitableTimer() 
+  from windows.h and was causing system resource issues when used in frequenly 
+  called functions like the RingBuffer read/write functions.
+
+version: 1.20.2       date: 2025-01-29
+-Made 'impedances' demo in DSI.py consistent with 'demo.c'
+
+version 1.20.1        date: 2025-01-08
+- Reinstated the 1.18.3 fix which had got lost in version-control limbo in 1.19 and 1.20.0
+- Added handling for packet parsing when there are zero-padded ends on packets in a block.
+- Fix bluetooth connection "freezing" issue by initializing the clock appropriately.
+
+version: 1.20.0       date: 2024-12-19
+- Added a virtual source called JERK that delivers the magnitude of the derivative
+  of the accelerometer readings, RMS( d{X,Y,Z}/dT ).
+
+
+version: 1.19.1       date: 2024-12-19
+- Transitioned to exclusively monotonic clocks for timing.
+
+version: 1.19.0       date: 2024-12-13
+- Disabled buffering controller by default.
+
+
+version 1.18.3       date: 2024-09-26
+-Fixed initialization of the mCalibratedSignal field for the zero-gain
+       Source object created to represent the Factory Reference sensor
+
+version: 1.18.2       date: 2021-11-09
+-Changed Sleep() calls to SleepSeconds() which takes advantage of Windows
+  Waitable Timer Objects to achieve 1 ms precision with sleep calls.
+
+version:  1.18.1      date:  2021-11-02
+-Added 2 sec delay to Headset connection to allow for battery polling to not fail.
+-Cleaned up the accelerometer demo in demo.c
+
+
+version:  1.18.0      date:  2021-03-23
+-Fixed Accelerometer timestamps queue (ACCT) population
+-Added Accelerometer option to demo.c
+-Increased resolution of formatted number output in DSI.py to 3 decimal places from 2
+
+
+version:  1.17.0      date:  2019-05-01 00:48:19 -0400
+- New command:
+    DSI_Headset_WaitForSamples( h, target );
+        Blocks until the buffers contain at least the target
+        number of samples. Returns the number of samples.
+
+- Under-the-hood improvements: better handshaking; buffering
+  controller re-enabled by default.
+
+
+
+version:  1.16.0      date:  2018-11-27 23:27:59 -0400
+- New commands:
+    DSI_Headset_GetFeatureAvailability( h, featureName );
+        Returns 0 if locked, 1 if unlocked, -1 if the headset
+        did not even recognize the question (so, the feature
+        is presumably unavailable). Supported names so far:
+        "Variable Acquisition Rate", "Internal Memory",
+        and "Accelerometer".
+    DSI_Headset_ConfigureADC( samplesPerSecond,  filterMode );
+        samplesPerSecond != 300 is only supported if the
+        "Variable Acquisition Rate" feature is unlocked.
+
+
+
+version:  1.15.1      date:  2018-03-30 17:00:32 -0400
+- Tweaked some timing parameters of the initial handshake
+  with the headset, (reverted closer to pre-1.14 settings).
+
+version:  1.15.0      date:  2017-07-18 19:51:20 -0400
+- New commands:
+    DSI_Headset_UseOptionalCommandPrefix()
+    DSI_Headset_ChangeLEDs() - only supported on some headset firmware branches
+
+
+version:  1.14.0      date:  2017-03-17 12:53:14 -0400
+- New commands:
+    DSI_Headset_GetHardwareModel()
+    DSI_Headset_GetHardwareRevision()
+- Tweaked/robustified timing of headset communication.
+
+
+version:  1.13.1      date:  2016-08-02 15:01:02 -0400
+- Various internal bug fixes including a fix for a rare "sleep forever" issue.
+- Internal buffering controller now works robustly.
+
+version:  1.13.0      date:  2015-09-27 20:30:35 -0400
+- Included capability of collecting the buffered signal
+  in a background thread, using DSI_Headset_StartBackgroundAcquisition().
+- Overhauled API documentation/demo program demo.c
+- Removed dependency on MSVC runtime redistributable under Windows.
+
+
+version:  1.12.2      date:  2015-07-08 00:21:10 -0400
+- Minor workaround for firmware quirk.
+
+version:  1.12.1      date:  2015-07-05 18:05:38 -0400
+- Minor performance and debugging tweaks.
+
+version:  1.12.0      date:  2015-04-14 13:15:27 -0400
+- Individual one-bit trigger lines are now available as individual sources
+  TRG0 through TRG7.
+- New DSI_SourceSelection constant TriggerBits allows selection of the new
+  sources (they are de-selected by default).
+- New functions DSI_Channel_IsTrigger( c ) and DSI_Source_IsTrigger( s ) test
+  whether a channel (or source) is any one of TRG0, .... TRG7, or the old TRG.
+
+
+version:  1.11.0      date:  2015-02-05 12:39:05 -0500
+- New function DSI_Headset_GetSensorCount( h ) returns the number of sensors
+  declared in headset's calibration memory (7 for DSI7s, 24 for DSI24s, if
+  correctly flashed).
+- "Feature"-fix:  DSI7 trigger values were previously shifted by 4 bits
+  relative to DSI24 trigger values from the same input.  This is now equalized.
+
+
+version:  1.10.0      date:  2015-01-26 23:30:00 -0500
+- New function DSI_GetDefaultPort() returns the value of the DSISerialPort
+  environment variable.   DSI_Headset_Connect() updated so that is uses this
+  default setting automatically if you supply either an empty string or the
+  string "default" as the port address.
+
+
+version:  1.9.1       date:  2015-01-23 18:27:42 -0500
+- Internal fix for rare bugs (changed to handling of string warning/error messages).
+
+version:  1.9.0       date:  2015-01-22 19:03:34 -0500
+- One entirely internal but significant change: the trigger signal (TRG) is now
+  delayed by 53.33 msec (16 samples at 300 Hz) relative to previous versions,
+  to bring it into alignment with the signal. The signal is delayed by this amount
+  due to the headset's built-in anti-aliasing filter.
+
+
+version:  1.8.0       date:  2015-01-16 20:56:27 -0500
+- Added DSI_Headset_SetVerbosity method and improved debugging output under
+  certain conditions.
+
+
+version:  1.7.1       date:  2014-12-03 21:00:22 -0500
+- Changed DSI_*_GetChannelByName functions so that Channels can be matched by the
+  aliases of their principal Source, as well as by its canonical name.
+
+version:  1.7.0       date:  2014-11-28 04:24:28 -0500
+- Added new functions DSI_Headset_GetChannelByName(h, name) and
+  DSI_ProcessingStage_GetChannelByName(p, name) for completeness.
+- Channel specifications may now optionally be comma- instead of space-delimited.
+- Better demo code with better documentation (now called demo.c instead of test.c).
+
+
+version:  1.6.2       date:  2014-10-31 18:32:28 -0400
+- Headsets are now initialized with the impedance driver turned off by default, so
+  API client code must now call DSI_Headset_StartImpedanceDriver(h) explicitly if
+  impedance measurements are needed. Any "locks" on analog-reset mode are also
+  released during initialization.
+
+version:  1.6.1       date:  2014-10-31 15:16:46 -0400
+- Fixed Halloween Bug which would cause trouble when using headsets on Oct 31st
+  (and various other dates throughout the year).
+
+version:  1.6.0       date:  2014-10-26 23:38:52 -0400
+- Added DSI_ProcessingStage methods as a hook for custom processing.
+- Renamed DSI_Channel_GetSignal(h) to DSI_Channel_CalculateRawSignal(h). This
+  makes it more explicit that the signals this returns are calculated from scratch
+  as a weighted combination of raw DSI_Source signals---this was counterintuitive
+  when the DSI_Channel in question was not a raw channel but rather a member of a
+  custom DSI_ProcessingStage.
+- For backward compatibility, the old name DSI_Channel_GetSignal(h) remains, but
+  now it delivers the buffered signal by calling DSI_Channel_LookBack(h,0), not
+  the from-scratch signal. In most cases, existing API client code that calls
+  DSI_Channel_GetSignal(h) will not be impacted by the difference.
+
+
+version:  1.5.0       date:  2014-10-17 18:56:32 -0400
+- Headsets now call DSI_Headset_SetTraditionalReference(h, true) automatically
+  when they are initialized. This means that the EEG is referenced against
+  averaged ears or averaged mastoids by default,  rather than against the factory
+  reference Pz. Previously, API client code had to call
+  DSI_Headset_SetTraditionalReference explicitly---this is no longer necessary.  A
+  warning message (level 1) is issued if ears/mastoids are not found during
+  initialization (i.e. if the headset calibration memory does not contain a record
+  of ear or mastoid sensors).
+- "IsEEG" methods have been renamed to "IsReferentialEEG"---i.e. now use
+  DSI_Source_IsReferentalEEG(s) and DSI_Channel_IsReferentialEEG(c).
+- The more correct DSI_Source_IsReferentalEEG criterion is applied in deciding
+  whether DefaultReference should be applied (rather than just DSI_Source_IsSensor
+  as before).
+
+
+version:  1.4.0       date:  2014-10-16 20:22:21 -0400
+- New DSI_Headset_GetImpedanceCMF(h) method saves API client code from having to
+  take the CMF impedance reading from one of the DSI_Source pointers (which used
+  to give meaningless readings if the DSI_Source in question did not happen to be
+  a referential EEG source).
+- New DSI_Source_IsEEG(s) and DSI_Channel_IsEEG(c) methods.
+- Added support for an expanded set of sensor position codes---among other things,
+  headset calibration memory can now encode the whole 10-10 system, the difference
+  between ear sensors and mastoid sensors, and the difference between external
+  bipolar sensors (X1, X2, X3) and unspecified sensors that are nonetheless known
+  to be part of the referential montage (S1, S2, S3, ...)
+
+
+version:  1.3.0       date:  2014-10-13 17:51:46 -0400
+- New methods DSI_Headset_LockAnalogReset(h) and
+  DSI_Headset_ReleaseAnalogReset(h): call these to begin and end a
+  contact-optimization session: between them, signals will be invalid but
+  impedances will be updated continuously without the need for explicit
+  DSI_Headset_StartAnalogReset(h) calls.
+- Added two new DSI_Source identifiers: "CM" which is the common-mode signal, and
+  "NUL" which is a zero flat line (but which, unlike the factory reference source
+  Pz, is not classified as a sensor).
+- Internally, added support for new calibration memory layout---fields that
+  specify the version of the calibration-memory layout, and (if the version is
+  >=2) the position of the CMF sensor.
+- Operational improvements, and better sample code, in the Python wrapper.
+
+
+version:  1.2.0       date:  2014-10-01 16:25:49 -0400
+- New method DSI_Source_GetDCOffset(s)
+
+
+version:  1.1.0       date:  2014-09-25 20:07:18 -0400
+- Removed seldom-used trailing boolean argument from various C methods.
+
+
+version:  1.0.0       date:  2014-08-30 16:19:25 -0400
+- First release.

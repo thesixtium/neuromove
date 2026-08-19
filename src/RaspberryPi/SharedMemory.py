@@ -3,9 +3,7 @@
 from multiprocessing import shared_memory
 import numpy as np
 
-from src.RaspberryPi.InternalException import DidNotCreateSharedMemory, NotEnoughSharedMemory
 from src.RaspberryPi.States import MotorDirections
-from src.RaspberryPi.States import States, DestinationDrivingStates
 
 class SharedMemory:
     def __init__(self, shem_name: str, size:int, create=False):
@@ -16,12 +14,12 @@ class SharedMemory:
             try:
                 self.memory = shared_memory.SharedMemory(name=shem_name, size=size, create=False)
             except:
-                raise DidNotCreateSharedMemory(shem_name)
+                print("SM erro 1`")
 
 
     def _check_size(self, encoded: bytes):
         if len(encoded) >= self.size:
-            raise NotEnoughSharedMemory(self.size, len(encoded) + 1)
+            raise print("SM erro 12")
 
     def write_string(self, string: str):
         encoded = string.encode()
@@ -67,51 +65,16 @@ class SharedMemory:
 
     def read_local_driving(self):
         value = self.read_string()
+        print(value)
         match value:
-            case "f":
+            case "1":
                 return MotorDirections.FORWARD
-            case "b":
-                return MotorDirections.BACKWARD
-            case "l":
+            case "3":
                 return MotorDirections.LEFT
-            case "r":
+            case "2":
                 return MotorDirections.RIGHT
             case _:
                 return MotorDirections.STOP
-
-    def read_destination_driving_state(self):
-        value = self.read_string()
-        match value:
-            case "i":
-                return DestinationDrivingStates.IDLE
-            case "m":
-                return DestinationDrivingStates.MAP_ROOM
-            case "s":
-                return DestinationDrivingStates.SELECT_DESTINATION
-            case "t":
-                return DestinationDrivingStates.TRANSLATE_TO_MOVEMENT
-            case "d":
-                return DestinationDrivingStates.DRIVE
-            case _:
-                return DestinationDrivingStates.IDLE
-
-    def read_requested_next_state(self):
-        value = self.read_string()
-        match value:
-            case "1":
-                return States.START
-            case "2":
-                return States.SETUP
-            case "3":
-                return States.LOCAL
-            case "4":
-                return States.DESTINATION
-            case "5":
-                return States.RECOVERY
-            case "6":
-                return States.OFF
-            case _:
-                return None
 
     def close(self):
         try:

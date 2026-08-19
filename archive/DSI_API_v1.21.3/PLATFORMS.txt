@@ -1,0 +1,46 @@
+DSI API - Platform Library Reference
+=====================================
+
+Each platform has a corresponding pre-built dynamic library in this folder.
+Load the correct one for your operating system and architecture.
+
+  libDSI-Windows-x64.dll        Windows 64-bit (x86_64)
+                                 Visual Studio 2010+, Windows 7 and later
+
+  libDSI-Windows-Win32.dll      Windows 32-bit (x86)
+                                 For legacy 32-bit applications on Windows
+
+  libDSI-Windows-ARM64.dll      Windows ARM64
+                                 Surface Pro X, Snapdragon-based Windows PCs
+
+  libDSI-Linux-x86_64.so        Linux 64-bit (x86_64)
+                                 Ubuntu, Debian, and other x64 distributions
+
+  libDSI-Linux-arm64.so         Linux ARM64
+                                 Raspberry Pi 4/5, NVIDIA Jetson, and other
+                                 64-bit ARM Linux systems
+
+  libDSI-Linux-armv7l.so        Linux ARM32 (ARMv7)
+                                 Raspberry Pi 2 and 3
+                                 NOTE: For original Pi Zero (ARMv6), this
+                                 binary may not run. Contact support if needed.
+
+  libDSI-Darwin-arm64.dylib     macOS Apple Silicon (M1, M2, M3, M4)
+                                 macOS 11 (Big Sur) and later
+
+  libDSI-Darwin-x86_64.dylib    macOS Intel (x86_64)
+                                 macOS 10.9 (Mavericks) and later
+
+
+Loading the library
+-------------------
+Use DSI_API_Loader.c (C/C++) or DSI.py (Python) to load the correct library
+at runtime. Pass the library filename as the first argument, or set the
+DSI_PLATFORM environment variable.
+
+See demo.c and README.txt for full usage examples.
+
+
+Support
+-------
+Wearable Sensing - support@wearablesensing.com

@@ -1,0 +1,10 @@
+Architecture: arm64
+Description: Labstreaminglayer C/C++ library
+Homepage: https://github.com/sccn/liblsl
+Maintainer: LabStreamingLayer Developers
+Package: liblsl
+Priority: optional
+Section: science
+Version: 1.17.7
+Installed-Size: 4451
+

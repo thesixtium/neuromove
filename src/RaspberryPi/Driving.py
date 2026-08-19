@@ -10,7 +10,6 @@ from collections import deque
 
 from src.RaspberryPi.SharedMemory import SharedMemory
 from src.RaspberryPi.States import MotorDirections
-from src.RaspberryPi.InternalException import InvalidDirection
 from src.Arduino.ArduinoUno import ArduinoUno
 
 # assumptions to begin with -> all neigborhood points do not directly touch walls
@@ -37,7 +36,6 @@ class Driving:
             destination_driving = self.directions_memory.read_string()
 
             print(f"local_driving_direction: {local_driving_direction}")
-            print(f"destination_driving: {destination_driving}")
 
             if destination_driving != "":
                 print("\n\nDESTINATION DRIVE TIME\n")
