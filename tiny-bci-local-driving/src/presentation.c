@@ -127,45 +127,21 @@ void initializePresenters(
 
 
     /*
-     * Fixed NeuroMove cross layout:
+     * Fixed NeuroMove widescreen cross layout:
+     *
+     *                 FORWARD
      *
      *
-     *               FORWARD
+     *      LEFT                   RIGHT
      *
      *
-     *        LEFT             RIGHT
+     *                  STOP
      *
-     *
-     *                STOP
-     *
-     *
-     * All four targets are the SAME size.
+     * All four SSVEP targets are the SAME size.
      */
 
-    float centreX =
-        RENDER_WIDTH / 2.0f;
-
-    float centreY =
-        RENDER_HEIGHT / 2.0f;
-
-
-    /*
-     * STOP
-     * Bottom middle
-     */
-    presenterRects[COMMAND_STOP] =
-        (Rectangle)
-        {
-            centreX -
-                STANDARD_TARGET_SIZE / 2.0f,
-
-            RENDER_HEIGHT -
-                MARGIN_BOTTOM -
-                STANDARD_TARGET_SIZE,
-
-            STANDARD_TARGET_SIZE,
-            STANDARD_TARGET_SIZE
-        };
+    float centreX = RENDER_WIDTH / 2.0f;
+    float centreY = RENDER_HEIGHT / 2.0f;
 
 
     /*
@@ -175,32 +151,24 @@ void initializePresenters(
     presenterRects[COMMAND_FORWARD] =
         (Rectangle)
         {
-            centreX -
-                STANDARD_TARGET_SIZE / 2.0f,
-
+            centreX - TARGET_WIDTH / 2.0f,
             MARGIN_TOP,
-
-            STANDARD_TARGET_SIZE,
-            STANDARD_TARGET_SIZE
+            TARGET_WIDTH,
+            TARGET_HEIGHT
         };
 
 
     /*
-     * RIGHT
-     * Right side, vertically centred
+     * STOP
+     * Bottom middle
      */
-    presenterRects[COMMAND_RIGHT] =
+    presenterRects[COMMAND_STOP] =
         (Rectangle)
         {
-            RENDER_WIDTH -
-                MARGIN_SIDE -
-                STANDARD_TARGET_SIZE,
-
-            centreY -
-                STANDARD_TARGET_SIZE / 2.0f,
-
-            STANDARD_TARGET_SIZE,
-            STANDARD_TARGET_SIZE
+            centreX - TARGET_WIDTH / 2.0f,
+            RENDER_HEIGHT - MARGIN_BOTTOM - TARGET_HEIGHT,
+            TARGET_WIDTH,
+            TARGET_HEIGHT
         };
 
 
@@ -212,12 +180,23 @@ void initializePresenters(
         (Rectangle)
         {
             MARGIN_SIDE,
+            centreY - TARGET_HEIGHT / 2.0f,
+            TARGET_WIDTH,
+            TARGET_HEIGHT
+        };
 
-            centreY -
-                STANDARD_TARGET_SIZE / 2.0f,
 
-            STANDARD_TARGET_SIZE,
-            STANDARD_TARGET_SIZE
+    /*
+     * RIGHT
+     * Right side, vertically centred
+     */
+    presenterRects[COMMAND_RIGHT] =
+        (Rectangle)
+        {
+            RENDER_WIDTH - MARGIN_SIDE - TARGET_WIDTH,
+            centreY - TARGET_HEIGHT / 2.0f,
+            TARGET_WIDTH,
+            TARGET_HEIGHT
         };
 }
 
