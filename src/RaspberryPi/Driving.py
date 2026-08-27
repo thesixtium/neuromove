@@ -35,7 +35,7 @@ class Driving:
             local_driving_direction = self.local_driving_memory.read_local_driving()
             destination_driving = self.directions_memory.read_string()
 
-            print(f"local_driving_direction: {local_driving_direction}")
+            #print(f"local_driving_direction: {local_driving_direction}")
 
             if destination_driving != "":
                 print("\n\nDESTINATION DRIVE TIME\n")

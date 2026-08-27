@@ -39,6 +39,21 @@ static const size_t shm_size = 284622;
 static const char *shmem_name = "pookinator";
 static void *addr;
 
+static void writeSelectionToSharedMemory(int selection)
+{
+    char labelStr[16];
+
+    int labelLen = snprintf(
+        labelStr,
+        sizeof(labelStr),
+        "%d",
+        selection
+    );
+
+    memset(addr, 0, shm_size);
+    memcpy(addr, labelStr, (size_t)labelLen);
+}
+
 ProgramMode promptProgramModeSelection()
 {
     return Standalone;
@@ -74,8 +89,18 @@ void onTrialStart(uint16_t target)
 void onTrialEnd(uint16_t nextTarget)
 {
     STANDALONE(pushTrigger(TRIAL_END_CODE);)
+
     pushLslTrigger(TRIAL_END_CODE);
+
+    int finalSelection = finalizeTrialSelection();
+
+    if (finalSelection >= 0)
+    {
+        writeSelectionToSharedMemory(finalSelection);
+    }
+
     setPresentationTarget(nextTarget);
+
     pauseStimulus();
 }
 
@@ -220,10 +245,10 @@ void updateProgram()
              * overwrites a longer previous one (otherwise leftover
              * trailing digits/nulls from the last write could remain in
              * the middle of the buffer and corrupt the strip/decode). */
-            char labelStr[16];
-            int labelLen = snprintf(labelStr, sizeof(labelStr), "%d", inference.predictedLabel);
-            memset(addr, 0, shm_size);
-            memcpy(addr, labelStr, (size_t)labelLen);
+            // char labelStr[16];
+            // int labelLen = snprintf(labelStr, sizeof(labelStr), "%d", inference.predictedLabel);
+            // memset(addr, 0, shm_size);
+            // memcpy(addr, labelStr, (size_t)labelLen);
         }
     }
 

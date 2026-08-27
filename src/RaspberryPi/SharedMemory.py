@@ -24,6 +24,10 @@ class SharedMemory:
     def write_string(self, string: str):
         encoded = string.encode()
         self._check_size(encoded)
+        
+        for i in range(self.size):
+            self.memory.buf[i] = 0
+
         self.memory.buf[:len(encoded)] = encoded
 
     def write_enum(self, enum):
@@ -65,7 +69,7 @@ class SharedMemory:
 
     def read_local_driving(self):
         value = self.read_string()
-        print(value)
+        
         match value:
             case "1":
                 return MotorDirections.FORWARD
@@ -75,6 +79,9 @@ class SharedMemory:
                 return MotorDirections.RIGHT
             case _:
                 return MotorDirections.STOP
+                
+        print(direction.name)
+        return direction
 
     def close(self):
         try:

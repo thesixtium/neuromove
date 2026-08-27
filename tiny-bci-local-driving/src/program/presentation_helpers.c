@@ -5,6 +5,8 @@
 # include "trial_conductor.h"
 # include "presentation.h"
 
+# define MIN_VOTES_FOR_SELECTION 3
+
 static int inferenceVotes[N_FREQS] = {0};
 
 void initializeTrialPresentation(
@@ -35,7 +37,7 @@ void displayInference(TinyBCIInference inference, uint64_t timestamp)
     }
 }
 
-void finalizeTrialSelection(void)
+int finalizeTrialSelection(void)
 {
     int winningSelection = -1;
     int mostVotes = 0;
@@ -49,7 +51,7 @@ void finalizeTrialSelection(void)
         }
     }
 
-    if (winningSelection >= 0)
+    if (winningSelection >= 0 && mostVotes >= MIN_VOTES_FOR_SELECTION)
     {
         printf(
             "Final trial selection: %d (%d votes)\n",
@@ -59,6 +61,11 @@ void finalizeTrialSelection(void)
 
         displaySelection(winningSelection);
     }
+    else
+    {
+        printf("No selection: only %d votes\n", mostVotes);
+        winningSelection = -1;
+        }
 
     /*
      * Reset vote counts for the next trial.
@@ -67,6 +74,8 @@ void finalizeTrialSelection(void)
     {
         inferenceVotes[i] = 0;
     }
+    
+    return winningSelection;
 }
 
 

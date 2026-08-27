@@ -25,13 +25,13 @@ class ArduinoUno:
 
             arduino.compile(fqbn="arduino:avr:uno", sketch="./src/Arduino/Arduino.ino")
 
-            print("\n\nA R D U I N O   S T U F F: ", end="\t")
-            print("UPLOADING")
+            #print("\n\nA R D U I N O   S T U F F: ", end="\t")
+            #print("UPLOADING")
 
             arduino.upload(fqbn="arduino:avr:uno", sketch="./src/Arduino/Arduino.ino", port=port)
 
-            print("\n\nA R D U I N O   S T U F F: ", end="\t")
-            print("DONE UPLOADING")
+            #print("\n\nA R D U I N O   S T U F F: ", end="\t")
+            #print("DONE UPLOADING")
         except Exception as e:
             print(e)
             print(e.args)

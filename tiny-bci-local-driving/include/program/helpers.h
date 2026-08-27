@@ -22,7 +22,7 @@ void awaitConnection(
 );
 
 void displayInference(TinyBCIInference inference, uint64_t timestamp);
-void finalizeTrialSelection(void);
+int finalizeTrialSelection(void);
 void printInference(TinyBCIInference inference, uint64_t timestamp);
 
 void displayMessageOrExit(const char *message, void (*cleanUpMethod)());

@@ -52,15 +52,21 @@ void startTrial()
 void endTrial()
 {
     state = BREAK;
+
     target = (target + 1) % targetCount;
+
     resetMicrosecondTimer(&breakTimer);
 
-    if (trialEndCallback != NULL) trialEndCallback(target);
-    if (target == 0) 
+    if (trialEndCallback != NULL)
+        trialEndCallback(target);
+
+    if (target == 0)
     {
-        if (stimulusRoundCompletedCallback != NULL) stimulusRoundCompletedCallback();
+        if (stimulusRoundCompletedCallback != NULL)
+            stimulusRoundCompletedCallback();
     }
 }
+        
 
 void updateTrialConductor()
 {
