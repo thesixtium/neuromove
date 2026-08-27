@@ -1,5 +1,6 @@
 # pragma once
 # include "raylib.h"
+# include <stdbool.h>
 
 # define RENDER_WIDTH 800
 # define RENDER_HEIGHT 800
@@ -38,6 +39,7 @@
 
 void initializePresentation(const float *, uint16_t);
 void drawMessageScreen(const char*);
+void drawStoppedScreen(void);
 void drawStimulusScreen();
 void stopPresentation();
 
@@ -50,3 +52,5 @@ void enableTextureStimulus();
 void setPresentationTarget(uint16_t);
 void clearPresentationTarget();
 void displaySelection(uint16_t);
+
+bool emergencyStopPressed(void);

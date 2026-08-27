@@ -5,6 +5,8 @@
 # include "trial_conductor.h"
 # include "presentation.h"
 
+static int inferenceVotes[N_FREQS] = {0};
+
 void initializeTrialPresentation(
     void (*trialStartCallback)(uint16_t),
     void (*trialEndCallback)(uint16_t),
@@ -20,7 +22,6 @@ void initializeTrialPresentation(
     setAllTrialsCompletedCallback(allTrialsCompletedCallback);
 
     initializePresentation(FREQUENCIES, N_FREQS);
-    setPresentationTarget(0);
     disableTextureStimulus();
 }
 
@@ -28,11 +29,47 @@ void displayInference(TinyBCIInference inference, uint64_t timestamp)
 {
     printInference(inference, timestamp);
 
-    if (inference.confidence > SELECTION_DISPLAY_THRESHOLD)
+    if (inference.confidence > SELECTION_DISPLAY_THRESHOLD && inference.predictedLabel < N_FREQS)
     {
-        displaySelection(inference.predictedLabel);
+        inferenceVotes[inference.predictedLabel]++;
     }
 }
+
+void finalizeTrialSelection(void)
+{
+    int winningSelection = -1;
+    int mostVotes = 0;
+
+    for (int i = 0; i < N_FREQS; i++)
+    {
+        if (inferenceVotes[i] > mostVotes)
+        {
+            mostVotes = inferenceVotes[i];
+            winningSelection = i;
+        }
+    }
+
+    if (winningSelection >= 0)
+    {
+        printf(
+            "Final trial selection: %d (%d votes)\n",
+            winningSelection,
+            mostVotes
+        );
+
+        displaySelection(winningSelection);
+    }
+
+    /*
+     * Reset vote counts for the next trial.
+     */
+    for (int i = 0; i < N_FREQS; i++)
+    {
+        inferenceVotes[i] = 0;
+    }
+}
+
+
 
 void displayMessageOrExit(const char *message, void (*cleanUpMethod)())
 {

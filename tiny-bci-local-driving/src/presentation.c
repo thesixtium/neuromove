@@ -16,8 +16,11 @@ static double selectionTime = -SELECTION_DISPLAY_TIME;
 static bool stimulusEnabled = true;
 static bool textureEnabled = true;
 
+static double presentationStartTime = 0.0;
+
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
+static Rectangle emergencyStopButton = {20, RENDER_HEIGHT - 90, 180, 70};
 
 /* ---------------------------------------------------------
  * NeuroMove command mapping
@@ -501,35 +504,50 @@ void drawMessageScreen(
         }
 
 
-        drawTargetIndicator();
+        // drawTargetIndicator();
+        
+        int fontSize = 30;
+        int lineSpacing = 40;
+        
+        const char *line1 = "Press SPACE";
+        const char *line2 = "to start";
+        
+        int line1Width = MeasureText(line1, fontSize);
+        int line2Width = MeasureText(line2, fontSize);
+        
+        DrawText(line1, (RENDER_WIDTH - line1Width) / 2, RENDER_HEIGHT / 2 - lineSpacing - 20, fontSize, STIMULUS_BACKGROUND_COLOUR);
+        DrawText(line2, (RENDER_WIDTH - line2Width) / 2, RENDER_HEIGHT / 2 - lineSpacing + 20, fontSize, STIMULUS_BACKGROUND_COLOUR);
 
-
-        int textWidth =
-            MeasureText(
-                message,
-                MESSAGE_SCREEN_FONT_SIZE
-            );
-
-
-        DrawText(
-            message,
-
-            (
-                RENDER_WIDTH -
-                textWidth
-            ) / 2,
-
-            RENDER_HEIGHT / 2,
-
-            MESSAGE_SCREEN_FONT_SIZE,
-
-            STIMULUS_BACKGROUND_COLOUR
-        );
 
     EndTextureMode();
 
 
     drawLetterboxedTarget();
+}
+
+void drawStoppedScreen(void)
+{
+    BeginDrawing();
+
+    ClearBackground(BLACK);
+
+    const char *text = "STOPPED";
+    int fontSize = 50;
+
+    int textWidth = MeasureText(
+        text,
+        fontSize
+    );
+
+    DrawText(
+        text,
+        (GetScreenWidth() - textWidth) / 2,
+        GetScreenHeight() / 2 - fontSize / 2,
+        fontSize,
+        RED
+    );
+
+    EndDrawing();
 }
 
 
@@ -950,6 +968,110 @@ void drawStimulusPresenter(
     );
 }
 
+static Vector2 getPresentationPointerPosition(void)
+{
+    Vector2 pointer;
+
+    if (GetTouchPointCount() > 0)
+    {
+        pointer = GetTouchPosition(0);
+    }
+    else
+    {
+        pointer = GetMousePosition();
+    }
+
+    float scaleX =
+        (float)GetScreenWidth() /
+        RENDER_WIDTH;
+
+    float scaleY =
+        (float)GetScreenHeight() /
+        RENDER_HEIGHT;
+
+    float scale =
+        MIN(
+            scaleX,
+            scaleY
+        );
+
+    float offsetX =
+        (
+            GetScreenWidth() -
+            RENDER_WIDTH * scale
+        ) / 2.0f;
+
+    float offsetY =
+        (
+            GetScreenHeight() -
+            RENDER_HEIGHT * scale
+        ) / 2.0f;
+
+    return (Vector2)
+    {
+        (pointer.x - offsetX) / scale,
+        (pointer.y - offsetY) / scale
+    };
+}
+
+
+static void drawEmergencyStopButton(void)
+{
+    DrawRectangleRec(
+        emergencyStopButton,
+        RED
+    );
+
+    DrawRectangleLinesEx(
+        emergencyStopButton,
+        4.0f,
+        WHITE
+    );
+
+    const char *text = "STOP";
+    int fontSize = 32;
+
+    int textWidth =
+        MeasureText(
+            text,
+            fontSize
+        );
+
+    DrawText(
+        text,
+        emergencyStopButton.x +
+            (emergencyStopButton.width - textWidth) / 2,
+        emergencyStopButton.y +
+            (emergencyStopButton.height - fontSize) / 2,
+        fontSize,
+        WHITE
+    );
+}
+
+bool emergencyStopPressed(void)
+{
+    bool pressed =
+        IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+
+    if (GetTouchPointCount() > 0)
+    {
+        pressed = true;
+    }
+
+    if (!pressed)
+    {
+        return false;
+    }
+
+    Vector2 pointer =
+        getPresentationPointerPosition();
+
+    return CheckCollisionPointRec(
+        pointer,
+        emergencyStopButton
+    );
+}
+
 
 /* =========================================================
  * Main stimulus screen
@@ -995,8 +1117,8 @@ void drawStimulusScreen()
         }
 
 
-        drawTargetIndicator();
-
+        // drawTargetIndicator();
+    drawEmergencyStopButton();
     EndTextureMode();
 
 

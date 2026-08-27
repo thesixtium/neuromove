@@ -59,10 +59,6 @@ void endTrial()
     if (target == 0) 
     {
         if (stimulusRoundCompletedCallback != NULL) stimulusRoundCompletedCallback();
-        if (--stimulusRoundsToBeCompleted <= 0)
-        {
-            if (allTrialsCompletedCallback != NULL) allTrialsCompletedCallback();
-        }
     }
 }
 
