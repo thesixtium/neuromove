@@ -1084,8 +1084,6 @@ Did the correct relay activate?
 Did the wheelchair controller respond?
 ```
 
-Do not change the classifier simply because a motor failed to move.
-
 ---
 
 # Known Issues / Technical Debt
@@ -1111,8 +1109,6 @@ However, the project has since been moved to:
 ```text
 ~/Documents/neuromove/tiny-bci-local-driving/
 ```
-
-This path should be corrected.
 
 Preferably, the DSI library location should eventually be configured through CMake or a runtime environment variable rather than hardcoded into the C source.
 
@@ -1157,43 +1153,9 @@ C → Reverse
 
 These interfaces should be unified so that **one command protocol is defined in one place and used consistently by both Python and Arduino**.
 
-Until this is resolved, verify motor commands using a bench test before relying on `main.py` for mobility control.
-
 ---
 
-## 4. `run_tinybci.sh` contains old paths
-
-The current script still references the previous directory/executable:
-
-```text
-~/Documents/tiny-bci-ssvep-experiment/bin
-```
-
-and:
-
-```text
-tiny_bci_ssvep_experiment
-```
-
-The current project is:
-
-```text
-~/Documents/neuromove/tiny-bci-local-driving/
-```
-
-with executable:
-
-```text
-tiny_bci_local_driving
-```
-
-Update the script before using it as the normal startup method.
-
-For now, manual startup from the desktop terminal is the most transparent debugging method.
-
----
-
-## 5. Startup automation is not yet fully reliable
+## 4. Startup automation is not yet fully reliable
 
 Attempts were made to automate:
 
@@ -1215,7 +1177,7 @@ Until this is cleaned up, the reliable procedure is to run TinyBCI and `main.py`
 
 ---
 
-## 6. Shared-memory naming should be cleaned up
+## 5. Shared-memory naming should be cleaned up
 
 The BCI shared-memory object currently used by `main.py` is named:
 
@@ -1223,17 +1185,13 @@ The BCI shared-memory object currently used by `main.py` is named:
 pookinator
 ```
 
-This works as an internal development name but should eventually be renamed to something descriptive, for example:
-
-```text
-bci_selection
-```
+This works as an internal development name but should eventually be renamed to something else...
 
 Both the C producer and Python consumer must be changed together.
 
 ---
 
-## 7. Shared-memory ownership / cleanup requires care
+## 6. Shared-memory ownership / cleanup requires care
 
 Both C and Python access POSIX shared memory.
 
@@ -1249,7 +1207,7 @@ and confirm which process is responsible for creating each shared-memory object.
 
 ---
 
-## 8. Motor timing requires further calibration
+## 7. Motor timing requires further calibration
 
 Movement duration is currently time-based.
 
@@ -1259,7 +1217,7 @@ Turning and forward-distance calibration should be verified experimentally befor
 
 ---
 
-## 9. Impedance checking is not currently integrated
+## 8. Impedance checking is not currently integrated
 
 An impedance-checking interface was investigated using the Wearable Sensing DSI API.
 
@@ -1320,35 +1278,7 @@ The `archive/` directory exists to retain older code without implying that it be
 
 # Future Development
 
-Major next steps include:
-
-### Stabilize local BCI driving
-
-* reconcile Arduino and Python motor commands,
-* remove stale hardcoded paths,
-* verify DSI headset montage configuration,
-* validate left/right/forward commands independently,
-* calibrate movement duration,
-* ensure every movement is followed reliably by STOP.
-
-### Improve TinyBCI presentation
-
-* optimize stimulus placement for the 1024 × 600 touchscreen,
-* use equal-size SSVEP targets where possible,
-* maximize target size while maintaining sufficient visual separation,
-* maintain reliable timing,
-* align classification output with trial completion.
-
-### Improve BCI decision logic
-
-The local-driving interface should prioritize avoiding unintended movements.
-
-Useful safeguards include:
-
-* confidence thresholds,
-* majority voting across inference windows,
-* minimum-vote requirements,
-* returning **no movement / STOP** when evidence is insufficient.
+Some next steps include:
 
 ### Improve DSI compatibility
 
@@ -1379,70 +1309,6 @@ start local driving
 ```
 
 without requiring multiple terminals or manual serial-port selection.
-
-### Safety
-
-Before clinical or participant use, verify:
-
-* STOP behaviour,
-* motor command timeout behaviour,
-* relay fail-safe behaviour,
-* sensor operation,
-* BCI no-selection behaviour,
-* loss-of-EEG behaviour,
-* loss-of-serial behaviour,
-* process-crash behaviour,
-* emergency stopping,
-* command duration limits.
-
-A software crash or loss of BCI input should never result in sustained unintended motor activation.
-
----
-
-# Development Notes
-
-When debugging the system, avoid changing multiple layers simultaneously.
-
-The most useful principle for NeuroMove development is:
-
-```text
-BCI
- ↓
-shared memory
- ↓
-Python
- ↓
-serial
- ↓
-Arduino
- ↓
-relay
- ↓
-motor
-```
-
-Test the interfaces individually.
-
-For example, if TinyBCI prints `RIGHT` but the wheelchair does not turn right, first verify that:
-
-```text
-TinyBCI → shared memory
-```
-
-is correct before modifying TinyBCI itself.
-
-Then verify:
-
-```text
-shared memory → Python
-Python → serial
-serial → Arduino
-Arduino → relay
-```
-
-in order.
-
-This approach makes failures much easier to isolate.
 
 ---
 
