@@ -30,11 +30,10 @@ The current development version is on the `ashdawg` branch.
 10. [Software Setup](#software-setup)
 11. [Building TinyBCI](#building-tinybci)
 12. [Running NeuroMove](#running-neuromove)
-13. [Testing Without the Full System](#testing-without-the-full-system)
-14. [Troubleshooting](#troubleshooting)
-15. [Known Issues / Technical Debt](#known-issues--technical-debt)
-16. [Historical / Archived Components](#historical--archived-components)
-17. [Future Development](#future-development)
+13. [Troubleshooting](#troubleshooting)
+14. [Known Issues / Technical Debt](#known-issues--technical-debt)
+15. [Historical / Archived Components](#historical--archived-components)
+16. [Future Development](#future-development)
 
 ---
 
@@ -892,44 +891,6 @@ Once both programs are running:
 TinyBCI should classify the user's selection and write it to shared memory.
 
 Python then converts that selection into a movement command.
-
----
-
-# Testing Without the Full System
-
-When debugging, test each layer separately rather than immediately running the entire BCI → wheelchair pipeline.
-
-A useful order is:
-
-```text
-1. Relay / Arduino test
-        ↓
-2. Python → Arduino test
-        ↓
-3. Shared-memory test
-        ↓
-4. TinyBCI with synthetic EEG
-        ↓
-5. TinyBCI with DSI EEG
-        ↓
-6. TinyBCI + Python
-        ↓
-7. Full wheelchair test
-```
-
-This makes it much easier to determine which subsystem is responsible for a failure.
-
-## Test files
-
-Hardware and Raspberry Pi test programs are stored under:
-
-```text
-test/
-```
-
-including Raspberry Pi / hardware bench-testing utilities.
-
-Use these before modifying the main driving system whenever possible.
 
 ---
 
