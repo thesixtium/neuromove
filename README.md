@@ -14,8 +14,6 @@ This repository contains the software used to integrate:
 
 The current development version is on the `ashdawg` branch.
 
-> **Important:** This is research software under active development. It should not be treated as a certified medical-device or mobility safety system. Test motor-control changes with the wheelchair safely supported / unloaded before testing with a user.
-
 ---
 
 # Table of Contents
