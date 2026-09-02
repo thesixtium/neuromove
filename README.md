@@ -145,8 +145,8 @@ neuromove/
 │
 ├── main.py
 │
-├── run_tinybci.sh
-├── start_lsl_streams.sh
+├── launch_neuromove.sh
+├── motor_test.py
 │
 ├── src/
 │   ├── Arduino/
