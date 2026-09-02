@@ -309,6 +309,8 @@ The current implementation uses trials rather than continuously issuing a new mo
 
 A trial consists of a period of SSVEP stimulation followed by selection of a final command.
 
+As the this implementation uses trials, the STOP selection is futile and should ideally be removed entirely or replaced with REVERSE
+
 ---
 
 # DSI EEG Integration
@@ -343,7 +345,7 @@ DSI API
 TinyBCI
 ```
 
-This was done because TinyBCI operated correctly with synthetic EEG while the LSL-based configuration produced instability on the Raspberry Pi.
+This was done because TinyBCI operated correctly with synthetic EEG while the LSL-based configuration caused TinyBCI to crash. It is possible to stream to the Raspberry Pi over LSL using dsi2lsl, but TinyBCI does not currently support that functionality, so EEG data is being streamed over serial.
 
 ## Acquisition thread
 
@@ -444,7 +446,7 @@ and the EEG-source selection/configuration code to determine which montage is be
 DSI_Headset_ChooseChannels(...)
 ```
 
-Do not assume that changing the physical headset is sufficient. The software montage must match the channel names reported by that headset.
+Do not assume that changing the physical headset is sufficient. The software montage must match the channel names reported by that headset. This should also eventually be edited so the montage is not hardcoded.
 
 ---
 
@@ -560,13 +562,7 @@ STOP
 
 to the Arduino.
 
-These values were empirically determined and should be recalibrated if:
-
-* the mobility platform changes,
-* motor speed changes,
-* relay behaviour changes,
-* battery voltage significantly changes,
-* or the desired movement increment changes.
+These values were empirically determined when the system was originally designed and have not recently been recalibrated.
 
 ---
 
@@ -629,7 +625,7 @@ The FSR is connected to:
 A0
 ```
 
-The exact FSR wiring should be verified before relying on it as a safety input.
+As of September 2026, the FSRs are not functional. They need to be replaced and wired in parallel.
 
 ---
 
@@ -802,11 +798,9 @@ For this reason, TinyBCI should initially be tested by launching it manually fro
 
 Connect:
 
-1. Raspberry Pi display,
-2. DSI headset,
-3. Arduino Uno,
-4. relay interface,
-5. required NeuroMove sensors.
+1. Raspberry Pi display (+ any desired input devices, e.g., mouse or keyboard)
+2. DSI headset
+3. Arduino Uno
 
 Check serial devices:
 
@@ -832,7 +826,7 @@ Verify this each time.
 cd ~/Documents/neuromove/tiny-bci-local-driving/bin
 ```
 
-Set the Mesa overrides:
+Set the Mesa overrides (if necessary):
 
 ```bash
 export MESA_GL_VERSION_OVERRIDE=3.3
@@ -978,31 +972,6 @@ and compare it against the source names reported by the headset.
 
 ---
 
-## TinyBCI works with synthetic EEG but not DSI EEG
-
-This is a useful diagnostic result.
-
-It suggests that:
-
-* the presentation system works,
-* the TinyBCI processing pipeline can run,
-* and the problem is likely upstream in EEG acquisition/configuration.
-
-Check:
-
-```text
-DSI serial connection
-DSI API library
-DSI montage
-channel count
-sample rate
-DSI API errors
-```
-
-before changing the TinyBCI classifier.
-
----
-
 ## `Failed to update Tiny BCI Pipeline | code: -5`
 
 This was encountered during earlier LSL-based testing.
@@ -1043,25 +1012,6 @@ arduino-cli board list
 
 ---
 
-## Permission denied on serial port
-
-Check:
-
-```bash
-ls -l /dev/ttyACM0
-ls -l /dev/ttyUSB0
-```
-
-The user may need to belong to the appropriate serial-device group, commonly:
-
-```bash
-sudo usermod -a -G dialout $USER
-```
-
-Log out/reboot after changing group membership.
-
----
-
 ## BCI selection appears but wheelchair does not move
 
 Debug downward through the control chain:
@@ -1083,6 +1033,8 @@ Did the correct relay activate?
         ↓
 Did the wheelchair controller respond?
 ```
+Often powering off and then powering on will fix this.
+Also ensure PRIDE controller is in 5-switch mode (details of how to do this are in NeuroMove Summer 2026 Documentation located on the SharePoint)
 
 ---
 
@@ -1226,6 +1178,9 @@ The DSI impedance driver was able to enter impedance mode, but valid per-channel
 Because the DSI impedance driver injects impedance-test signals and should not operate simultaneously with normal EEG acquisition, impedance testing should be implemented as a separate **pre-session setup step**, not during active BCI classification.
 
 Experimental impedance code should not be reintroduced into the acquisition path until it has been independently validated.
+
+## 9. STOP Command
+As NeuroMove selections are currently trial-based, the STOP selection is futile. That would ideally be removed entirely or replaced with a REVERSE command.
 
 ---
 
